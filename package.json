@@ -4,8 +4,10 @@
   "description": "Back-end for managing users and transactions",
   "main": "dist/app.js",
   "scripts": {
-    "watch": "tsc -w & nodemon",
-    "start": "tsc && node dist/app.js",
+    "watchDebug": "tsc -w & NODE_ENV=DEV nodemon dist/app.js",
+    "debug": "tsc && NODE_ENV=DEV node dist/app.js",
+    "watchRelease": "tsc -w & NODE_ENV=PROD nodemon dist/app.js",
+    "release": "tsc && NODE_ENV=PROD node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -31,6 +33,9 @@
     "typescript": "^4.4.3"
   },
   "dependencies": {
-    "@types/argon2": "^0.15.0"
+    "@types/argon2": "^0.15.0",
+    "@types/mysql": "^2.15.19",
+    "dotenv": "^10.0.0",
+    "mysql": "^2.18.1"
   }
 }
