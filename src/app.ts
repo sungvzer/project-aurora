@@ -9,7 +9,7 @@ else
     console.log("Aurora v1.0");
 
 const app = express();
-const port = parseInt(process.env.PORT);
+const port: number = parseInt(process.env.PORT);
 
 
 /**
