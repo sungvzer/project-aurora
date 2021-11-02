@@ -15,7 +15,8 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "type": "pwa-node"
+            "type": "pwa-node",
+            "console": "internalConsole"
         },
         {
             "name": "Release",
@@ -28,7 +29,8 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "type": "pwa-node"
+            "type": "pwa-node",
+            "console": "internalConsole"
         }
     ]
 }
