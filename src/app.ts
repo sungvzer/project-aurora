@@ -1,6 +1,5 @@
 import express from 'express';
 import { endpointList } from './utils/endpoints';
-import body_parser from 'body-parser';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
 
@@ -25,9 +24,9 @@ app.use((req, res, next): void => {
 /**
  * Libraries
  */
-app.use(body_parser.urlencoded({ extended: true }));
-app.use(body_parser.json());
-app.use(body_parser.text());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.text());
 
 /**
  * Routes
