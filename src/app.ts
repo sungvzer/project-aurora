@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
@@ -16,7 +16,7 @@ const port: number = parseInt(process.env.PORT);
 /**
  * Allow CORS
  */
-app.use((req, res, next): void => {
+app.use((req: Request, res: Response, next: NextFunction): void => {
     res.header('Access-Control-Allow-Headers', '*');
     res.header('Access-Control-Allow-Origin', '*');
     next();
@@ -34,10 +34,11 @@ app.use(express.text());
  */
 app.post('/signup', postSignup);
 
+
 /**
  * Error Handling
  */
-app.use((err: Error, req, res, next): void => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
     if (err instanceof SyntaxError) {
         const error = { status: undefined, message: undefined, type: undefined, ...err };
         if (error.status === 400 && 'body' in err) {
