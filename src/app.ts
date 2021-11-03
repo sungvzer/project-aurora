@@ -42,7 +42,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
     if (err instanceof SyntaxError) {
         const error = { status: undefined, message: undefined, type: undefined, ...err };
         if (error.status === 400 && 'body' in err) {
-            res.status(400).json({ error: "bad json", message: error.message, type: error.type, body: req.body });
+            res.status(400).json({
+                error: true,
+                message: "Malformed JSON body"
+            });
         }
     }
 });
