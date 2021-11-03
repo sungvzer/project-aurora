@@ -1,0 +1,12 @@
+POST http://127.0.0.1:3000/signup HTTP/1.1
+content-type: application/json
+
+{
+    "email": "example@example.com",
+    "password": "VerySecurePassword",
+    "lastName": "Johnson",
+    "firstName": "Mark",
+    "middleName": "P",
+    "currency": "EUR",
+    "birthday": "1986-05-12"
+}
