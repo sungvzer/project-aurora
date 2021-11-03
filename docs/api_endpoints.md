@@ -1,5 +1,29 @@
 # API Endpoint definitions
 
+## Common errors
+
+This list contains common errors and their responses.
+
+### Malformed JSON
+
+Happens whenever a request contains incorrect JSON syntax.
+
+The response will be:
+
+```http
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Connection: close
+
+{
+  "error": true,
+  "message": "Malformed JSON body"
+}
+```
+
 ## POST /signup - Create a new user
 
 ### Description
@@ -81,5 +105,3 @@ Connection: close
   "message": "User with email example@example.com already exists"
 }
 ```
-
-
