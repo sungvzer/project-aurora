@@ -3,6 +3,7 @@ import * as dbController from '../controllers/databaseController';
 import { hashPassword } from '../utils/argon';
 import CurrencyCode from './CurrencyCode';
 import ErrorModel from './APIError';
+import ErrorOr from './ErrorOr';
 
 export interface UserDatabaseInsertModel {
     firstName: string;
@@ -25,8 +26,10 @@ export default class User {
         const passwordHash = await hashPassword(user.plainTextPassword);
         const currencyCode = user.currencyCode;
 
-        const userId = await User.findUserByEmail(email);
-        if (userId != -1) {
+        const userFoundOrError = await User.findUserByEmail(email);
+
+        // If a user could be found
+        if (userFoundOrError.hasValue()) {
             return { error: true, message: `User with email ${email} already exists` };
         }
         // Original query is: 
@@ -38,13 +41,21 @@ export default class User {
         return { error: false, message: `User created` };
     }
 
-    static async findUserByEmail(email: string): Promise<number> {
+    static async findUserByEmail(email: string): Promise<ErrorOr<number>> {
         const connection = await dbController.getDatabaseConnection();
         const [result] = await connection.execute<RowDataPacket[]>('SELECT UserCredentialID FROM UserCredential WHERE UserEmail=?;', [email]);
 
         if (result.length > 0)
-            return result[0]['UserCredentialID'];
-        return -1;
+            return new ErrorOr<number>({
+                value: result[0]['UserCredentialID'],
+                isError: false,
+                message: null
+            });
+        return new ErrorOr<number>({
+            isError: true,
+            message: `No user with email ${email} found`,
+            value: null,
+        });
     }
 
 }
