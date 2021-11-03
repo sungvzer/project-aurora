@@ -2,7 +2,7 @@ import { body, check, Result, ValidationError, validationResult } from 'express-
 import { Request, Response } from 'express';
 import User, { UserDatabaseInsertModel } from '../models/User';
 import CurrencyCode, { isCurrencyCode } from '../models/CurrencyCode';
-import AuroraError from '../models/ErrorModel';
+import AuroraError from '../models/APIError';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
     /**

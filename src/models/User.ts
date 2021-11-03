@@ -2,7 +2,7 @@ import { RowDataPacket } from 'mysql2';
 import * as dbController from '../controllers/databaseController';
 import { hashPassword } from '../utils/argon';
 import CurrencyCode from './CurrencyCode';
-import ErrorModel from './ErrorModel';
+import ErrorModel from './APIError';
 
 export interface UserDatabaseInsertModel {
     firstName: string;
