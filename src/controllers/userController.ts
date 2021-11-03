@@ -1,4 +1,4 @@
-import { body, check, validationResult } from 'express-validator';
+import { body, check, Result, ValidationError, validationResult } from 'express-validator';
 import { Request, Response } from 'express';
 import User, { UserDatabaseInsertModel } from '../models/User';
 import CurrencyCode, { isCurrencyCode } from '../models/CurrencyCode';
@@ -30,9 +30,13 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
     await body("email").normalizeEmail({ gmail_remove_dots: false, all_lowercase: true }).run(req);
 
 
-    const errors = validationResult(req);
+    const errors: Result<ValidationError> = validationResult(req);
+    const errorMessages: string[] = [];
     if (!errors.isEmpty()) {
-        res.status(400).json(errors.array());
+        for (const { msg } of errors.array()) {
+            errorMessages.push(msg);
+        }
+        res.status(400).json({ "error": true, "message": errorMessages });
         return;
     }
 
@@ -63,6 +67,7 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
     }
 
     res.status(200).json({
+        "error": false,
         "message": "User signed up correctly",
     });
 };
