@@ -2,6 +2,7 @@ import express from 'express';
 import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
+import { postSignup } from './controllers/userController';
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART))
     console.log(appNameArt);
@@ -31,6 +32,7 @@ app.use(express.text());
 /**
  * Routes
  */
+app.post('/signup', postSignup);
 
 /**
  * Error Handling
