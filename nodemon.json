@@ -1,0 +1,6 @@
+{
+    "events": {
+        "restart": "notify-send -t 500 \"nodemon\" 'App restarted'"
+    },
+    "delay": 1000
+}
