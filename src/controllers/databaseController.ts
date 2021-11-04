@@ -5,8 +5,8 @@ export interface LastInsertId extends mysql2.RowDataPacket {
     "LAST_INSERT_ID()": number;
 }
 
-export const getDatabaseConnection = async () =>
-    await mysql2.createConnection({
+export const getDatabaseConnection = async () => {
+    return await mysql2.createConnection({
         host: process.env.MYSQL_HOST,
         password: process.env.MYSQL_PASSWORD_DEV,
         port: parseInt(process.env.MYSQL_PORT),
@@ -14,3 +14,4 @@ export const getDatabaseConnection = async () =>
         // TODO: This needs to be changed once we reach production
         user: ENVIRONMENT === 'Development' ? "aurora_dev" : "aurora_dev",
     });
+};
