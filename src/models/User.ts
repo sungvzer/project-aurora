@@ -15,6 +15,12 @@ export interface UserDatabaseInsertModel {
     currencyCode: CurrencyCode;
 }
 
+export interface UserCredentials {
+    email: string;
+    passwordHash: string;
+    lastModifiedAt: Date;
+}
+
 export default class User {
     static async create(user: UserDatabaseInsertModel): Promise<ErrorModel> {
         const connection = await dbController.getDatabaseConnection();
@@ -59,4 +65,27 @@ export default class User {
         });
     }
 
+    static async getCredentialsByEmail(email: string): Promise<ErrorOr<UserCredentials>> {
+        const connection = await dbController.getDatabaseConnection();
+
+        const [result] = await connection.execute<RowDataPacket[]>("SELECT * FROM UserCredential WHERE UserEmail = ?", [email]);
+
+        if (result.length == 0) {
+            return new ErrorOr<UserCredentials>({
+                isError: true,
+                message: `No user credentials found for email ${email}`,
+                value: null,
+            });
+        }
+
+        return new ErrorOr<UserCredentials>({
+            isError: false,
+            message: null,
+            value: {
+                "email": email,
+                "passwordHash": result[0].hash,
+                "lastModifiedAt": new Date(Date.now()),
+            },
+        });
+    }
 }
