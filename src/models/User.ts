@@ -45,16 +45,17 @@ export default class User {
         const connection = await dbController.getDatabaseConnection();
         const [result] = await connection.execute<RowDataPacket[]>('SELECT UserCredentialID FROM UserCredential WHERE UserEmail=?;', [email]);
 
-        if (result.length > 0)
+        if (result.length == 0)
             return new ErrorOr<number>({
-                value: result[0]['UserCredentialID'],
-                isError: false,
-                message: null
+                isError: true,
+                message: `No user with email ${email} found`,
+                value: null,
             });
+
         return new ErrorOr<number>({
-            isError: true,
-            message: `No user with email ${email} found`,
-            value: null,
+            value: result[0]['UserCredentialID'],
+            isError: false,
+            message: null
         });
     }
 
