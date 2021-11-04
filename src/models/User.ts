@@ -32,7 +32,7 @@ export default class User {
         const passwordHash = await hashPassword(user.plainTextPassword);
         const currencyCode = user.currencyCode;
 
-        const userFoundOrError = await User.findUserByEmail(email);
+        const userFoundOrError = await User.getUserIdByEmail(email);
 
         // If a user could be found
         if (userFoundOrError.hasValue()) {
@@ -47,7 +47,7 @@ export default class User {
         return { error: false, message: `User created` };
     }
 
-    static async findUserByEmail(email: string): Promise<ErrorOr<number>> {
+    static async getUserIdByEmail(email: string): Promise<ErrorOr<number>> {
         const connection = await dbController.getDatabaseConnection();
         const [result] = await connection.execute<RowDataPacket[]>('SELECT UserCredentialID FROM UserCredential WHERE UserEmail=?;', [email]);
 
