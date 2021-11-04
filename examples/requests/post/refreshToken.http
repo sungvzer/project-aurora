@@ -1,0 +1,6 @@
+POST http://127.0.0.1:3000/refreshToken HTTP/1.1
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjA2NDk5NX0.lEBudZEnIQxuyRGDjJmQle9TZklqpmS8iUH5jAR6nt8"
+}
