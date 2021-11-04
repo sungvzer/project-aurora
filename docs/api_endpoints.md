@@ -105,3 +105,50 @@ Connection: close
   "message": "User with email example@example.com already exists"
 }
 ```
+
+## GET /routes
+
+### Description
+
+Returns all possible routes in a JSON format.
+
+### Fields
+
+No fields are required.
+
+### Responses
+
+An example response will be:
+
+```http
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Connection: close
+
+{
+  "error": false,
+  "routes": {
+    "get": [
+      "/getRoute1"
+    ],
+    "post": [
+      "/postRoute1",
+      "/postRoute2"
+    ],
+    "put": [
+      "/putRoute1"
+    ],
+    "patch": [
+      "/patchRoute1",
+      "/patchRoute2"
+    ],
+    "delete": [
+      "/deleteRoute1"
+    ],
+  }
+}
+```
+
