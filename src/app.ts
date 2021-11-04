@@ -2,9 +2,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
-import { postSignup, postLogin } from './controllers/userController';
+import { postSignup, postLogin, getUserSettings } from './controllers/userController';
 import { getRoutes } from './controllers/apiController';
-import { regenerateToken } from './controllers/authenticationController';
+import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART))
     console.log(appNameArt);
@@ -38,6 +38,7 @@ app.post('/signup', postSignup);
 app.get('/routes', getRoutes);
 app.post('/login', postLogin);
 app.post('/refreshToken', regenerateToken);
+app.get('/users/:id/settings', requireAuthentication, getUserSettings);
 
 /**
  * Error Handling

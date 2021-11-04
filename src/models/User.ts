@@ -15,6 +15,12 @@ export interface UserDatabaseInsertModel {
     currencyCode: CurrencyCode;
 }
 
+export interface UserSettings {
+    currency: CurrencyCode,
+    darkMode: boolean,
+    abbreviatedFormat: boolean;
+}
+
 export interface UserCredentials {
     email: string;
     passwordHash: string;
@@ -45,6 +51,29 @@ export default class User {
         await connection.execute("CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);", [firstName, middleName, lastName, birthday, email, passwordHash, 0, 1, currencyCode]);
         await connection.commit();
         return { error: false, message: `User created` };
+    }
+
+    static async getSettingsById(id: number): Promise<ErrorOr<UserSettings>> {
+        const connection = await dbController.getDatabaseConnection();
+        const [result] = await connection.execute<RowDataPacket[]>('SELECT * FROM UserDataHeader INNER JOIN UserSetting ON UserDataHeader.UserSettingID = UserSetting.UserSettingID WHERE UserDataHeaderID = ?', [id]);
+
+        if (result.length == 0) {
+            return new ErrorOr<UserSettings>({
+                isError: true,
+                message: "No settings found for user " + id,
+                value: null
+            });
+        }
+
+        return new ErrorOr<UserSettings>({
+            isError: false,
+            message: null,
+            value: {
+                abbreviatedFormat: result[0]['AbbreviatedFormat'],
+                currency: result[0]['UserCurrencyID'],
+                darkMode: result[0]['DarkMode']
+            }
+        });
     }
 
     static async getUserIdByEmail(email: string): Promise<ErrorOr<number>> {

@@ -1,6 +1,6 @@
 import { body, check, Result, ValidationError, validationResult } from 'express-validator';
 import { Request, Response } from 'express';
-import User, { UserCredentials, UserDatabaseInsertModel } from '../models/User';
+import User, { UserCredentials, UserDatabaseInsertModel, UserSettings } from '../models/User';
 import CurrencyCode, { isCurrencyCode } from '../models/CurrencyCode';
 import AuroraError from '../models/APIError';
 import ErrorOr from '../models/ErrorOr';
@@ -128,4 +128,33 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
         "error": false, "accessToken": accessToken, "refreshToken": refreshToken
     });
     return;
+};
+
+// TODO: Return currency code and not id
+export const getUserSettings = async (req: Request, res: Response): Promise<void> => {
+    const userId = parseInt(req.params.id);
+    if (!userId) {
+        res.status(400).json({ "error": true, "message": "No valid ID provided" });
+        return;
+    }
+
+    const jwtUserHeaderId = req["decodedJWTPayload"]["userHeaderID"];
+    if (!jwtUserHeaderId) {
+        res.status(500).json({ "error": true, "message": "There's been an internal error. Please login again." });
+        return;
+    }
+
+    if (userId != jwtUserHeaderId) {
+        res.status(403).json({ "error": true, "message": `Cannot GET settings for user ${userId}. Authenticated user is ${jwtUserHeaderId}` });
+        return;
+
+    }
+
+    const settingsOrError: ErrorOr<UserSettings> = await User.getSettingsById(userId);
+    if (settingsOrError.isError()) {
+        res.status(404).json({ "error": true, "message": settingsOrError.message });
+        return;
+    }
+
+    res.status(200).json({ "error": false, "settings": settingsOrError.value });
 };
