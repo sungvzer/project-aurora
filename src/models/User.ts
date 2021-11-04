@@ -83,7 +83,7 @@ export default class User {
             message: null,
             value: {
                 "email": email,
-                "passwordHash": result[0].hash,
+                "passwordHash": result[0]['UserPasswordHash'],
                 "lastModifiedAt": new Date(Date.now()),
             },
         });
