@@ -7,6 +7,8 @@ import ErrorOr from '../models/ErrorOr';
 import { verifyPassword } from '../utils/argon';
 import { generateTokenPair } from '../utils/jwt';
 import { getRedisConnection } from './databaseController';
+import assert from 'node:assert';
+import * as jwt from 'jsonwebtoken';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
     /**
@@ -75,6 +77,49 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
         "error": false,
         "message": "User signed up correctly",
     });
+    return;
+};
+
+export const postLogout = async (req: Request, res: Response): Promise<void> => {
+    /**
+     * Empty Check
+     */
+    await check("refreshToken", "No refresh token provided").notEmpty().run(req);
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ "error": true, "message": errors.array()[0].msg });
+        return;
+    }
+
+    const accessPayload = req["decodedJWTPayload"];
+    // We assert because the authentication middleware shold handle this for us
+    assert(accessPayload);
+
+    const refreshToken = req.body.refreshToken;
+    let refreshPayload: any;
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, payload) => {
+        assert(!err); // Same reason for the assertion as of above
+        refreshPayload = payload;
+    });
+
+    if (!accessPayload["userHeaderID"] || !refreshPayload["userHeaderID"]) {
+        res.status(403).json({ "error": true, "message": "Invalid access or refresh token(s)" });
+        return;
+    }
+
+    if (accessPayload["userHeaderID"] != refreshPayload["userHeaderID"]) {
+        res.status(403).json({ "error": true, "message": "Tokens refer to different users" });
+        return;
+    }
+
+    const redis = await getRedisConnection();
+    const queryResult = await redis.get(refreshToken);
+    if (!queryResult) {
+        res.status(404).json({ "error": true, "message": `Refresh token doesn't belong to any session` });
+        return;
+    }
+    await redis.del(refreshToken);
+    res.status(200).json({ "error": false, "message": "User logged out successfully" });
     return;
 };
 

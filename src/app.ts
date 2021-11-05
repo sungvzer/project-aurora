@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
-import { postSignup, postLogin, getUserSettings } from './controllers/userController';
+import { postSignup, postLogin, getUserSettings, postLogout } from './controllers/userController';
 import { getRoutes } from './controllers/apiController';
 import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
 
@@ -37,6 +37,7 @@ app.use(express.text());
 app.post('/signup', postSignup);
 app.get('/routes', getRoutes);
 app.post('/login', postLogin);
+app.post('/logout', requireAuthentication, postLogout);
 app.post('/refreshToken', regenerateToken);
 app.get('/users/:id/settings', requireAuthentication, getUserSettings);
 

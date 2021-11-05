@@ -1,0 +1,7 @@
+POST http://127.0.0.1:3000/logout HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjE1MjU5OCwiZXhwIjoxNjM2MTUzNDk4fQ.wDrmK-I5DlWTsbm4rrJ36VG0f4nqCS3-19Hqn4utKoA
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjE1MjU5OH0.fVeY5eJPK8cKGmzwkRDKxprWu4Xhqq-X9wAQMHx6bh0"
+}
