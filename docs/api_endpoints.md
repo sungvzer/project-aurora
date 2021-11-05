@@ -32,7 +32,7 @@
     - [Headers](#headers-4)
     - [Fields](#fields-4)
     - [Responses](#responses-4)
-      
+
 ## Common errors
 
 This list contains common errors and their responses.
@@ -92,6 +92,21 @@ Content-Type: application/json; charset=utf-8
 {
   "error": true,
   "message": "Invalid authorization token"
+}
+```
+
+Expired access token:
+
+```http
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+
+{
+  "error": true,
+  "message": "jwt expired"
 }
 ```
 
