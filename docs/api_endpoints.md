@@ -2,30 +2,37 @@
 
 ## Table of contents
 
-* [Common errors](#common-errors)
-  + [Malformed JSON](#malformed-json)
-  + [Authentication errors](#authentication-errors)
-* [POST /signup](#post-signup)
-  + [Description](#description)
-  + [Headers](#headers)
-  + [Fields](#fields)
-  + [Responses](#responses)
-* [GET /routes](#get-routes)
-  + [Description](#description-1)
-  + [Headers](#headers-1)
-  + [Fields](#fields-1)
-  + [Responses](#responses-1)
-* [POST /login](#post-login)
-  + [Description](#description-2)
-  + [Headers](#headers-2)
-  + [Fields](#fields-2)
-  + [Responses](#responses-2)
-* [GET /user/{id}/settings](#get-useridsettings)
-  + [Description](#description-3)
-  + [Headers](#headers-3)
-  + [Fields](#fields-3)
-  + [Responses](#responses-3)
-
+- [API Endpoint definitions](#api-endpoint-definitions)
+  - [Table of contents](#table-of-contents)
+  - [Common errors](#common-errors)
+    - [Malformed JSON](#malformed-json)
+    - [Authentication errors](#authentication-errors)
+  - [POST /signup](#post-signup)
+    - [Description](#description)
+    - [Headers](#headers)
+    - [Fields](#fields)
+    - [Responses](#responses)
+  - [GET /routes](#get-routes)
+    - [Description](#description-1)
+    - [Headers](#headers-1)
+    - [Fields](#fields-1)
+    - [Responses](#responses-1)
+  - [POST /login](#post-login)
+    - [Description](#description-2)
+    - [Headers](#headers-2)
+    - [Fields](#fields-2)
+    - [Responses](#responses-2)
+  - [POST /logout](#post-logout)
+    - [Description](#description-3)
+    - [Headers](#headers-3)
+    - [Fields](#fields-3)
+    - [Responses](#responses-3)
+  - [GET /user/{id}/settings](#get-useridsettings)
+    - [Description](#description-4)
+    - [Headers](#headers-4)
+    - [Fields](#fields-4)
+    - [Responses](#responses-4)
+      
 ## Common errors
 
 This list contains common errors and their responses.
@@ -324,6 +331,101 @@ Content-Type: application/json; charset=utf-8
 {
   "error": true,
   "message": "Wrong password"
+}
+```
+
+## POST /logout
+
+### Description
+
+Deletes a user's refresh token, practically invalidating the access token at the expiry date.
+
+It's an **authenticated** endpoint. This means you need to first obtain an `accessToken` by [logging in](#post-login).
+
+### Headers
+
+`Authorization: Bearer {accessToken}`
+
+`Content-Type: application/json`
+
+### Fields
+
+- `refreshToken`: the refresh token to be invalidated.
+
+### Responses
+
+If it succeeds, the request will return the following response:
+
+```http
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+
+{
+  "error": false,
+  "message": "User logged out successfully"
+}
+```
+
+If the `refreshToken` is omitted:
+
+```http
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+
+{
+  "error": true,
+  "message": "No refresh token provided"
+}
+```
+
+If the `refreshToken` is provided, but does not belong to any user:
+
+```http
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+
+{
+  "error": true,
+  "message": "Refresh token doesn't belong to any session"
+}
+```
+
+Should - by any chance - the payloads be missing in any of the two tokens:
+
+```http
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+
+{
+  "error": true,
+  "message": "Invalid access or refresh token(s)"
+}
+```
+
+If refresh and access token refer to different users in their payload:
+
+```http
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+
+{
+  "error": true,
+  "message": "Tokens refer to different users"
 }
 ```
 
