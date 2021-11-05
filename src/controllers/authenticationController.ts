@@ -36,7 +36,7 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
     const redis = await getRedisConnection();
     const result = await redis.get(oldRefreshToken);
 
-    if (result) {
+    if (!result) {
         res.status(403).json({ "error": true, "message": "Invalid refresh token" });
         return;
     }
@@ -46,8 +46,11 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
             res.status(403).json({ "error": true, "message": "Invalid refresh token" });
             return;
         }
-        await redis.set(oldRefreshToken, '0');
+
+        // Remove old token from list of valid tokens
+        await redis.del(oldRefreshToken);
         const { accessToken, refreshToken } = generateTokenPair({ 'userHeaderID': payload['userHeaderID'] });
+        await redis.set(refreshToken, '1');
         res.status(200).json({ "error": false, "accessToken": accessToken, "refreshToken": refreshToken });
     });
 };

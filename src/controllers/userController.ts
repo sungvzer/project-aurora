@@ -6,6 +6,7 @@ import AuroraError from '../models/APIError';
 import ErrorOr from '../models/ErrorOr';
 import { verifyPassword } from '../utils/argon';
 import { generateTokenPair } from '../utils/jwt';
+import { getRedisConnection } from './databaseController';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
     /**
@@ -124,6 +125,8 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     }
 
     const { accessToken, refreshToken } = generateTokenPair({ userHeaderID: userIDOrError.value });
+    const redis = await getRedisConnection();
+    await redis.set(refreshToken, '1');
 
     res.status(200).json({
         "error": false, "accessToken": accessToken, "refreshToken": refreshToken
