@@ -5,7 +5,7 @@ import CurrencyCode, { isCurrencyCode } from '../models/CurrencyCode';
 import AuroraError from '../models/APIError';
 import ErrorOr from '../models/ErrorOr';
 import { verifyPassword } from '../utils/argon';
-import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
+import { generateTokenPair } from '../utils/jwt';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
     /**
@@ -67,12 +67,14 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
         res.status(400).json({
             ...errorOrSuccess
         });
+        return;
     }
 
     res.status(200).json({
         "error": false,
         "message": "User signed up correctly",
     });
+    return;
 };
 
 export const postLogin = async (req: Request, res: Response): Promise<void> => {
@@ -121,8 +123,7 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const accessToken = generateAccessToken({ userHeaderID: userIDOrError.value });
-    const refreshToken = generateRefreshToken({ userHeaderID: userIDOrError.value });
+    const { accessToken, refreshToken } = generateTokenPair({ userHeaderID: userIDOrError.value });
 
     res.status(200).json({
         "error": false, "accessToken": accessToken, "refreshToken": refreshToken
