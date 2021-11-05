@@ -2,14 +2,18 @@ import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { generateTokenPair } from '../utils/jwt';
 import { getRedisConnection } from './databaseController';
+import { check, header, Result, ValidationError, validationResult } from 'express-validator';
 
-export const requireAuthentication = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers["authorization"];
+export const requireAuthentication = async (req: Request, res: Response, next: NextFunction) => {
+    await header("Authorization", "Missing Authorization header").notEmpty().run(req);
+    const error: Result<ValidationError> = validationResult(req);
 
-    if (!authHeader) {
-        res.status(401).json({ "error": true, "message": "Missing Authorization header" });
+    if (!error.isEmpty()) {
+        res.status(400).json({ "error": true, "message": error.array()[0].msg });
         return;
     }
+
+    const authHeader = req.headers["authorization"];
 
     const [bearer, token] = authHeader.split(' ');
     if (!bearer || bearer.toLowerCase() != 'bearer' || !token) {
@@ -27,11 +31,18 @@ export const requireAuthentication = (req: Request, res: Response, next: NextFun
 };
 
 export const regenerateToken = async (req: Request, res: Response): Promise<void> => {
-    const oldRefreshToken = req.body.token;
-    if (!oldRefreshToken) {
-        res.status(401).json({ "error": true, "message": "No refresh token provided" });
+    /**
+     * Empty Check
+     */
+    await check("refreshToken", "No refresh token provided").notEmpty().run(req);
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ "error": true, "message": errors.array()[0].msg });
         return;
     }
+
+    const oldRefreshToken = req.body.token;
 
     const redis = await getRedisConnection();
     const result = await redis.get(oldRefreshToken);
