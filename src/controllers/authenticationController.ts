@@ -4,6 +4,15 @@ import { generateTokenPair } from '../utils/jwt';
 import { getRedisConnection } from './databaseController';
 import { check, header, Result, ValidationError, validationResult } from 'express-validator';
 
+export const getAccessTokenFromRequest = (req: Request): string => {
+    const authHeader = req.headers["authorization"];
+    const [bearer, token] = authHeader.split(' ');
+    if (!bearer || bearer.toLowerCase() != 'bearer' || !token) {
+        return null;
+    }
+    return token;
+};
+
 export const requireAuthentication = async (req: Request, res: Response, next: NextFunction) => {
     await header("Authorization", "Missing Authorization header").notEmpty().run(req);
     const error: Result<ValidationError> = validationResult(req);
@@ -13,12 +22,9 @@ export const requireAuthentication = async (req: Request, res: Response, next: N
         return;
     }
 
-    const authHeader = req.headers["authorization"];
-
-    const [bearer, token] = authHeader.split(' ');
-    if (!bearer || bearer.toLowerCase() != 'bearer' || !token) {
+    const token = getAccessTokenFromRequest(req);
+    if (!token) {
         return res.status(401).json({ "error": true, "message": "Invalid authorization token" });
-
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
