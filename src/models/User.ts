@@ -27,6 +27,22 @@ export interface UserCredentials {
     lastModifiedAt: Date;
 }
 
+export interface UserTransaction {
+    amount: number;
+    currency: CurrencyCode;
+    date: string;
+    tag: string;
+}
+
+export interface TransactionQueryOptions {
+    minAmount?: number;
+    maxAmount?: number;
+    currency?: CurrencyCode;
+    startDate?: Date;
+    endDate?: Date;
+    tag?: string;
+}
+
 export default class User {
     static async create(user: UserDatabaseInsertModel): Promise<ErrorModel> {
         const connection = await dbController.getDatabaseConnection();
@@ -91,6 +107,61 @@ export default class User {
             value: result[0]['UserCredentialID'],
             isError: false,
             message: null
+        });
+    }
+
+    static async getTransactionsById(id: number, queryOptions: TransactionQueryOptions): Promise<ErrorOr<UserTransaction[]>> {
+        const connection = await dbController.getDatabaseConnection();
+
+        let parameters: string[] = [id.toString(),];
+        let sql = 'SELECT UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ? ';
+
+        if (queryOptions.currency) {
+            sql += ' AND CurrencyCode = ? ';
+            parameters.push(queryOptions.currency);
+        }
+        if (queryOptions.tag) {
+            sql += ' AND UserTransactionTag = ? ';
+            parameters.push(queryOptions.tag);
+        }
+        if (queryOptions.startDate) {
+            sql += ' AND UserTransactionDate >= ? ';
+            parameters.push(queryOptions.startDate.toISOString());
+        }
+        if (queryOptions.endDate) {
+            sql += ' AND UserTransactionDate <= ? ';
+            parameters.push(queryOptions.endDate.toISOString());
+        }
+        if (queryOptions.minAmount) {
+            sql += ' AND UserTransactionAmount >= ? ';
+            parameters.push(queryOptions.minAmount.toString());
+        }
+        if (queryOptions.maxAmount) {
+            sql += ' AND UserTransactionAmount <= ? ';
+            parameters.push(queryOptions.maxAmount.toString());
+        }
+
+        const [result] = await connection.execute<RowDataPacket[]>(sql, parameters);
+        let transactionArray: UserTransaction[] = [];
+        if (result.length == 0) {
+            return new ErrorOr<UserTransaction[]>({
+                isError: false,
+                message: null,
+                value: []
+            });
+        }
+
+        /**
+         * UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode
+         */
+        for (let row of result) {
+            transactionArray.push({ amount: row['UserTransactionAmount'], currency: row['CurrencyCode'], date: row['UserTransactionDate'].toISOString(), tag: row['UserTransactionTag'] });
+        }
+
+        return new ErrorOr<UserTransaction[]>({
+            isError: false,
+            message: null,
+            value: transactionArray
         });
     }
 

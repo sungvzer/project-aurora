@@ -32,6 +32,11 @@
     - [Headers](#headers-4)
     - [Fields](#fields-4)
     - [Responses](#responses-4)
+  - [GET /user/{id}/transactions](#get-useridtransactions)
+    - [Description](#description-5)
+    - [Headers](#headers-5)
+    - [Fields](#fields-5)
+    - [Responses](#responses-5)
 
 ## Common errors
 
@@ -480,3 +485,62 @@ Content-Type: application/json; charset=utf-8
   }
 }
 ```
+
+## GET /user/{id}/transactions
+
+### Description
+
+List user's transactions, filtered by query parameters.
+
+It's an **authenticated** endpoint. This means you need to first obtain an `accessToken` by [logging in](#post-login).
+
+### Headers
+
+`Authorization: Bearer {accessToken}`
+
+### Fields
+
+These need to be included in the GET query string. For example: `/users/2/transactions?currency=USD`
+
+- `minAmount` and `maxAmount` define the range of filtering for the transactions' amounts. 
+
+- `startDate` and `endDate` define the range of filtering for the transactions' dates.
+
+- `currency` represents the **only** currency code that will get included in the result.
+
+- `tag` refers to the transactions' tags.
+
+### Responses
+
+Unless an [authentication error](#authentication-errors) occurs, the response will be:
+
+```http
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+
+{
+  "error": false,
+  "transactions": [
+    {
+      "amount": -520189,
+      "currency": "USD",
+      "date": "2021-11-03T23:00:00.000Z",
+      "tag": "Hospital bill"
+    },
+    {
+      "amount": -1799,
+      "currency": "USD",
+      "date": "2021-11-06T23:00:00.000Z",
+      "tag": "Streaming service subscription"
+    },
+    # ... 
+  ]
+}
+```
+
+`transactions` *can* be an empty array if no transactions matching the query were found.
+
+The `amount` field is an integer where the last two digits are the "cents" part; if we look at the first transaction, for example, the amount is -\$5,201.89.

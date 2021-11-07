@@ -1,6 +1,6 @@
-import { body, check, Result, ValidationError, validationResult } from 'express-validator';
+import { body, check, query, Result, ValidationError, validationResult } from 'express-validator';
 import { Request, Response } from 'express';
-import User, { UserCredentials, UserDatabaseInsertModel, UserSettings } from '../models/User';
+import User, { TransactionQueryOptions, UserCredentials, UserDatabaseInsertModel, UserSettings } from '../models/User';
 import CurrencyCode, { isCurrencyCode } from '../models/CurrencyCode';
 import AuroraError from '../models/APIError';
 import ErrorOr from '../models/ErrorOr';
@@ -206,4 +206,59 @@ export const getUserSettings = async (req: Request, res: Response): Promise<void
     }
 
     res.status(200).json({ "error": false, "settings": settingsOrError.value });
+};
+
+export const getUserTransactions = async (req: Request, res: Response) => {
+    await query("minAmount", "minAmount must be an integer").optional().isInt().run(req);
+    await query("maxAmount", "maxAmount must be an integer").optional().isInt().run(req);
+    await query("startDate", "startDate must be an ISO 8601 date (YYYY-MM-DD)").optional().isDate({ format: 'YYYY-MM-DD' }).run(req);
+    await query("endDate", "endDate must be an ISO 8601 date (YYYY-MM-DD)").optional().isDate({ format: 'YYYY-MM-DD' }).run(req);
+
+    await query("currency", "Currency code is not valid").optional().custom((input) => {
+        return isCurrencyCode(input);
+    }).run(req);
+
+    const errors: Result<ValidationError> = validationResult(req);
+    const errorMessages: string[] = [];
+    if (!errors.isEmpty()) {
+        for (const { msg } of errors.array()) {
+            errorMessages.push(msg);
+        }
+        res.status(400).json({ "error": true, "message": errorMessages });
+        return;
+    }
+
+    const userId = req["decodedJWTPayload"]["userHeaderID"];
+    assert(userId);
+
+    // Parse query 
+    let queryOptions: TransactionQueryOptions = {};
+
+    if (req.query.currency)
+        queryOptions.currency = CurrencyCode[req.query.currency.toString()];
+
+    if (req.query.minAmount)
+        queryOptions.minAmount = parseInt(req.query.minAmount.toString());
+
+    if (req.query.maxAmount)
+        queryOptions.maxAmount = parseInt(req.query.maxAmount.toString());
+
+    if (req.query.startDate)
+        queryOptions.startDate = new Date(Date.parse(req.query.startDate.toString()));
+
+    if (req.query.endDate)
+        queryOptions.endDate = new Date(Date.parse(req.query.endDate.toString()));
+
+    if (req.query.tag)
+        queryOptions.tag = req.query.tag.toString();
+
+    const transactionsOrError = await User.getTransactionsById(userId, queryOptions);
+
+    if (transactionsOrError.isError()) {
+        res.status(500).json({ "error": true, "message": "Internal server error occurred" });
+        return;
+    }
+
+    res.status(200).json({ "error": false, "transactions": transactionsOrError.value });
+    return;
 };
