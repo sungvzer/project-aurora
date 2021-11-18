@@ -5,6 +5,7 @@ import { appNameArt } from './utils/ascii';
 import { postSignup, postLogin, getUserSettings, postLogout, getUserTransactions } from './controllers/userController';
 import { getRoutes } from './controllers/apiController';
 import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
+import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART))
     console.log(appNameArt);
@@ -25,11 +26,37 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
 });
 
 /**
- * Libraries
+ * Libraries and middleware
  */
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json({ type: ["application/vnd.api+json", "application/json"] }));
 app.use(express.text());
+app.use(setJsonAPIType);
+
+
+/**
+ * Error Handling
+ */
+app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
+    let response: SingleResourceResponse = new SingleResourceResponse("error");
+
+    if (err instanceof SyntaxError) {
+        const error = { status: undefined, message: undefined, type: undefined, ...err };
+        if (error.status === 400 && 'body' in err) {
+            response.addError({
+                "title": "Malformed JSON body",
+                "detail": "A request was sent with a malformed JSON body. Please check the request and try again.",
+                "status": "400",
+                "code": "ERR_MALFORMED_JSON",
+                "source": req.body
+            }).addLink("JSON standard", "https://www.json.org/json-en.html");
+            res.status(400).json(
+                response.close()
+            );
+        }
+    }
+});
+
 
 /**
  * Routes
@@ -41,21 +68,6 @@ app.post('/logout', requireAuthentication, postLogout);
 app.post('/refreshToken', regenerateToken);
 app.get('/users/:id/settings', requireAuthentication, getUserSettings);
 app.get('/users/:id/transactions', requireAuthentication, getUserTransactions);
-
-/**
- * Error Handling
- */
-app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
-    if (err instanceof SyntaxError) {
-        const error = { status: undefined, message: undefined, type: undefined, ...err };
-        if (error.status === 400 && 'body' in err) {
-            res.status(400).json({
-                error: true,
-                message: "Malformed JSON body"
-            });
-        }
-    }
-});
 
 /**
  * Main Point of the application
