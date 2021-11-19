@@ -4,6 +4,7 @@ import { hashPassword } from '../utils/argon';
 import CurrencyCode from './CurrencyCode';
 import ErrorModel from './APIError';
 import ErrorOr from './ErrorOr';
+import { Error } from '../utils/jsonAPI';
 
 export interface UserDatabaseInsertModel {
     firstName: string;
@@ -44,7 +45,7 @@ export interface TransactionQueryOptions {
 }
 
 export default class User {
-    static async create(user: UserDatabaseInsertModel): Promise<ErrorModel> {
+    static async create(user: UserDatabaseInsertModel): Promise<Error> {
         const connection = await dbController.getDatabaseConnection();
         const firstName = user.firstName;
         const middleName = user.middleName;
@@ -58,7 +59,12 @@ export default class User {
 
         // If a user could be found
         if (userFoundOrError.hasValue()) {
-            return { error: true, message: `User with email ${email} already exists` };
+            return {
+                code: "ERR_USER_ALREADY_EXISTS",
+                detail: "User with email " + email + " already exists",
+                title: "User already exists",
+                status: "409",
+            };
         }
         // Original query is: 
         // CALL`aurora`.`SP_InsertUserIntoDatabase`(firstName, middleName, lastName, birthday, email, passwordHash, darkMode, abbreviatedFormat, currencyCode, insertedIdOutVariable);
@@ -66,7 +72,7 @@ export default class User {
         await connection.beginTransaction();
         await connection.execute("CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);", [firstName, middleName, lastName, birthday, email, passwordHash, 0, 1, currencyCode]);
         await connection.commit();
-        return { error: false, message: `User created` };
+        return null;
     }
 
     static async getSettingsById(id: number): Promise<ErrorOr<UserSettings>> {
@@ -75,15 +81,16 @@ export default class User {
 
         if (result.length == 0) {
             return new ErrorOr<UserSettings>({
-                isError: true,
-                message: "No settings found for user " + id,
-                value: null
+                error: {
+                    code: "ERR_NO_USER_SETTINGS",
+                    detail: "No user settings were found for id " + id,
+                    status: "404",
+                    title: "No settings found"
+                }
             });
         }
 
         return new ErrorOr<UserSettings>({
-            isError: false,
-            message: null,
             value: {
                 abbreviatedFormat: result[0]['AbbreviatedFormat'],
                 currency: result[0]['UserCurrencyID'],
@@ -98,15 +105,16 @@ export default class User {
 
         if (result.length == 0)
             return new ErrorOr<number>({
-                isError: true,
-                message: `No user with email ${email} found`,
-                value: null,
+                error: {
+                    code: "ERR_NO_USER_FOUND",
+                    detail: `No user with email ${email} could be found`,
+                    status: "404",
+                    title: "No user found"
+                }
             });
 
         return new ErrorOr<number>({
             value: result[0]['UserCredentialID'],
-            isError: false,
-            message: null
         });
     }
 
@@ -145,8 +153,6 @@ export default class User {
         let transactionArray: UserTransaction[] = [];
         if (result.length == 0) {
             return new ErrorOr<UserTransaction[]>({
-                isError: false,
-                message: null,
                 value: []
             });
         }
@@ -159,8 +165,6 @@ export default class User {
         }
 
         return new ErrorOr<UserTransaction[]>({
-            isError: false,
-            message: null,
             value: transactionArray
         });
     }
@@ -172,15 +176,16 @@ export default class User {
 
         if (result.length == 0) {
             return new ErrorOr<UserCredentials>({
-                isError: true,
-                message: `No user credentials found for email ${email}`,
-                value: null,
+                error: {
+                    code: "ERR_NO_USER_FOUND",
+                    detail: `No user with email ${email} could be found`,
+                    status: "404",
+                    title: "No user found"
+                }
             });
         }
 
         return new ErrorOr<UserCredentials>({
-            isError: false,
-            message: null,
             value: {
                 "email": email,
                 "passwordHash": result[0]['UserPasswordHash'],
