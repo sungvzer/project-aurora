@@ -2,9 +2,7 @@ import { RowDataPacket } from 'mysql2';
 import * as dbController from '../controllers/databaseController';
 import { hashPassword } from '../utils/argon';
 import CurrencyCode from './CurrencyCode';
-import ErrorModel from './APIError';
 import ErrorOr from './ErrorOr';
-import { Error } from '../utils/jsonAPI';
 
 export interface UserDatabaseInsertModel {
     firstName: string;
@@ -45,11 +43,11 @@ export interface TransactionQueryOptions {
 }
 
 export default class User {
-    static async create(user: UserDatabaseInsertModel): Promise<Error> {
+    static async create(user: UserDatabaseInsertModel): Promise<ErrorOr<number>> {
         const connection = await dbController.getDatabaseConnection();
-        const firstName = user.firstName;
-        const middleName = user.middleName;
-        const lastName = user.lastName;
+        const firstName = user.firstName || null;
+        const middleName = user.middleName || null;
+        const lastName = user.lastName || null;
         const email = user.email;
         const birthday = user.birthday;
         const passwordHash = await hashPassword(user.plainTextPassword);
@@ -59,20 +57,24 @@ export default class User {
 
         // If a user could be found
         if (userFoundOrError.hasValue()) {
-            return {
-                code: "ERR_USER_ALREADY_EXISTS",
-                detail: "User with email " + email + " already exists",
-                title: "User already exists",
-                status: "409",
-            };
+            return new ErrorOr<number>({
+                error: {
+                    code: "ERR_USER_ALREADY_EXISTS",
+                    detail: "User with email " + email + " already exists",
+                    title: "User already exists",
+                    status: "409",
+                }
+            });
         }
         // Original query is: 
         // CALL`aurora`.`SP_InsertUserIntoDatabase`(firstName, middleName, lastName, birthday, email, passwordHash, darkMode, abbreviatedFormat, currencyCode, insertedIdOutVariable);
 
         await connection.beginTransaction();
-        await connection.execute("CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);", [firstName, middleName, lastName, birthday, email, passwordHash, 0, 1, currencyCode]);
+        const [x] = await connection.execute("CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);", [firstName, middleName, lastName, birthday, email, passwordHash, 0, 1, currencyCode]);
         await connection.commit();
-        return null;
+        return new ErrorOr<number>(
+            { value: x[0][0].insertedID }
+        );
     }
 
     static async getSettingsById(id: number): Promise<ErrorOr<UserSettings>> {
