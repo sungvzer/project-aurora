@@ -1,7 +1,7 @@
 POST http://127.0.0.1:3000/logout HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjE1MjU5OCwiZXhwIjoxNjM2MTUzNDk4fQ.wDrmK-I5DlWTsbm4rrJ36VG0f4nqCS3-19Hqn4utKoA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNzM0Nzg2MCwiZXhwIjoxNjM3MzQ4NzYwfQ.y49-TUwlrAtjYjruC4KDYj15m7_ml2ym8qCCFrg_-uo
 Content-Type: application/json
 
 {
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjE1MjU5OH0.fVeY5eJPK8cKGmzwkRDKxprWu4Xhqq-X9wAQMHx6bh0"
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNzM0Nzg2MH0.zVnBkf4GZaziKa9r3N_nGSkeOpVsK7z4KzVTHpnMRNQ"
 }

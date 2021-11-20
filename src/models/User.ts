@@ -1,6 +1,7 @@
 import { RowDataPacket } from 'mysql2';
 import * as dbController from '../controllers/databaseController';
 import { hashPassword } from '../utils/argon';
+import { wrongCredentials } from '../utils/errors';
 import CurrencyCode from './CurrencyCode';
 import ErrorOr from './ErrorOr';
 
@@ -107,12 +108,7 @@ export default class User {
 
         if (result.length == 0)
             return new ErrorOr<number>({
-                error: {
-                    code: "ERR_NO_USER_FOUND",
-                    detail: `No user with email ${email} could be found`,
-                    status: "404",
-                    title: "No user found"
-                }
+                error: wrongCredentials
             });
 
         return new ErrorOr<number>({
@@ -178,12 +174,7 @@ export default class User {
 
         if (result.length == 0) {
             return new ErrorOr<UserCredentials>({
-                error: {
-                    code: "ERR_NO_USER_FOUND",
-                    detail: `No user with email ${email} could be found`,
-                    status: "404",
-                    title: "No user found"
-                }
+                error: wrongCredentials
             });
         }
 

@@ -20,7 +20,7 @@ export const getDatabaseConnection = async () => {
 
 export const getRedisConnection = async (): Promise<RedisClientType<{}, {}>> => {
     const client = createClient({ url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}` });
-    client.on('error', (err) => { throw err; });
+    client.on('error', (err) => { console.log(err); throw err; });
     await client.connect();
     return client;
 };
