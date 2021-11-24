@@ -80,7 +80,7 @@ export default class User {
 
     static async getSettingsById(id: number): Promise<ErrorOr<UserSettings>> {
         const connection = await dbController.getDatabaseConnection();
-        const [result] = await connection.execute<RowDataPacket[]>('SELECT * FROM UserDataHeader INNER JOIN UserSetting ON UserDataHeader.UserSettingID = UserSetting.UserSettingID WHERE UserDataHeaderID = ?', [id]);
+        const [result] = await connection.execute<RowDataPacket[]>('SELECT * FROM UserDataHeader INNER JOIN UserSetting ON UserDataHeader.UserSettingID = UserSetting.UserSettingID INNER JOIN Currency ON UserSetting.UserCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ?', [id]);
 
         if (result.length == 0) {
             return new ErrorOr<UserSettings>({
@@ -96,7 +96,7 @@ export default class User {
         return new ErrorOr<UserSettings>({
             value: {
                 abbreviatedFormat: result[0]['AbbreviatedFormat'],
-                currency: result[0]['UserCurrencyID'],
+                currency: result[0]['CurrencyCode'],
                 darkMode: result[0]['DarkMode']
             }
         });

@@ -199,7 +199,6 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     return;
 };
 
-// TODO: Return currency code and not id
 export const getUserSettings = async (req: Request, res: Response): Promise<void> => {
     let response = new SingleResourceResponse("data");
     const userId = parseInt(req.params.id);
