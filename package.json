@@ -31,17 +31,17 @@
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/mysql2": "github:types/mysql2",
-    "argon2": "0.28.2",
+    "argon2": "^0.28.2",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.13.0",
     "get-routes": "^2.1.5",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.2",
-    "nodemon": "2.0.14",
+    "nodemon": "^2.0.15",
     "redis": "^4.0.0-rc.3",
     "typescript": "^4.4.3",
     "@types/validator": "^13.7.0",
-    "validator": "13.7.0"
+    "validator": "^13.7.0"
   }
 }
