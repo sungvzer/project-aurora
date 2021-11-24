@@ -10,6 +10,7 @@ import assert from 'node:assert';
 import * as jwt from 'jsonwebtoken';
 import { Error, MultipleResourcesResponse, ResourceObject, SingleResourceResponse } from '../utils/jsonAPI';
 import { blankBirthdayError, blankCurrencyCodeError, blankEmailError, blankFirstNameError, blankLastNameError, blankPasswordError, invalidAmountError, invalidCurrencyCodeError, invalidDateError, invalidEmailError, invalidRefreshToken, noRefreshTokenError, wrongCredentials } from '../utils/errors';
+import { jwtObjectHasEmail, jwtObjectHasPassword, jwtObjectHasValidEmail, jwtObjectSanitizeEmail } from '../utils/customValidators';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
     let response: SingleResourceResponse = new SingleResourceResponse("data");
@@ -136,18 +137,19 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     /**
      * Empty Checks
      */
-    await check("email", blankEmailError).notEmpty().run(req);
-    await check("password", blankPasswordError).notEmpty().run(req);
+    await check("data", invalidAmountError).notEmpty().run(req);
+    await check("data", blankEmailError).custom(jwtObjectHasEmail).run(req);
+    await check("data", blankPasswordError).custom(jwtObjectHasPassword).run(req);
 
     /**
      * Validity Checks
      */
-    await check("email", invalidEmailError).isEmail().run(req);
+    await check("data", invalidEmailError).custom(jwtObjectHasValidEmail).run(req);
 
     /**
      * Body sanitization
      */
-    await body("email").normalizeEmail({ gmail_remove_dots: false, all_lowercase: true }).run(req);
+    await body("data").customSanitizer(jwtObjectSanitizeEmail).run(req);
 
     /**
      * Error handling
@@ -161,8 +163,8 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const email = req.body.email;
-    const plainTextPassword = req.body.password;
+    const email = req.body.data.attributes.email;
+    const plainTextPassword = req.body.data.attributes.password;
     const credentialsOrError: ErrorOr<UserCredentials> = await User.getCredentialsByEmail(email);
     const userIDOrError: ErrorOr<number> = await User.getUserIdByEmail(email);
     if (credentialsOrError.isError() || userIDOrError.isError()) {
