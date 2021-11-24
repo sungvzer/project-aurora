@@ -9,7 +9,7 @@ import { getRedisConnection } from './databaseController';
 import assert from 'node:assert';
 import * as jwt from 'jsonwebtoken';
 import { Error, MultipleResourcesResponse, ResourceObject, SingleResourceResponse } from '../utils/jsonAPI';
-import { blankBirthdayError, blankCurrencyCodeError, blankEmailError, blankFirstNameError, blankLastNameError, blankPasswordError, invalidAmountError, invalidCurrencyCodeError, invalidDateError, invalidEmailError, invalidRefreshToken, noRefreshTokenError, wrongCredentials } from '../utils/errors';
+import { blankBirthdayError, blankCurrencyCodeError, blankDataFieldError, blankEmailError, blankFirstNameError, blankLastNameError, blankPasswordError, invalidAmountError, invalidCurrencyCodeError, invalidDateError, invalidEmailError, invalidRefreshToken, noRefreshTokenError, wrongCredentials } from '../utils/errors';
 import { jwtObjectHasEmail, jwtObjectHasPassword, jwtObjectHasValidEmail, jwtObjectSanitizeEmail } from '../utils/customValidators';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
@@ -137,7 +137,7 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     /**
      * Empty Checks
      */
-    await check("data", invalidAmountError).notEmpty().run(req);
+    await check("data", blankDataFieldError).notEmpty().run(req);
     await check("data", blankEmailError).custom(jwtObjectHasEmail).run(req);
     await check("data", blankPasswordError).custom(jwtObjectHasPassword).run(req);
 
