@@ -54,7 +54,7 @@ export interface ResourceObject {
     /**
      * Represents information about the object
      */
-    attributes?: object | [];
+    attributes?: { [key: string]: any; };
 
     // TODO: Implement type for RelationshipObject
     /**
