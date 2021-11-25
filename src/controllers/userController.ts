@@ -78,7 +78,7 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
         assert(errorOrID.hasValue());
     }
 
-    // ! DO NOT COMMIT THIS WE DON'T WANT THE USER PLAIN TEXT PASSWORD TO BE SENT BACK ONCE IT'S HASHED AND STORED !
+    delete userModel.plainTextPassword;
     response.data = { id: errorOrID.value.toString(), type: "user", attributes: { ...userModel } };
 
     res.status(201).json(response.close());
