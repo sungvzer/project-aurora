@@ -1,5 +1,6 @@
-import { CustomSanitizer, Meta } from 'express-validator';
+import { CustomSanitizer, Meta, CustomValidator } from 'express-validator';
 import validator from 'validator';
+
 
 function editJwtObjectAttribute(object: any, attribute: string, value: any): object {
     let returned = { ...object };
@@ -12,16 +13,11 @@ export interface Validators<Return> {
     jwtEmail(): Return,
 };
 
-export const jwtObjectHasEmail = (input: any, meta: Meta): any => {
-    return input["attributes"]["email"];
+export const jwtObjectHas = (str: string): CustomValidator => {
+    return (input, meta) => input["attributes"][str];
 };
 
-
-export const jwtObjectHasPassword = (input: any, meta: Meta): any => {
-    return input["attributes"]["password"];
-};
-
-export const jwtObjectHasValidEmail = (input: any, meta: Meta): any => {
+export const jwtObjectValidateEmail = (input: any, meta: Meta): any => {
     if (input["attributes"]["email"]) {
         const email = input["attributes"]["email"];
         return validator.isEmail(email);
