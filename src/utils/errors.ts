@@ -83,7 +83,7 @@ export const blankLastNameError: Error = {
 export const blankDataFieldError: Error = {
     "status": "400",
     "code": "ERR_DATA_BLANK",
-    "detail": "As per the JSON:API specification, this endpoint needs a top-level object with a \"data\" field",
+    "detail": 'As per the JSON:API specification, this endpoint needs a top-level object with a "data" field',
     "title": "Data field should not be blank"
 };
 
