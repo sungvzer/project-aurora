@@ -18,26 +18,28 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
     /**
      * Empty Checks
      */
-    await check("email", blankEmailError).notEmpty().run(req);
-    await check("password", blankPasswordError).notEmpty().run(req);
-    await check("firstName", blankFirstNameError).notEmpty().run(req);
-    await check("lastName", blankLastNameError).notEmpty().run(req);
-    await check("birthday", blankBirthdayError).notEmpty().run(req);
-    await check("currency", blankCurrencyCodeError).notEmpty().run(req);
+    await check("data", blankEmailError).custom(jwtObjectHas("email")).run(req);
+    await check("data", blankPasswordError).custom(jwtObjectHas("password")).run(req);
+    await check("data", blankFirstNameError).custom(jwtObjectHas("firstName")).run(req);
+    await check("data", blankLastNameError).custom(jwtObjectHas("lastName")).run(req);
+    await check("data", blankBirthdayError).custom(jwtObjectHas("birthday")).run(req);
+    await check("data", blankCurrencyCodeError).custom(jwtObjectHas("currency")).run(req);
 
     /**
      * Validity Checks
      */
-    await check("currency", invalidCurrencyCodeError).custom((input) => {
-        return isCurrencyCode(input);
+    await check("data", invalidCurrencyCodeError).custom((input) => {
+        return isCurrencyCode(input["attributes"]["currency"]);
     }).run(req);
-    await check("email", invalidEmailError).isEmail().run(req);
-    await check("birthday", invalidDateError).isDate({ format: "YYYY-MM-DD" }).run(req);
+    await check("data", invalidEmailError).custom(jwtObjectValidateEmail).run(req);
+    await check("data", invalidDateError).custom((input, _) => {
+        return validator.isDate(input["attributes"]["birthday"], { format: "YYYY-MM-DD" });
+    }).run(req);
 
     /**
      * Body sanitization
      */
-    await body("email").normalizeEmail({ gmail_remove_dots: false, all_lowercase: true }).run(req);
+    await body("data").customSanitizer(jwtObjectSanitizeEmail).run(req);
 
 
     const validationErrors: Result<ValidationError> = validationResult(req);
@@ -50,13 +52,15 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
         return;
     }
 
-    const email = req.body.email;
-    const plainTextPassword = req.body.password;
-    const lastName = req.body.lastName;
-    const firstName = req.body.firstName;
-    const middleName = req.body.middleName;
-    const currencyCode = CurrencyCode[req.body.currency];
-    const birthday = req.body.birthday;
+    let resource: ResourceObject = req.body.data;
+
+    const email = resource.attributes.email;
+    const plainTextPassword = resource.attributes.password;
+    const lastName = resource.attributes.lastName;
+    const firstName = resource.attributes.firstName;
+    const middleName = resource.attributes.middleName;
+    const currencyCode = CurrencyCode[resource.attributes.currency];
+    const birthday = resource.attributes.birthday;
 
 
     const userModel: UserDatabaseInsertModel = {
