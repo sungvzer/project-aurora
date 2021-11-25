@@ -80,7 +80,7 @@ export interface Error {
     id?: string;
 
     /**
-     * A [links object](https://jsonapi.org/format/#document-links) 
+     * A [links object](https://jsonapi.org/format/1.0/#document-links)
      */
     links?: ErrorLinksObject;
 
@@ -120,7 +120,7 @@ export interface Error {
     };
 
     /**
-     * A [meta object](https://jsonapi.org/format/#document-meta) containing non-standard meta-information about the error.
+     * A [meta object](https://jsonapi.org/format/1.0/#document-meta) containing non-standard meta-information about the error.
      */
     meta?: object;
 }
