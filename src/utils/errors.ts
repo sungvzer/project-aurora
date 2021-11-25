@@ -128,3 +128,18 @@ export const invalidRefreshToken: Error = {
     title: "Invalid refresh token",
     detail: "The refresh token provided is not valid or refers to a different user"
 };
+
+export const invalidRequestBody: Error = {
+    status: "400",
+    code: "ERR_INVALID_BODY",
+    title: "Invalid request body",
+    detail: "Request's body is invalid. Please check again and make sure to follow the JSON:API v1.0 specification.",
+    links: {
+        about: {
+            meta: {
+                title: "JSON:API Specification"
+            },
+            href: "https://jsonapi.org/format/1.0/"
+        }
+    }
+};
