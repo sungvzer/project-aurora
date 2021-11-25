@@ -6,6 +6,7 @@ import { postSignup, postLogin, getUserSettings, postLogout, getUserTransactions
 import { getRoutes } from './controllers/apiController';
 import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
 import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
+import { verifyJsonApiRequest } from './controllers/jsonAPIController';
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART))
     console.log(appNameArt);
@@ -61,9 +62,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
 /**
  * Routes
  */
-app.post('/signup', postSignup);
+app.post('/signup', verifyJsonApiRequest, postSignup);
 app.get('/routes', getRoutes);
-app.post('/login', postLogin);
+app.post('/login', verifyJsonApiRequest, postLogin);
 app.post('/logout', requireAuthentication, postLogout);
 app.post('/refreshToken', regenerateToken);
 app.get('/users/:id/settings', requireAuthentication, getUserSettings);
