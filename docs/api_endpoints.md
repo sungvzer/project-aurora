@@ -40,12 +40,15 @@
   - [GET /user/{id}/settings](#get-useridsettings)
     - [Description](#description-4)
     - [Headers](#headers-4)
-    - [Fields](#fields)
+    - [Resource type](#resource-type-4)
+    - [Attributes](#attributes-4)
     - [Responses](#responses-4)
   - [GET /user/{id}/transactions](#get-useridtransactions)
     - [Description](#description-5)
     - [Headers](#headers-5)
-    - [Fields](#fields-1)
+    - [Resource type](#resource-type-5)
+    - [Attributes](#attributes-5)
+    - [Fields](#fields)
     - [Responses](#responses-5)
 
 ## JSON:API Specification
@@ -529,27 +532,28 @@ It's an **authenticated** endpoint. This means you need to first obtain an `acce
 
 `Authorization: Bearer {accessToken}`
 
-### Fields
+### Resource type
 
-- `accessToken`: JWT string obtained via the login process.
+No body is required
+
+### Attributes
+
+No body is required.
 
 ### Responses
 
 Unless an [authentication error](#authentication-errors) occurs, the response will be:
 
-```http
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": false,
-  "settings": {
-    "abbreviatedFormat": 1,
-    "currency": 50,
-    "darkMode": 0
+  "data": {
+    "id": "2",
+    "type": "UserSettings",
+    "attributes": {
+      "abbreviatedFormat": 1, // 1 or 0 represents true or false
+      "currency": "EUR",
+      "darkMode": 0 // 1 or 0 represents true or false
+    }
   }
 }
 ```
@@ -565,6 +569,14 @@ It's an **authenticated** endpoint. This means you need to first obtain an `acce
 ### Headers
 
 `Authorization: Bearer {accessToken}`
+
+### Resource type
+
+No body is required.
+
+### Attributes
+
+No body is required.
 
 ### Fields
 
@@ -582,33 +594,44 @@ These need to be included in the GET query string. For example: `/users/2/transa
 
 Unless an [authentication error](#authentication-errors) occurs, the response will be:
 
-```http
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": false,
-  "transactions": [
-    {
-      "amount": -520189,
-      "currency": "USD",
-      "date": "2021-11-03T23:00:00.000Z",
-      "tag": "Hospital bill"
-    },
-    {
-      "amount": -1799,
-      "currency": "USD",
-      "date": "2021-11-06T23:00:00.000Z",
-      "tag": "Streaming service subscription"
-    },
-    # ... 
-  ]
+    "data": [
+        {
+            "id": "1",
+            "type": "UserTransaction",
+            "attributes": {
+                "amount": -5189,
+                "currency": "USD",
+                "date": "2021-11-03T23:00:00.000Z",
+                "tag": "Hospital bill"
+            }
+        },
+        {
+            "id": "2",
+            "type": "UserTransaction",
+            "attributes": {
+                "amount": -4887,
+                "currency": "EUR",
+                "date": "2021-11-06T23:00:00.000Z",
+                "tag": "Food"
+            }
+        },
+        {
+            "id": "3",
+            "type": "UserTransaction",
+            "attributes": {
+                "amount": 3677,
+                "currency": "USD",
+                "date": "2021-11-06T23:00:00.000Z",
+                "tag": "Food"
+            }
+        }
+        /* ... */
+    ]
 }
 ```
 
-`transactions` *can* be an empty array if no transactions matching the query were found.
+`data` *can* be an empty array if no transactions matching the query were found.
 
 The `amount` field is an integer where the last two digits are the "cents" part; if we look at the first transaction, for example, the amount is -\$5,201.89.
