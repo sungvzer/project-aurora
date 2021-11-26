@@ -150,6 +150,13 @@ export abstract class GenericResponse {
         if (this._errors == undefined) {
             this._errors = [];
         }
+
+        for (let err of this.errors) {
+            if (err.code === error.code) {
+                return this;
+            }
+        }
+
         this._errors.push(error);
         this._dataOrError = "error";
         return this;
