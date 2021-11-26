@@ -12,12 +12,6 @@ export const invalidAuthTokenError: Error = {
     status: "400",
     title: "Invalid Authorization Token"
 };
-export const invalidRefreshTokenError: Error = {
-    code: "ERR_INVALID_REFRESH_TOKEN",
-    detail: "The refresh token provided with this request is not valid",
-    status: "403",
-    title: "Invalid Refresh Token"
-};
 
 export const expiredAuthTokenError: Error = {
     code: "ERR_EXPIRED_AUTH_TOKEN",

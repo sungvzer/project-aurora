@@ -4,7 +4,7 @@ import { generateTokenPair } from '../utils/jwt';
 import { getRedisConnection } from './databaseController';
 import { check, header, Result, ValidationError, validationResult } from 'express-validator';
 import { SingleResourceResponse } from '../utils/jsonAPI';
-import { expiredAuthTokenError, genericJWTError, invalidAuthTokenError, invalidRefreshTokenError, missingAuthorizationError, noRefreshTokenError } from '../utils/errors';
+import { expiredAuthTokenError, genericJWTError, invalidAuthTokenError, invalidRefreshToken, missingAuthorizationError, noRefreshTokenError } from '../utils/errors';
 
 export const getAccessTokenFromRequest = (req: Request): string => {
     const authHeader = req.headers["authorization"];
@@ -61,13 +61,13 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
     const result = await redis.get(oldRefreshToken);
 
     if (!result) {
-        res.status(403).json(response.addError(invalidRefreshTokenError).close());
+        res.status(403).json(response.addError(invalidRefreshToken).close());
         return;
     }
 
     jwt.verify(oldRefreshToken, process.env.JWT_REFRESH_SECRET, async (err: jwt.VerifyErrors, payload: jwt.JwtPayload) => {
         if (err) {
-            res.status(403).json(response.addError(invalidRefreshTokenError).close());
+            res.status(403).json(response.addError(invalidRefreshToken).close());
             return;
         }
 
