@@ -47,73 +47,73 @@ export const invalidAmountError: Error = {
 };
 
 export const blankEmailError: Error = {
-    "status": "400",
-    "code": "ERR_EMAIL_BLANK",
-    "detail": "A blank email was provided",
-    "title": "Email should not be blank",
+    status: "400",
+    code: "ERR_EMAIL_BLANK",
+    detail: "A blank email was provided",
+    title: "Email should not be blank",
 };
 
 export const blankPasswordError: Error = {
-    "status": "400",
-    "code": "ERR_PASSWORD_BLANK",
-    "detail": "A blank password was provided",
-    "title": "Password should not be blank"
+    status: "400",
+    code: "ERR_PASSWORD_BLANK",
+    detail: "A blank password was provided",
+    title: "Password should not be blank"
 };
 
 export const blankFirstNameError: Error = {
-    "status": "400",
-    "code": "ERR_FIRST_NAME_BLANK",
-    "detail": "An empty first name was provided",
-    "title": "First name should not be blank"
+    status: "400",
+    code: "ERR_FIRST_NAME_BLANK",
+    detail: "An empty first name was provided",
+    title: "First name should not be blank"
 };
 
 export const blankLastNameError: Error = {
-    "status": "400",
-    "code": "ERR_LAST_NAME_BLANK",
-    "detail": "An empty last name was provided",
-    "title": "Last name should not be blank"
+    status: "400",
+    code: "ERR_LAST_NAME_BLANK",
+    detail: "An empty last name was provided",
+    title: "Last name should not be blank"
 };
 
 export const blankDataFieldError: Error = {
-    "status": "400",
-    "code": "ERR_DATA_BLANK",
-    "detail": 'As per the JSON:API specification, this endpoint needs a top-level object with a "data" field',
-    "title": "Data field should not be blank"
+    status: "400",
+    code: "ERR_DATA_BLANK",
+    detail: 'As per the JSON:API specification, this endpoint needs a top-level object with a "data" field',
+    title: "Data field should not be blank"
 };
 
 export const blankBirthdayError: Error = {
-    "status": "400",
-    "code": "ERR_BIRTHDAY_BLANK",
-    "detail": "An blank birthday was provided",
-    "title": "Birthday should not be blank"
+    status: "400",
+    code: "ERR_BIRTHDAY_BLANK",
+    detail: "An blank birthday was provided",
+    title: "Birthday should not be blank"
 };
 
 export const blankCurrencyCodeError: Error = {
-    "status": "400",
-    "code": "ERR_CURRENCY_CODE_BLANK",
-    "detail": "An blank currency code was provided",
-    "title": "Currency code should not be blank"
+    status: "400",
+    code: "ERR_CURRENCY_CODE_BLANK",
+    detail: "An blank currency code was provided",
+    title: "Currency code should not be blank"
 };
 
 export const invalidCurrencyCodeError: Error = {
-    "status": "400",
-    "code": "ERR_CURRENCY_CODE_INVALID",
-    "detail": "An invalid currency code was provided",
-    "title": "Currency code is not valid"
+    status: "400",
+    code: "ERR_CURRENCY_CODE_INVALID",
+    detail: "An invalid currency code was provided",
+    title: "Currency code is not valid"
 };
 
 export const invalidEmailError: Error = {
-    "status": "400",
-    "code": "ERR_EMAIL_INVALID",
-    "detail": "An invalid email was provided",
-    "title": "Email is not valid"
+    status: "400",
+    code: "ERR_EMAIL_INVALID",
+    detail: "An invalid email was provided",
+    title: "Email is not valid"
 };
 export const invalidDateError: Error = {
-    "status": "400",
-    "code": "ERR_DATE_INVALID",
-    "detail": "All dates must be formatted using ISO 8601",
-    "title": "Provided date is not valid",
-    "links": { "about": "https://en.wikipedia.org/wiki/ISO_8601" },
+    status: "400",
+    code: "ERR_DATE_INVALID",
+    detail: "All dates must be formatted using ISO 8601",
+    title: "Provided date is not valid",
+    links: { "about": "https://en.wikipedia.org/wiki/ISO_8601" },
 };
 
 export const invalidRefreshToken: Error = {
