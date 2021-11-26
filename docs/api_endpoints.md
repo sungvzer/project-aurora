@@ -22,27 +22,30 @@
   - [GET /routes](#get-routes)
     - [Description](#description-1)
     - [Headers](#headers-1)
-    - [Fields](#fields)
+    - [Resource type](#resource-type-1)
+    - [Attributes](#attributes-1)
     - [Responses](#responses-1)
   - [POST /login](#post-login)
     - [Description](#description-2)
     - [Headers](#headers-2)
-    - [Fields](#fields-1)
+    - [Resource type](#resource-type-2)
+    - [Attributes](#attributes-2)
     - [Responses](#responses-2)
   - [POST /logout](#post-logout)
     - [Description](#description-3)
     - [Headers](#headers-3)
-    - [Fields](#fields-2)
+    - [Resource type](#resource-type-3)
+    - [Attributes](#attributes-3)
     - [Responses](#responses-3)
   - [GET /user/{id}/settings](#get-useridsettings)
     - [Description](#description-4)
     - [Headers](#headers-4)
-    - [Fields](#fields-3)
+    - [Fields](#fields)
     - [Responses](#responses-4)
   - [GET /user/{id}/transactions](#get-useridtransactions)
     - [Description](#description-5)
     - [Headers](#headers-5)
-    - [Fields](#fields-4)
+    - [Fields](#fields-1)
     - [Responses](#responses-5)
 
 ## JSON:API Specification
@@ -316,43 +319,40 @@ Returns all possible routes in a JSON format.
 
 No headers are required.
 
-### Fields
+### Resource type
 
-No fields are required.
+No body is required.
+
+### Attributes
+
+No body is required
 
 ### Responses
 
 An example response will be:
 
-```http
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Connection: close
-
+```json
 {
-  "error": false,
-  "routes": {
-    "get": [
-      "/getRoute1"
-    ],
-    "post": [
-      "/postRoute1",
-      "/postRoute2"
-    ],
-    "put": [
-      "/putRoute1"
-    ],
-    "patch": [
-      "/patchRoute1",
-      "/patchRoute2"
-    ],
-    "delete": [
-      "/deleteRoute1"
-    ],
-  }
+    "data": {
+        "id": "0",
+        "type": "Routes",
+        "attributes": {
+            "get": [
+                "/routes",
+                "/users/:id/settings",
+                "/users/:id/transactions"
+            ],
+            "post": [
+                "/signup",
+                "/login",
+                "/logout",
+                "/refreshToken"
+            ],
+            "put": [],
+            "patch": [],
+            "delete": []
+        }
+    }
 }
 ```
 
@@ -366,7 +366,11 @@ Log in to an existing user.
 
 `Content-Type: application/json`
 
-### Fields
+### Resource type
+
+`UserCredentials`
+
+### Attributes
 
 - `email`: a string representing the user email. Any email **will** be converted to lowercase. Example: `email@example.com`.
 
@@ -376,17 +380,16 @@ Log in to an existing user.
 
 If it succeeds, the request will return the following response:
 
-```http
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": false,
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjA2MjEwMiwiZXhwIjoxNjM2MDYzMDAyfQ.IyoeAywnHqGBN6XWECtXFiUFRfLIgl-sr2XjmXRTtr8",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjA2MjEwMn0.2g_tvIrY89KWw_bnPme0Pc68wsE0gN-wUgxznqhYgX8"
+    "data": {
+        "id": "2",
+        "type": "Credentials",
+        "attributes": {
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNzkyNTY3MywiZXhwIjoxNjM3OTI2NTczfQ.e_gf4V9xPTN1A0Wu1XV56bxENpOMf9dEHkmMz82aeVE",
+            "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNzkyNTY3M30.PJO7UIr4mhUnYaEq7ImeSRaGcCF4kwyI05hdp9W8Jh0"
+        }
+    }
 }
 ```
 
@@ -396,66 +399,58 @@ The `accessToken` value needs to be used everywhere authentication is needed, as
 
 Should any of the two fields be missing, the following response will be returned:
 
-```http
-HTTP/1.1 400 Bad Request
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": true,
-  "message": [
-    "Email should not be blank",
-    "Password should not be blank"
-  ]
+    "errors": [
+        {
+            "status": "400",
+            "code": "ERR_EMAIL_BLANK",
+            "detail": "A blank email was provided",
+            "title": "Email should not be blank"
+        },
+        {
+            "status": "400",
+            "code": "ERR_PASSWORD_BLANK",
+            "detail": "A blank password was provided",
+            "title": "Password should not be blank"
+        },
+        {
+            "status": "400",
+            "code": "ERR_EMAIL_INVALID",
+            "detail": "An invalid email was provided",
+            "title": "Email is not valid"
+        }
+    ]
 }
 ```
 
 If the email is not valid, this response will be returned:
 
-```http
-HTTP/1.1 400 Bad Request
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": true,
-  "message": [
-    "Email is not valid"
-  ]
+    "errors": [
+        {
+            "status": "400",
+            "code": "ERR_EMAIL_INVALID",
+            "detail": "An invalid email was provided",
+            "title": "Email is not valid"
+        }
+    ]
 }
 ```
 
-When a wrong email is provided:
+Should an email or password be wrong, this response will be returned:
 
-```http
-HTTP/1.1 404 Not Found
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": true,
-  "message": "No user credentials found for email example@example.it"
-}
-```
-
-When a wrong password is provided:
-
-```http
-HTTP/1.1 401 Unauthorized
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
-{
-  "error": true,
-  "message": "Wrong password"
+    "errors": [
+        {
+            "code": "ERR_WRONG_CREDENTIALS",
+            "detail": "A wrong email or password were used. I'm not gonna tell you which though.",
+            "status": "400",
+            "title": "Wrong email or password"
+        }
+    ]
 }
 ```
 
@@ -473,7 +468,11 @@ It's an **authenticated** endpoint. This means you need to first obtain an `acce
 
 `Content-Type: application/json`
 
-### Fields
+### Resource type
+
+`RefreshToken`
+
+### Attributes
 
 - `refreshToken`: the refresh token to be invalidated.
 
@@ -481,76 +480,40 @@ It's an **authenticated** endpoint. This means you need to first obtain an `acce
 
 If it succeeds, the request will return the following response:
 
-```http
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": false,
-  "message": "User logged out successfully"
+  "meta": {
+    "message": "User logged out successfully"
+  }
 }
 ```
 
 If the `refreshToken` is omitted:
 
-```http
-HTTP/1.1 400 Bad Request
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": true,
-  "message": "No refresh token provided"
+  "errors": [
+    {
+      "status": "400",
+      "code": "ERR_NO_REFRESH_TOKEN",
+      "title": "No refresh token provided"
+    }
+  ]
 }
 ```
 
-If the `refreshToken` is provided, but does not belong to any user:
+If the `refreshToken` is provided, but does not belong to any user, or it is provided but is invalid (e.g. payloads missing or mismatch):
 
-```http
-HTTP/1.1 404 Not Found
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": true,
-  "message": "Refresh token doesn't belong to any session"
-}
-```
-
-Should - by any chance - the payloads be missing in any of the two tokens:
-
-```http
-HTTP/1.1 403 Forbidden
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
-{
-  "error": true,
-  "message": "Invalid access or refresh token(s)"
-}
-```
-
-If refresh and access token refer to different users in their payload:
-
-```http
-HTTP/1.1 403 Forbidden
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
-{
-  "error": true,
-  "message": "Tokens refer to different users"
+  "errors": [
+    {
+      "status": "403",
+      "code": "ERR_INVALID_REFRESH_TOKEN",
+      "title": "Invalid refresh token",
+      "detail": "The refresh token provided is not valid or refers to a different user"
+    }
+  ]
 }
 ```
 
