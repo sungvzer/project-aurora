@@ -24,7 +24,13 @@ export const jwtObjectValidateEmail = (input: any, meta: Meta): any => {
     }
 };
 
+/** 
+ * This function does not validate if email is present or not, please check with `jwtObjectHas` and `jwtObjectValidateEmail`
+ */
 export const jwtObjectSanitizeEmail: CustomSanitizer = (input, meta): any => {
+    if (!input || !input["attributes"] || !input["attributes"]["email"]) {
+        return null;
+    }
     let email = input["attributes"]["email"];
     email = validator.normalizeEmail(email, { gmail_remove_dots: false, all_lowercase: true });
     let returnedObject = editJwtObjectAttribute(input, "email", email);
