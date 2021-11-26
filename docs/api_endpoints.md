@@ -4,115 +4,181 @@
 
 - [API Endpoint definitions](#api-endpoint-definitions)
   - [Table of contents](#table-of-contents)
+  - [JSON:API Specification](#jsonapi-specification)
+    - [Resources](#resources)
   - [Common errors](#common-errors)
-    - [Malformed JSON](#malformed-json)
-    - [Authentication errors](#authentication-errors)
+    - [`ERR_MALFORMED_JSON`: Malformed JSON](#err_malformed_json-malformed-json)
+    - [`ERR_INVALID_BODY`: Invalid JSON:API body](#err_invalid_body-invalid-jsonapi-body)
+  - [Authentication errors](#authentication-errors)
+    - [`ERR_MISSING_AUTH` : Authorization Header missing](#err_missing_auth--authorization-header-missing)
+    - [`ERR_INVALID_AUTH_TOKEN`: Malformed header or invalid access token](#err_invalid_auth_token-malformed-header-or-invalid-access-token)
+    - [`ERR_EXPIRED_AUTH_TOKEN`: Expired access token](#err_expired_auth_token-expired-access-token)
   - [POST /signup](#post-signup)
     - [Description](#description)
     - [Headers](#headers)
-    - [Fields](#fields)
+    - [Resource type](#resource-type)
+    - [Attributes](#attributes)
     - [Responses](#responses)
   - [GET /routes](#get-routes)
     - [Description](#description-1)
     - [Headers](#headers-1)
-    - [Fields](#fields-1)
+    - [Fields](#fields)
     - [Responses](#responses-1)
   - [POST /login](#post-login)
     - [Description](#description-2)
     - [Headers](#headers-2)
-    - [Fields](#fields-2)
+    - [Fields](#fields-1)
     - [Responses](#responses-2)
   - [POST /logout](#post-logout)
     - [Description](#description-3)
     - [Headers](#headers-3)
-    - [Fields](#fields-3)
+    - [Fields](#fields-2)
     - [Responses](#responses-3)
   - [GET /user/{id}/settings](#get-useridsettings)
     - [Description](#description-4)
     - [Headers](#headers-4)
-    - [Fields](#fields-4)
+    - [Fields](#fields-3)
     - [Responses](#responses-4)
   - [GET /user/{id}/transactions](#get-useridtransactions)
     - [Description](#description-5)
     - [Headers](#headers-5)
-    - [Fields](#fields-5)
+    - [Fields](#fields-4)
     - [Responses](#responses-5)
+
+## JSON:API Specification
+
+This API is aiming to be almost fully compliant to the [JSON:API](https://jsonapi.org/format/1.0) specification, with the goal of sticking to a standard, and not re-inventing the wheel.
+
+We say *almost* fully because there are some shenanigans with Express and headers that makes it not 100% compliant to the standard.
+
+The [`jsonAPI.ts`](../src/utils/jsonAPI.ts) file will probably get polished and then released as a stand-alone library in the future, so that this specification can be adopted and implemented by many.
+
+Every response sent by the API will be in the format of the specification, read more to get insights on parsing and processing.
+
+### Resources
+
+Every communication that requires an exchange of resources will happen through the JSON:API specification. This means that, if the client needs to send two objects, both of the same type, like
+
+```json
+{
+    "name": "Woofie",
+    "family": "Canidae",
+    "color": "Brown"
+}
+```
+
+and
+
+```json
+{
+    "name": "Felix",
+    "family": "Felidae",
+    "color": "White"
+}
+```
+
+Both of type `animal`, the client will send them like this:
+
+```json
+{
+    "data": [
+        {
+            "type": "animal",
+            "attributes": {
+                "name": "Felix",
+                "family": "Felidae",
+                "color": "White"
+            }
+        },
+        {
+            "type": "animal",
+            "attributes": {
+                "name": "Woofie",
+                "family": "Canidae",
+                "color": "Brown"
+            }
+        }
+    ]
+}
+```
 
 ## Common errors
 
 This list contains common errors and their responses.
 
-### Malformed JSON
+### `ERR_MALFORMED_JSON`: Malformed JSON
 
 Happens whenever a request contains incorrect JSON syntax.
 
-The response will be:
+One element in the `errors` array will be:
 
-```http
-HTTP/1.1 400 Bad Request
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Connection: close
-
+```json
 {
-  "error": true,
-  "message": "Malformed JSON body"
+    "title": "Malformed JSON body",
+    "detail": "A request was sent with a malformed JSON body. Please check the request and try again.",
+    "status": "400",
+    "code": "ERR_MALFORMED_JSON"
 }
 ```
 
-### Authentication errors
+### `ERR_INVALID_BODY`: Invalid JSON:API body
+
+This error will get sent whenever and endpoint requests a JSON:API compliant body, but finds a malformed one.
+
+```json
+{
+    "status": "400",
+    "code": "ERR_INVALID_BODY",
+    "title": "Invalid request body",
+    "detail": "Request's body is invalid. Please check again and make sure to follow the JSON:API v1.0 specification.",
+    "links": {
+        "about": {
+            "meta": {
+                "title": "JSON:API Specification"
+            },
+            "href": "https://jsonapi.org/format/1.0/"
+        }
+    }
+}
+```
+
+## Authentication errors
 
 Whenever an authenticated route is requested, a middleware parses the request for an `accessToken`.
 
 If the request gets authenticated, it will simply get passed on to the next handler.
 
-Should the `Authorization: Bearer {jsonWebToken}` header be missing or malformed, these responses will be sent:
+### `ERR_MISSING_AUTH` : Authorization Header missing
 
-Header missing:
-
-```http
-HTTP/1.1 401 Unauthorized
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": true,
-  "message": "Missing Authorization header"
+    "status": "400",
+    "code": "ERR_MISSING_AUTH",
+    "detail": "The request is missing the Authorization: Bearer token necessary for authentication.\nThis is an authenticated route.",
+    "title": "Missing authorization header"
 }
 ```
 
-Malformed header or invalid access token:
+### `ERR_INVALID_AUTH_TOKEN`: Malformed header or invalid access token
 
-```http
-HTTP/1.1 401 Unauthorized
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": true,
-  "message": "Invalid authorization token"
+    "code": "ERR_INVALID_AUTH_TOKEN",
+    "detail": "The authorization token provided with this request is not valid",
+    "status": "400",
+    "title": "Invalid Authorization Token"
 }
 ```
 
-Expired access token:
+### `ERR_EXPIRED_AUTH_TOKEN`: Expired access token
 
-```http
-HTTP/1.1 403 Forbidden
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-
+```json
 {
-  "error": true,
-  "message": "jwt expired"
-}
+    "code": "ERR_EXPIRED_AUTH_TOKEN",
+    "detail": "The authorization token provided with this request is expired",
+    "status": "400",
+    "title": "Expired Authorization Token"
+};
 ```
 
 ## POST /signup
@@ -125,7 +191,11 @@ Create a new user.
 
 `Content-Type: application/json`
 
-### Fields
+### Resource type
+
+`SignupData`
+
+### Attributes
 
 - `birthday`: an ISO 8601 formatted date string representing the user birth date. The format **must** be `YYYY-MM-DD`. Example: `1986-02-12`.
 
@@ -139,65 +209,100 @@ Create a new user.
 
  Of these fields, only `middleName` is optional.
 
-An example of a correct `HTTP POST` request to this endpoint can be found at [this link](../examples/request/post/signup.http).
-
 ### Responses
 
-In case of a successful request: the following response is returned:
+In case of a successful request: the status `201: Created` and the following response are returned:
 
-```http
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Connection: close
-
+```json
 {
-  "error": false,
-  "message": "User signed up correctly"
+  "data": {
+    "id": "new user id",
+    "type": "user",
+    "attributes": {
+        /* Same attributes sent by the request, without plain text password */
+    }
+  }
 }
 ```
 
-Depending on which field is missing from the request, the following response is returned:
+Depending on which field is missing from the request, the following errors can be returned:
 
-```http
-HTTP/1.1 400 Bad Request
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Connection: close
-
+```json
 {
-  "error": true,
-  "message": [
-    "Email should not be blank",
-    "Password should not be blank",
-    "First name should not be blank",
-    "Last name should not be blank",
-    "Birthday should not be blank",
-    "Currency code should not be blank",
-    "Currency code is not valid",
-    "Email is not valid",
-    "Birthday should be a valid ISO date"
-  ]
+    "errors": [
+        {
+            "status": "400",
+            "code": "ERR_EMAIL_BLANK",
+            "detail": "A blank email was provided",
+            "title": "Email should not be blank"
+        },
+        {
+            "status": "400",
+            "code": "ERR_PASSWORD_BLANK",
+            "detail": "A blank password was provided",
+            "title": "Password should not be blank"
+        },
+        {
+            "status": "400",
+            "code": "ERR_FIRST_NAME_BLANK",
+            "detail": "An empty first name was provided",
+            "title": "First name should not be blank"
+        },
+        {
+            "status": "400",
+            "code": "ERR_LAST_NAME_BLANK",
+            "detail": "An empty last name was provided",
+            "title": "Last name should not be blank"
+        },
+        {
+            "status": "400",
+            "code": "ERR_BIRTHDAY_BLANK",
+            "detail": "An blank birthday was provided",
+            "title": "Birthday should not be blank"
+        },
+        {
+            "status": "400",
+            "code": "ERR_CURRENCY_CODE_BLANK",
+            "detail": "An blank currency code was provided",
+            "title": "Currency code should not be blank"
+        },
+        {
+            "status": "400",
+            "code": "ERR_CURRENCY_CODE_INVALID",
+            "detail": "An invalid currency code was provided",
+            "title": "Currency code is not valid"
+        },
+        {
+            "status": "400",
+            "code": "ERR_EMAIL_INVALID",
+            "detail": "An invalid email was provided",
+            "title": "Email is not valid"
+        },
+        {
+            "status": "400",
+            "code": "ERR_DATE_INVALID",
+            "detail": "All dates must be formatted using ISO 8601",
+            "title": "Provided date is not valid",
+            "links": {
+                "about": "https://en.wikipedia.org/wiki/ISO_8601"
+            }
+        }
+    ]
 }
 ```
 
 If a user with the corresponding `email` is found in the database, the response will be:
 
-```http
-HTTP/1.1 400 Bad Request
-X-Powered-By: Express
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Connection: close
-
+```json
 {
-  "error": true,
-  "message": "User with email example@example.com already exists"
+    "errors": [
+        {
+            "code": "ERR_USER_ALREADY_EXISTS",
+            "detail": "User with email /* email */ already exists",
+            "title": "User already exists",
+            "status": "409"
+        }
+    ]
 }
 ```
 
