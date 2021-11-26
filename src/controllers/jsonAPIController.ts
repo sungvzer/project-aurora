@@ -11,6 +11,10 @@ export const verifyJsonApiRequest = async (req: Request, res: Response, next: Ne
                 'id', 'type', 'attributes', 'relationships', 'links', 'meta'
             ];
 
+            if (!input) {
+                return false;
+            }
+
             if (!input["id"] && !input["type"]) {
                 return false;
             }
