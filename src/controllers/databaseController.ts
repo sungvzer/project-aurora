@@ -1,7 +1,7 @@
 import * as mysql2 from 'mysql2/promise';
 import { ENVIRONMENT } from '../utils/secrets';
 import { createClient } from 'redis';
-import { RedisClientType } from 'redis/dist/lib/client';
+import { RedisClientType } from '@node-redis/client/dist/lib/client';
 
 export interface LastInsertId extends mysql2.RowDataPacket {
     "LAST_INSERT_ID()": number;
