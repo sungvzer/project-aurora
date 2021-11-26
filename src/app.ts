@@ -65,7 +65,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
 app.post('/signup', verifyJsonApiRequest, postSignup);
 app.get('/routes', getRoutes);
 app.post('/login', verifyJsonApiRequest, postLogin);
-app.post('/logout', requireAuthentication, postLogout);
+app.post('/logout', requireAuthentication, verifyJsonApiRequest, postLogout);
 app.post('/refreshToken', regenerateToken);
 app.get('/users/:id/settings', requireAuthentication, getUserSettings);
 app.get('/users/:id/transactions', requireAuthentication, getUserTransactions);

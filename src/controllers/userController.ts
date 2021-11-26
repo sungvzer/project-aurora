@@ -95,7 +95,7 @@ export const postLogout = async (req: Request, res: Response): Promise<void> => 
      * Empty Check
      */
     let response = new SingleResourceResponse("data");
-    await check("refreshToken", noRefreshTokenError).notEmpty().run(req);
+    await check("data", noRefreshTokenError).custom(jwtObjectHas("refreshToken")).run(req);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const { msg: error } = errors.array()[0];
@@ -108,9 +108,9 @@ export const postLogout = async (req: Request, res: Response): Promise<void> => 
     // We assert because the authentication middleware shold handle this for us
     assert(accessPayload);
 
-    const refreshToken = req.body.refreshToken;
-    let refreshPayload: any;
-    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, payload) => {
+    const refreshToken = req.body.data.attributes.refreshToken;
+    let refreshPayload: jwt.JwtPayload;
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err: jwt.VerifyErrors, payload: jwt.JwtPayload) => {
         assert(!err); // Same reason for the assertion as of above: the authentication middleware shold handle this for us
         refreshPayload = payload;
     });
