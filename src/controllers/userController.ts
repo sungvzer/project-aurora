@@ -318,14 +318,17 @@ export const getUserTransactions = async (req: Request, res: Response) => {
         return;
     }
 
-    response.data = transactionsOrError.value.map<ResourceObject>((value) => ({
-        // TODO: Add Transaction id to this.
-        id: "-1",
-        type: "UserTransaction",
-        attributes: {
-            ...value,
-        },
-    }));
+    response.data = transactionsOrError.value.map<ResourceObject>((value) => {
+        const id = value.id.toString();
+        delete value.id;
+        return {
+            id: id,
+            type: "UserTransaction",
+            attributes: {
+                ...value,
+            },
+        };
+    });
     res.status(200).json(response.close());
     return;
 };

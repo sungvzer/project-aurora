@@ -28,6 +28,7 @@ export interface UserCredentials {
 }
 
 export interface UserTransaction {
+    id: number,
     amount: number;
     currency: CurrencyCode;
     date: string;
@@ -120,7 +121,7 @@ export default class User {
         const connection = await dbController.getDatabaseConnection();
 
         let parameters: string[] = [id.toString(),];
-        let sql = 'SELECT UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ? ';
+        let sql = 'SELECT UserTransactionID, UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ? ';
 
         if (queryOptions.currency) {
             sql += ' AND CurrencyCode = ? ';
@@ -159,7 +160,7 @@ export default class User {
          * UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode
          */
         for (let row of result) {
-            transactionArray.push({ amount: row['UserTransactionAmount'], currency: row['CurrencyCode'], date: row['UserTransactionDate'].toISOString(), tag: row['UserTransactionTag'] });
+            transactionArray.push({ id: row['UserTransactionID'], amount: row['UserTransactionAmount'], currency: row['CurrencyCode'], date: row['UserTransactionDate'].toISOString(), tag: row['UserTransactionTag'] });
         }
 
         return new ErrorOr<UserTransaction[]>({
