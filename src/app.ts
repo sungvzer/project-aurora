@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
-import { postSignup, postLogin, getUserSettings, postLogout, getUserTransactions } from './controllers/userController';
+import { postSignup, postLogin, getUserSettings, postLogout, getUserTransactions, deleteUser } from './controllers/userController';
 import { defaultError, getRoutes } from './controllers/apiController';
 import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
 import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
@@ -69,6 +69,7 @@ app.post('/logout', requireAuthentication, verifyJsonApiRequest, postLogout);
 app.post('/refreshToken', verifyJsonApiRequest, regenerateToken);
 app.get('/users/:id/settings', requireAuthentication, getUserSettings);
 app.get('/users/:id/transactions', requireAuthentication, getUserTransactions);
+app.delete('/users/:id', requireAuthentication, deleteUser);
 
 app.use('*', defaultError);
 

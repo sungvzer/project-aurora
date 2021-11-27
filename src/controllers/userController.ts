@@ -10,7 +10,7 @@ import { getRedisConnection } from './databaseController';
 import assert from 'node:assert';
 import * as jwt from 'jsonwebtoken';
 import { MultipleResourcesResponse, ResourceObject, SingleResourceResponse } from '../utils/jsonAPI';
-import { blankBirthdayError, blankCurrencyCodeError, blankEmailError, blankFirstNameError, blankLastNameError, blankPasswordError, invalidAmountError, invalidCurrencyCodeError, invalidDateError, invalidEmailError, invalidRefreshToken, noRefreshTokenError, wrongCredentials } from '../utils/errors';
+import { blankBirthdayError, blankCurrencyCodeError, blankEmailError, blankFirstNameError, blankLastNameError, blankPasswordError, invalidAmountError, invalidCurrencyCodeError, invalidDateError, invalidEmailError, invalidRefreshToken, invalidUserIdError, noRefreshTokenError, userIdMismatch, userNotFoundError, wrongCredentials } from '../utils/errors';
 import { jwtObjectHas, jwtObjectValidateEmail, jwtObjectSanitizeEmail } from '../utils/customValidators';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
@@ -348,5 +348,46 @@ export const getUserTransactions = async (req: Request, res: Response) => {
         };
     });
     res.status(200).json(response.close());
+    return;
+};
+
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+    let response: SingleResourceResponse = new SingleResourceResponse("data");
+    /**
+     * Empty and validity checks
+     */
+    await param("id", invalidUserIdError).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
+
+    const validationErrors: Result<ValidationError> = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+        for (const { msg } of validationErrors.array()) {
+            response.addError(msg);
+        }
+        res.status(400).json(response.close());
+        return;
+    }
+
+    const userId = parseInt(req.params.id);
+    if (req["decodedJWTPayload"]["userHeaderID"] != userId) {
+        response.addError(userIdMismatch);
+        res.status(403).json(response.close());
+        return;
+    }
+
+    const exists = await User.exists(userId);
+    if (!exists) {
+        response.addError(userNotFoundError);
+        res.status(404).json(response.close());
+        return;
+    }
+
+    const errorOr = await User.delete(userId);
+    if (errorOr.isError()) {
+        response.addError(errorOr.error);
+        res.status(400).json(response.close());
+        return;
+    }
+
+    res.status(204).send();
     return;
 };
