@@ -66,7 +66,7 @@ app.post('/signup', verifyJsonApiRequest, postSignup);
 app.get('/routes', getRoutes);
 app.post('/login', verifyJsonApiRequest, postLogin);
 app.post('/logout', requireAuthentication, verifyJsonApiRequest, postLogout);
-app.post('/refreshToken', regenerateToken);
+app.post('/refreshToken', verifyJsonApiRequest, regenerateToken);
 app.get('/users/:id/settings', requireAuthentication, getUserSettings);
 app.get('/users/:id/transactions', requireAuthentication, getUserTransactions);
 

@@ -5,6 +5,7 @@ import { getRedisConnection } from './databaseController';
 import { check, header, Result, ValidationError, validationResult } from 'express-validator';
 import { SingleResourceResponse } from '../utils/jsonAPI';
 import { expiredAuthTokenError, genericJWTError, invalidAuthTokenError, invalidRefreshToken, missingAuthorizationError, noRefreshTokenError } from '../utils/errors';
+import { jwtObjectHas } from '../utils/customValidators';
 
 export const getAccessTokenFromRequest = (req: Request): string => {
     const authHeader = req.headers["authorization"];
@@ -47,7 +48,7 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
     /**
      * Empty Check
      */
-    await check("refreshToken", noRefreshTokenError).notEmpty().run(req);
+    await check("data", noRefreshTokenError).custom(jwtObjectHas("refreshToken")).run(req);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -55,7 +56,7 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
         return;
     }
 
-    const oldRefreshToken = req.body.refreshToken;
+    const oldRefreshToken = req.body.data.attributes.refreshToken;
 
     const redis = await getRedisConnection();
     const result = await redis.get(oldRefreshToken);
