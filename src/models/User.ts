@@ -1,7 +1,7 @@
 import { RowDataPacket } from 'mysql2';
 import * as dbController from '../controllers/databaseController';
 import { hashPassword } from '../utils/argon';
-import { wrongCredentials } from '../utils/errors';
+import { wrongCredentials, userNotFoundError } from '../utils/errors';
 import CurrencyCode from './CurrencyCode';
 import ErrorOr from './ErrorOr';
 
@@ -194,5 +194,21 @@ export default class User {
         const [result] = await connection.execute<RowDataPacket[]>("SELECT UserDataHeaderID FROM UserDataHeader WHERE UserDataHeaderID = ?", [id]);
 
         return result.length !== 0;
+    }
+
+    static async delete(id: number): Promise<ErrorOr<boolean>> {
+        const userExists = await User.exists(id);
+        if (!userExists) {
+            return new ErrorOr({
+                error: userNotFoundError
+            });
+        }
+
+        const connection = await dbController.getDatabaseConnection();
+        await connection.execute<RowDataPacket[]>("CALL SP_DeleteUser(?);", [id]);
+
+        return new ErrorOr({
+            value: true
+        });
     }
 }
