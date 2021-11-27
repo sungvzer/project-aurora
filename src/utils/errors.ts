@@ -13,6 +13,27 @@ export const invalidAuthTokenError: Error = {
     title: "Invalid Authorization Token"
 };
 
+export const invalidUserIdError: Error = {
+    code: "ERR_INVALID_USER_ID",
+    detail: "An empty or invalid id parameter was provided",
+    status: "400",
+    title: "Invalid User ID"
+};
+
+export const userNotFoundError: Error = {
+    code: "ERR_USER_NOT_FOUND",
+    detail: "The requested user could not be found",
+    status: "404",
+    title: "User not found"
+};
+
+export const userIdMismatch: Error = {
+    code: "ERR_USER_ID_MISMATCH",
+    detail: "The request could not be fulfilled as the provided user id is different from the one contained authentication token",
+    status: "403",
+    title: "User id mismatch"
+};
+
 export const expiredAuthTokenError: Error = {
     code: "ERR_EXPIRED_AUTH_TOKEN",
     detail: "The authorization token provided with this request is expired",
