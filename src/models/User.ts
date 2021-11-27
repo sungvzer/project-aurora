@@ -187,4 +187,12 @@ export default class User {
             },
         });
     }
+
+    static async exists(id: number): Promise<boolean> {
+        const connection = await dbController.getDatabaseConnection();
+
+        const [result] = await connection.execute<RowDataPacket[]>("SELECT UserDataHeaderID FROM UserDataHeader WHERE UserDataHeaderID = ?", [id]);
+
+        return result.length !== 0;
+    }
 }
