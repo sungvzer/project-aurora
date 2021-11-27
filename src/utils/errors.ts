@@ -6,21 +6,22 @@ export const wrongCredentials: Error = {
     status: "400",
     title: "Wrong email or password"
 };
-export const invalidAuthTokenError: Error = {
+
+export const invalidAuthToken: Error = {
     code: "ERR_INVALID_AUTH_TOKEN",
     detail: "The authorization token provided with this request is not valid",
     status: "400",
     title: "Invalid Authorization Token"
 };
 
-export const invalidUserIdError: Error = {
+export const invalidUserId: Error = {
     code: "ERR_INVALID_USER_ID",
     detail: "An empty or invalid id parameter was provided",
     status: "400",
     title: "Invalid User ID"
 };
 
-export const userNotFoundError: Error = {
+export const userNotFound: Error = {
     code: "ERR_USER_NOT_FOUND",
     detail: "The requested user could not be found",
     status: "404",
@@ -34,102 +35,103 @@ export const userIdMismatch: Error = {
     title: "User id mismatch"
 };
 
-export const expiredAuthTokenError: Error = {
+export const expiredAuthToken: Error = {
     code: "ERR_EXPIRED_AUTH_TOKEN",
     detail: "The authorization token provided with this request is expired",
     status: "400",
     title: "Expired Authorization Token"
 };
 
-export const genericJWTError: Error = {
+export const genericJWT: Error = {
     code: "ERR_GENERIC_JWT",
     detail: "Something went wrong processing your token. Please try logging in again.",
     status: "400",
     title: "Generic JWT Error"
 };
 
-export const missingAuthorizationError: Error = {
+export const missingAuthorization: Error = {
     status: "400",
     code: "ERR_MISSING_AUTH",
     detail: "The request is missing the Authorization: Bearer token necessary for authentication.\nThis is an authenticated route.",
     title: "Missing authorization header"
 };
-export const noRefreshTokenError: Error = {
+export const noRefreshToken: Error = {
     status: "400",
     code: "ERR_NO_REFRESH_TOKEN",
     title: "No refresh token provided",
 };
 
-export const invalidAmountError: Error = {
+export const invalidAmount: Error = {
     code: "ERR_INVALID_AMOUNT",
     detail: "An amount must be an integer. The last two digits will be considered decimals.",
     title: "Invalid amount",
     status: "400"
 };
 
-export const blankEmailError: Error = {
+export const blankEmail: Error = {
     status: "400",
     code: "ERR_EMAIL_BLANK",
     detail: "A blank email was provided",
     title: "Email should not be blank",
 };
 
-export const blankPasswordError: Error = {
+export const blankPassword: Error = {
     status: "400",
     code: "ERR_PASSWORD_BLANK",
     detail: "A blank password was provided",
     title: "Password should not be blank"
 };
 
-export const blankFirstNameError: Error = {
+export const blankFirstName: Error = {
     status: "400",
     code: "ERR_FIRST_NAME_BLANK",
     detail: "An empty first name was provided",
     title: "First name should not be blank"
 };
 
-export const blankLastNameError: Error = {
+export const blankLastName: Error = {
     status: "400",
     code: "ERR_LAST_NAME_BLANK",
     detail: "An empty last name was provided",
     title: "Last name should not be blank"
 };
 
-export const blankDataFieldError: Error = {
+export const blankDataField: Error = {
     status: "400",
     code: "ERR_DATA_BLANK",
     detail: 'As per the JSON:API specification, this endpoint needs a top-level object with a "data" field',
     title: "Data field should not be blank"
 };
 
-export const blankBirthdayError: Error = {
+export const blankBirthday: Error = {
     status: "400",
     code: "ERR_BIRTHDAY_BLANK",
     detail: "An blank birthday was provided",
     title: "Birthday should not be blank"
 };
 
-export const blankCurrencyCodeError: Error = {
+export const blankCurrencyCode: Error = {
     status: "400",
     code: "ERR_CURRENCY_CODE_BLANK",
     detail: "An blank currency code was provided",
     title: "Currency code should not be blank"
 };
 
-export const invalidCurrencyCodeError: Error = {
+export const invalidCurrencyCode: Error = {
     status: "400",
     code: "ERR_CURRENCY_CODE_INVALID",
     detail: "An invalid currency code was provided",
     title: "Currency code is not valid"
 };
 
-export const invalidEmailError: Error = {
+export const invalidEmail: Error = {
     status: "400",
     code: "ERR_EMAIL_INVALID",
     detail: "An invalid email was provided",
     title: "Email is not valid"
 };
-export const invalidDateError: Error = {
+
+export const invalidDate: Error = {
     status: "400",
     code: "ERR_DATE_INVALID",
     detail: "All dates must be formatted using ISO 8601",

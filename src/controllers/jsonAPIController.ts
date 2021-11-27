@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { check, validationResult } from 'express-validator';
-import { blankDataFieldError, invalidRequestBody } from '../utils/errors';
+import * as err from '../utils/errors';
 import { SingleResourceResponse } from '../utils/jsonAPI';
 
 export const verifyJsonApiRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await check("data", blankDataFieldError).notEmpty().run(req);
-    await check("data", invalidRequestBody).custom((input, meta) => {
+    await check("data", err.blankDataField).notEmpty().run(req);
+    await check("data", err.invalidRequestBody).custom((input, meta) => {
         const checkInput = (input: any): boolean => {
             const allowedResourceKeys = [
                 'id', 'type', 'attributes', 'relationships', 'links', 'meta'

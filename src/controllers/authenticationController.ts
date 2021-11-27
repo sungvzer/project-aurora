@@ -4,7 +4,7 @@ import { generateTokenPair } from '../utils/jwt';
 import { getRedisConnection } from './databaseController';
 import { check, header, Result, ValidationError, validationResult } from 'express-validator';
 import { SingleResourceResponse } from '../utils/jsonAPI';
-import { expiredAuthTokenError, genericJWTError, invalidAuthTokenError, invalidRefreshToken, missingAuthorizationError, noRefreshTokenError } from '../utils/errors';
+import * as commonErrors from '../utils/errors';
 import { jwtObjectHas } from '../utils/customValidators';
 
 export const getAccessTokenFromRequest = (req: Request): string => {
@@ -17,7 +17,7 @@ export const getAccessTokenFromRequest = (req: Request): string => {
 };
 export const requireAuthentication = async (req: Request, res: Response, next: NextFunction) => {
     let response = new SingleResourceResponse("data");
-    await header("Authorization", missingAuthorizationError).notEmpty().run(req);
+    await header("Authorization", commonErrors.missingAuthorization).notEmpty().run(req);
     const error: Result<ValidationError> = validationResult(req);
 
     if (!error.isEmpty()) {
@@ -27,16 +27,16 @@ export const requireAuthentication = async (req: Request, res: Response, next: N
 
     const token = getAccessTokenFromRequest(req);
     if (!token) {
-        return res.status(401).json(response.addError(invalidAuthTokenError).close());
+        return res.status(401).json(response.addError(commonErrors.invalidAuthToken).close());
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
         if (err) {
             if (err.message.indexOf('expired') != -1) {
-                response.addError(expiredAuthTokenError);
+                response.addError(commonErrors.expiredAuthToken);
                 return res.status(403).json(response.close());
             }
-            return res.status(403).json(response.addError(genericJWTError).close());
+            return res.status(403).json(response.addError(commonErrors.genericJWT).close());
         }
         req["decodedJWTPayload"] = payload;
         next();
@@ -48,7 +48,7 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
     /**
      * Empty Check
      */
-    await check("data", noRefreshTokenError).custom(jwtObjectHas("refreshToken")).run(req);
+    await check("data", commonErrors.noRefreshToken).custom(jwtObjectHas("refreshToken")).run(req);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -62,13 +62,13 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
     const result = await redis.get(oldRefreshToken);
 
     if (!result) {
-        res.status(403).json(response.addError(invalidRefreshToken).close());
+        res.status(403).json(response.addError(commonErrors.invalidRefreshToken).close());
         return;
     }
 
     jwt.verify(oldRefreshToken, process.env.JWT_REFRESH_SECRET, async (err: jwt.VerifyErrors, payload: jwt.JwtPayload) => {
         if (err) {
-            res.status(403).json(response.addError(invalidRefreshToken).close());
+            res.status(403).json(response.addError(commonErrors.invalidRefreshToken).close());
             return;
         }
 

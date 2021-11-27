@@ -10,7 +10,7 @@ import { getRedisConnection } from './databaseController';
 import assert from 'node:assert';
 import * as jwt from 'jsonwebtoken';
 import { MultipleResourcesResponse, ResourceObject, SingleResourceResponse } from '../utils/jsonAPI';
-import { blankBirthdayError, blankCurrencyCodeError, blankEmailError, blankFirstNameError, blankLastNameError, blankPasswordError, invalidAmountError, invalidCurrencyCodeError, invalidDateError, invalidEmailError, invalidRefreshToken, invalidUserIdError, noRefreshTokenError, userIdMismatch, userNotFoundError, wrongCredentials } from '../utils/errors';
+import * as err from '../utils/errors';
 import { jwtObjectHas, jwtObjectValidateEmail, jwtObjectSanitizeEmail } from '../utils/customValidators';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
@@ -18,21 +18,21 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
     /**
      * Empty Checks
      */
-    await check("data", blankEmailError).custom(jwtObjectHas("email")).run(req);
-    await check("data", blankPasswordError).custom(jwtObjectHas("password")).run(req);
-    await check("data", blankFirstNameError).custom(jwtObjectHas("firstName")).run(req);
-    await check("data", blankLastNameError).custom(jwtObjectHas("lastName")).run(req);
-    await check("data", blankBirthdayError).custom(jwtObjectHas("birthday")).run(req);
-    await check("data", blankCurrencyCodeError).custom(jwtObjectHas("currency")).run(req);
+    await check("data", err.blankEmail).custom(jwtObjectHas("email")).run(req);
+    await check("data", err.blankPassword).custom(jwtObjectHas("password")).run(req);
+    await check("data", err.blankFirstName).custom(jwtObjectHas("firstName")).run(req);
+    await check("data", err.blankLastName).custom(jwtObjectHas("lastName")).run(req);
+    await check("data", err.blankBirthday).custom(jwtObjectHas("birthday")).run(req);
+    await check("data", err.blankCurrencyCode).custom(jwtObjectHas("currency")).run(req);
 
     /**
      * Validity Checks
      */
-    await check("data", invalidCurrencyCodeError).custom((input) => {
+    await check("data", err.invalidCurrencyCode).custom((input) => {
         return isCurrencyCode(input["attributes"]["currency"]);
     }).run(req);
-    await check("data", invalidEmailError).custom(jwtObjectValidateEmail).run(req);
-    await check("data", invalidDateError).custom((input, _) => {
+    await check("data", err.invalidEmail).custom(jwtObjectValidateEmail).run(req);
+    await check("data", err.invalidDate).custom((input, _) => {
         return validator.isDate(input["attributes"]["birthday"], { format: "YYYY-MM-DD" });
     }).run(req);
 
@@ -95,7 +95,7 @@ export const postLogout = async (req: Request, res: Response): Promise<void> => 
      * Empty Check
      */
     let response = new SingleResourceResponse("data");
-    await check("data", noRefreshTokenError).custom(jwtObjectHas("refreshToken")).run(req);
+    await check("data", err.noRefreshToken).custom(jwtObjectHas("refreshToken")).run(req);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const { msg: error } = errors.array()[0];
@@ -116,19 +116,19 @@ export const postLogout = async (req: Request, res: Response): Promise<void> => 
     });
 
     if (!accessPayload["userHeaderID"] || !refreshPayload["userHeaderID"]) {
-        res.status(403).json(response.addError(invalidRefreshToken).close());
+        res.status(403).json(response.addError(err.invalidRefreshToken).close());
         return;
     }
 
     if (accessPayload["userHeaderID"] != refreshPayload["userHeaderID"]) {
-        res.status(403).json(response.addError(invalidRefreshToken).close());
+        res.status(403).json(response.addError(err.invalidRefreshToken).close());
         return;
     }
 
     const redis = await getRedisConnection();
     const queryResult = await redis.get(refreshToken);
     if (!queryResult) {
-        res.status(403).json(response.addError(invalidRefreshToken).close());
+        res.status(403).json(response.addError(err.invalidRefreshToken).close());
         return;
     }
     await redis.del(refreshToken);
@@ -142,13 +142,13 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     /**
      * Empty Checks
      */
-    await check("data", blankEmailError).custom(jwtObjectHas("email")).run(req);
-    await check("data", blankPasswordError).custom(jwtObjectHas("password")).run(req);
+    await check("data", err.blankEmail).custom(jwtObjectHas("email")).run(req);
+    await check("data", err.blankPassword).custom(jwtObjectHas("password")).run(req);
 
     /**
      * Validity Checks
      */
-    await check("data", invalidEmailError).custom(jwtObjectValidateEmail).run(req);
+    await check("data", err.invalidEmail).custom(jwtObjectValidateEmail).run(req);
 
     /**
      * Body sanitization
@@ -184,7 +184,7 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
 
     const accessGranted: boolean = await verifyPassword(plainTextPassword, credentialsOrError.value.passwordHash);
     if (!accessGranted) {
-        response.addError(wrongCredentials);
+        response.addError(err.wrongCredentials);
         res.status(401).json(response.close());
         return;
     }
@@ -233,7 +233,7 @@ export const getUserSettings = async (req: Request, res: Response): Promise<void
 
     if (userId != jwtUserHeaderId) {
         res.status(403).json(response.addError(
-            userIdMismatch
+            err.userIdMismatch
         ).close());
         return;
 
@@ -258,14 +258,14 @@ export const getUserSettings = async (req: Request, res: Response): Promise<void
 
 export const getUserTransactions = async (req: Request, res: Response) => {
     let response = new MultipleResourcesResponse("data");
-    await param("id", invalidUserIdError).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
+    await param("id", err.invalidUserId).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
 
-    await query("minAmount", { ...invalidAmountError, source: { parameter: "minAmount" } }).optional().isInt().run(req);
-    await query("maxAmount", { ...invalidAmountError, source: { parameter: "maxAmount" } }).optional().isInt().run(req);
-    await query("startDate", { ...invalidDateError, source: { parameter: "startDate" } }).optional().isDate({ format: 'YYYY-MM-DD' }).run(req);
-    await query("endDate", { ...invalidDateError, source: { parameter: "endDate" } }).optional().isDate({ format: 'YYYY-MM-DD' }).run(req);
+    await query("minAmount", { ...err.invalidAmount, source: { parameter: "minAmount" } }).optional().isInt().run(req);
+    await query("maxAmount", { ...err.invalidAmount, source: { parameter: "maxAmount" } }).optional().isInt().run(req);
+    await query("startDate", { ...err.invalidDate, source: { parameter: "startDate" } }).optional().isDate({ format: 'YYYY-MM-DD' }).run(req);
+    await query("endDate", { ...err.invalidDate, source: { parameter: "endDate" } }).optional().isDate({ format: 'YYYY-MM-DD' }).run(req);
 
-    await query("currency", invalidCurrencyCodeError).optional().custom((input) => {
+    await query("currency", err.invalidCurrencyCode).optional().custom((input) => {
         return isCurrencyCode(input);
     }).run(req);
 
@@ -348,7 +348,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
     /**
      * Empty and validity checks
      */
-    await param("id", invalidUserIdError).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
+    await param("id", err.invalidUserId).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
 
     const validationErrors: Result<ValidationError> = validationResult(req);
     if (!validationErrors.isEmpty()) {
@@ -361,14 +361,14 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 
     const userId = parseInt(req.params.id);
     if (req["decodedJWTPayload"]["userHeaderID"] != userId) {
-        response.addError(userIdMismatch);
+        response.addError(err.userIdMismatch);
         res.status(403).json(response.close());
         return;
     }
 
     const exists = await User.exists(userId);
     if (!exists) {
-        response.addError(userNotFoundError);
+        response.addError(err.userNotFound);
         res.status(404).json(response.close());
         return;
     }

@@ -1,7 +1,7 @@
 import { RowDataPacket } from 'mysql2';
 import * as dbController from '../controllers/databaseController';
 import { hashPassword } from '../utils/argon';
-import { wrongCredentials, userNotFoundError } from '../utils/errors';
+import { wrongCredentials, userNotFound } from '../utils/errors';
 import CurrencyCode from './CurrencyCode';
 import ErrorOr from './ErrorOr';
 
@@ -200,7 +200,7 @@ export default class User {
         const userExists = await User.exists(id);
         if (!userExists) {
             return new ErrorOr({
-                error: userNotFoundError
+                error: userNotFound
             });
         }
 
