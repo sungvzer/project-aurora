@@ -13,3 +13,14 @@ export const getRoutes = async (req: Request, res: Response): Promise<void> => {
     };
     res.status(200).json(response.close());
 };
+
+export const defaultError = (req: Request, res: Response): void => {
+    let response = new SingleResourceResponse("error");
+    response.addError({
+        code: "ERR_NOT_FOUND",
+        detail: "Cannot " + req.method + " " + req.path,
+        title: "Not found",
+        status: "404"
+    });
+    res.status(404).json(response.close());
+};

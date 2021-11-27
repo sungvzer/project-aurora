@@ -3,7 +3,7 @@ import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
 import { postSignup, postLogin, getUserSettings, postLogout, getUserTransactions } from './controllers/userController';
-import { getRoutes } from './controllers/apiController';
+import { defaultError, getRoutes } from './controllers/apiController';
 import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
 import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
 import { verifyJsonApiRequest } from './controllers/jsonAPIController';
@@ -69,6 +69,8 @@ app.post('/logout', requireAuthentication, verifyJsonApiRequest, postLogout);
 app.post('/refreshToken', verifyJsonApiRequest, regenerateToken);
 app.get('/users/:id/settings', requireAuthentication, getUserSettings);
 app.get('/users/:id/transactions', requireAuthentication, getUserTransactions);
+
+app.use('*', defaultError);
 
 /**
  * Main Point of the application
