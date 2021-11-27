@@ -1,2 +1,0 @@
-GET http://127.0.0.1:3000/users/2/transactions?currency=USD&startDate=2021-11-04&endDate=2021-11-06&minAmount=-5400&maxAmount=1000&tag=Hospital+bill HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjI4NDMxMiwiZXhwIjoxNjM2Mjg1MjEyfQ.Z7t2JUagOvMGiRRo_RHZyUfQxG4yJXqOx9ZmbYXGrbA

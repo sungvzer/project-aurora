@@ -1,2 +1,0 @@
-GET http://127.0.0.1:3000/users/2/settings HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySGVhZGVySUQiOjIsImlhdCI6MTYzNjA0NTkxNH0.n5QBz6-OAl7_uhd_IX_ZqRIbgZvf68WJv_JpeoJL32Y
