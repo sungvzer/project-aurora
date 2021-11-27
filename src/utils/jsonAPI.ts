@@ -183,6 +183,8 @@ export abstract class GenericResponse {
             response["links"] = this.links;
         }
 
+        response["jsonapi"] = JsonAPIObject;
+
         return response;
     }
 
