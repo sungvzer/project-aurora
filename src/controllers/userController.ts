@@ -232,12 +232,9 @@ export const getUserSettings = async (req: Request, res: Response): Promise<void
     }
 
     if (userId != jwtUserHeaderId) {
-        res.status(403).json(response.addError({
-            code: "ERR_AUTH_MISMATCH",
-            detail: `Cannot get settings for user ${userId} as authentication header refers to a different user.`,
-            status: "403",
-            title: "Authentication mismatch"
-        }).close());
+        res.status(403).json(response.addError(
+            userIdMismatch
+        ).close());
         return;
 
     }
@@ -261,12 +258,7 @@ export const getUserSettings = async (req: Request, res: Response): Promise<void
 
 export const getUserTransactions = async (req: Request, res: Response) => {
     let response = new MultipleResourcesResponse("data");
-    await param("id", {
-        code: "ERR_INVALID_USER_ID",
-        detail: "An empty or invalid id parameter was provided",
-        status: "400",
-        title: "Invalid User ID"
-    }).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
+    await param("id", invalidUserIdError).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
 
     await query("minAmount", { ...invalidAmountError, source: { parameter: "minAmount" } }).optional().isInt().run(req);
     await query("maxAmount", { ...invalidAmountError, source: { parameter: "maxAmount" } }).optional().isInt().run(req);
