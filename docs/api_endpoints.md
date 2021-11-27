@@ -50,6 +50,12 @@
     - [Attributes](#attributes-5)
     - [Fields](#fields)
     - [Responses](#responses-5)
+  - [POST /refreshToken](#post-refreshtoken)
+    - [Description](#description-6)
+    - [Headers](#headers-6)
+    - [Resource type](#resource-type-6)
+    - [Attributes](#attributes-6)
+    - [Responses](#responses-6)
 
 ## JSON:API Specification
 
@@ -635,3 +641,67 @@ Unless an [authentication error](#authentication-errors) occurs, the response wi
 `data` *can* be an empty array if no transactions matching the query were found.
 
 The `amount` field is an integer where the last two digits are the "cents" part; if we look at the first transaction, for example, the amount is -\$5,201.89.
+
+## POST /refreshToken
+
+### Description
+
+Refreshes `accessToken` and `refreshToken` after the first expires.
+
+### Headers
+
+No header is required.
+
+### Resource type
+
+`RefreshToken`
+
+### Attributes
+
+- `refreshToken`: the token provided through the /login endpoint.
+
+### Responses
+
+In the case of a succesful request, the response will be:
+
+```json
+{
+  "data": {
+    "id": /* User ID related to the tokens */,
+    "type": "AuthTokenPair",
+    "attributes": {
+      "accessToken": /* New access token */,
+      "refreshToken": /* New refresh token */
+    }
+  }
+}
+```
+
+If the `refreshToken` is omitted:
+
+```json
+{
+  "errors": [
+    {
+      "status": "400",
+      "code": "ERR_NO_REFRESH_TOKEN",
+      "title": "No refresh token provided"
+    }
+  ]
+}
+```
+
+If the `refreshToken` is provided, but does not belong to any user, or it is provided but is invalid (e.g. payloads missing or mismatch):
+
+```json
+{
+  "errors": [
+    {
+      "status": "403",
+      "code": "ERR_INVALID_REFRESH_TOKEN",
+      "title": "Invalid refresh token",
+      "detail": "The refresh token provided is not valid or refers to a different user"
+    }
+  ]
+}
+```
