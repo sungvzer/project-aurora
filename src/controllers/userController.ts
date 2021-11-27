@@ -1,4 +1,4 @@
-import { body, check, query, Result, ValidationError, validationResult } from 'express-validator';
+import { body, check, param, query, Result, ValidationError, validationResult } from 'express-validator';
 import validator from 'validator';
 import { Request, Response } from 'express';
 import User, { TransactionQueryOptions, UserCredentials, UserDatabaseInsertModel, UserSettings } from '../models/User';
@@ -261,6 +261,13 @@ export const getUserSettings = async (req: Request, res: Response): Promise<void
 
 export const getUserTransactions = async (req: Request, res: Response) => {
     let response = new MultipleResourcesResponse("data");
+    await param("id", {
+        code: "ERR_INVALID_USER_ID",
+        detail: "An empty or invalid id parameter was provided",
+        status: "400",
+        title: "Invalid User ID"
+    }).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
+
     await query("minAmount", { ...invalidAmountError, source: { parameter: "minAmount" } }).optional().isInt().run(req);
     await query("maxAmount", { ...invalidAmountError, source: { parameter: "maxAmount" } }).optional().isInt().run(req);
     await query("startDate", { ...invalidDateError, source: { parameter: "startDate" } }).optional().isDate({ format: 'YYYY-MM-DD' }).run(req);
@@ -279,8 +286,19 @@ export const getUserTransactions = async (req: Request, res: Response) => {
         return;
     }
 
-    const userId = req["decodedJWTPayload"]["userHeaderID"];
-    assert(userId);
+    const payloadID = req["decodedJWTPayload"]["userHeaderID"];
+    const userID = parseInt(req.params.id);
+    assert(payloadID);
+    if (userID !== payloadID) {
+        response.addError({
+            code: "ERR_AUTH_MISMATCH",
+            detail: `Cannot get transactions for user ${userID} as authentication header refers to a different user.`,
+            status: "403",
+            title: "Authentication mismatch"
+        });
+        res.status(403).json(response.close());
+        return;
+    }
 
     // Parse query 
     let queryOptions: TransactionQueryOptions = {};
@@ -303,7 +321,7 @@ export const getUserTransactions = async (req: Request, res: Response) => {
     if (req.query.tag)
         queryOptions.tag = req.query.tag.toString();
 
-    const transactionsOrError = await User.getTransactionsById(userId, queryOptions);
+    const transactionsOrError = await User.getTransactionsById(payloadID, queryOptions);
 
     if (transactionsOrError.isError()) {
         res.status(500).json(response.addError({
