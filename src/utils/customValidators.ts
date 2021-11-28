@@ -20,6 +20,14 @@ export const resourceObjectValidateEmail = (input: any, meta: Meta): any => {
     }
 };
 
+export const dataIsArray = (input: any, meta: Meta): any => {
+    return Array.isArray(input);
+};
+
+export const dataHas = (str: string): CustomValidator => {
+    return (input, meta) => input[str];
+};
+
 /** 
  * This function does not validate if email is present or not, please check with `jwtObjectHas` and `jwtObjectValidateEmail`
  */
