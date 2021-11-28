@@ -56,6 +56,12 @@
     - [Resource type](#resource-type-6)
     - [Attributes](#attributes-6)
     - [Responses](#responses-6)
+  - [DELETE /users/{:id}](#delete-usersid)
+    - [Description](#description-7)
+    - [Headers](#headers-7)
+    - [Resource type](#resource-type-7)
+    - [Attributes](#attributes-7)
+    - [Responses](#responses-7)
 
 ## JSON:API Specification
 
@@ -703,5 +709,74 @@ If the `refreshToken` is provided, but does not belong to any user, or it is pro
       "detail": "The refresh token provided is not valid or refers to a different user"
     }
   ]
+}
+```
+
+## DELETE /users/{:id}
+
+### Description
+
+Deletes a user.
+
+It's an **authenticated** endpoint. This means you need to first obtain an `accessToken` by [logging in](#post-login).
+
+### Headers
+
+`Authorization: Bearer {accessToken}`
+
+### Resource type
+
+No body is required.
+
+### Attributes
+
+No body is required.
+
+### Responses
+
+Unless an [authentication error](#authentication-errors) occurs, the response will be a `204 No Content` status code, with no body whatsoever.
+
+If the `id` URL parameter is empty, invalid, or malformed:
+
+```json
+{
+    "errors": [
+        {
+            "code": "ERR_INVALID_USER_ID",
+            "detail": "An empty or invalid id parameter was provided",
+            "status": "400",
+            "title": "Invalid User ID"
+        }
+    ]
+}
+```
+
+If the user ID in the authentication token is different from the `id` URL parameter:
+
+```json
+{
+    "errors": [
+        {
+            "code": "ERR_USER_ID_MISMATCH",
+            "detail": "The request could not be fulfilled as the provided user id is different from the one contained authentication token",
+            "status": "403",
+            "title": "User id mismatch"
+        }
+    ]
+}
+```
+
+If the user is not found:
+
+```json
+{
+    "errors": [
+        {
+            "code": "ERR_USER_NOT_FOUND",
+            "detail": "The requested user could not be found",
+            "status": "404",
+            "title": "User not found"
+        }
+    ]
 }
 ```
