@@ -2,7 +2,7 @@ import { check, body, Result, ValidationError, validationResult } from 'express-
 import validator from 'validator';
 import CurrencyCode, { isCurrencyCode } from '../../models/CurrencyCode';
 import User, { UserDatabaseInsertModel } from '../../models/User';
-import { jwtObjectHas, jwtObjectValidateEmail, jwtObjectSanitizeEmail } from '../../utils/customValidators';
+import { resourceObjectHas, resourceObjectValidateEmail, resourceObjectSanitizeEmail } from '../../utils/customValidators';
 import { SingleResourceResponse, ResourceObject } from '../../utils/jsonAPI';
 import * as err from '../../utils/errors';
 import { Request, Response } from 'express';
@@ -14,12 +14,12 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
     /**
      * Empty Checks
      */
-    await check("data", err.blankEmail).custom(jwtObjectHas("email")).run(req);
-    await check("data", err.blankPassword).custom(jwtObjectHas("password")).run(req);
-    await check("data", err.blankFirstName).custom(jwtObjectHas("firstName")).run(req);
-    await check("data", err.blankLastName).custom(jwtObjectHas("lastName")).run(req);
-    await check("data", err.blankBirthday).custom(jwtObjectHas("birthday")).run(req);
-    await check("data", err.blankCurrencyCode).custom(jwtObjectHas("currency")).run(req);
+    await check("data", err.blankEmail).custom(resourceObjectHas("email")).run(req);
+    await check("data", err.blankPassword).custom(resourceObjectHas("password")).run(req);
+    await check("data", err.blankFirstName).custom(resourceObjectHas("firstName")).run(req);
+    await check("data", err.blankLastName).custom(resourceObjectHas("lastName")).run(req);
+    await check("data", err.blankBirthday).custom(resourceObjectHas("birthday")).run(req);
+    await check("data", err.blankCurrencyCode).custom(resourceObjectHas("currency")).run(req);
 
     /**
      * Validity Checks
@@ -27,7 +27,7 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
     await check("data", err.invalidCurrencyCode).custom((input) => {
         return isCurrencyCode(input["attributes"]["currency"]);
     }).run(req);
-    await check("data", err.invalidEmail).custom(jwtObjectValidateEmail).run(req);
+    await check("data", err.invalidEmail).custom(resourceObjectValidateEmail).run(req);
     await check("data", err.invalidDate).custom((input, _) => {
         return validator.isDate(input["attributes"]["birthday"], { format: "YYYY-MM-DD" });
     }).run(req);
@@ -35,7 +35,7 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
     /**
      * Body sanitization
      */
-    await body("data").customSanitizer(jwtObjectSanitizeEmail).run(req);
+    await body("data").customSanitizer(resourceObjectSanitizeEmail).run(req);
 
 
     const validationErrors: Result<ValidationError> = validationResult(req);

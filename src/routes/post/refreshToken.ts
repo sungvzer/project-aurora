@@ -1,5 +1,5 @@
 import { check, validationResult } from 'express-validator';
-import { jwtObjectHas } from '../../utils/customValidators';
+import { resourceObjectHas } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as commonErrors from '../../utils/errors';
 import { Request, Response } from 'express';
@@ -12,7 +12,7 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
     /**
      * Empty Check
      */
-    await check("data", commonErrors.noRefreshToken).custom(jwtObjectHas("refreshToken")).run(req);
+    await check("data", commonErrors.noRefreshToken).custom(resourceObjectHas("refreshToken")).run(req);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

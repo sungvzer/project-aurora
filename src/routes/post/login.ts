@@ -4,7 +4,7 @@ import { getRedisConnection } from '../../utils/databases';
 import ErrorOr from '../../models/ErrorOr';
 import User, { UserCredentials } from '../../models/User';
 import { verifyPassword } from '../../utils/argon';
-import { jwtObjectHas, jwtObjectValidateEmail, jwtObjectSanitizeEmail } from '../../utils/customValidators';
+import { resourceObjectHas, resourceObjectValidateEmail, resourceObjectSanitizeEmail } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import { generateTokenPair } from '../../utils/jwt';
 import * as err from '../../utils/errors';
@@ -14,18 +14,18 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     /**
      * Empty Checks
      */
-    await check("data", err.blankEmail).custom(jwtObjectHas("email")).run(req);
-    await check("data", err.blankPassword).custom(jwtObjectHas("password")).run(req);
+    await check("data", err.blankEmail).custom(resourceObjectHas("email")).run(req);
+    await check("data", err.blankPassword).custom(resourceObjectHas("password")).run(req);
 
     /**
      * Validity Checks
      */
-    await check("data", err.invalidEmail).custom(jwtObjectValidateEmail).run(req);
+    await check("data", err.invalidEmail).custom(resourceObjectValidateEmail).run(req);
 
     /**
      * Body sanitization
      */
-    await body("data").customSanitizer(jwtObjectSanitizeEmail).run(req);
+    await body("data").customSanitizer(resourceObjectSanitizeEmail).run(req);
 
     /**
      * Error handling

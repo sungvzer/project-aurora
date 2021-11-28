@@ -1,6 +1,6 @@
 import { check, validationResult } from 'express-validator';
 import { getRedisConnection } from '../../utils/databases';
-import { jwtObjectHas } from '../../utils/customValidators';
+import { resourceObjectHas } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as err from '../../utils/errors';
 import { Request, Response } from 'express';
@@ -12,7 +12,7 @@ export const postLogout = async (req: Request, res: Response): Promise<void> => 
      * Empty Check
      */
     let response = new SingleResourceResponse("data");
-    await check("data", err.noRefreshToken).custom(jwtObjectHas("refreshToken")).run(req);
+    await check("data", err.noRefreshToken).custom(resourceObjectHas("refreshToken")).run(req);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const { msg: error } = errors.array()[0];
