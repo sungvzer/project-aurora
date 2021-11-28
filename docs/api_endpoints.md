@@ -43,7 +43,7 @@
     - [Resource type](#resource-type-4)
     - [Attributes](#attributes-4)
     - [Responses](#responses-4)
-  - [GET /users/{id}/transactions](#get-usersidtransactions)
+  - [GET /users/{id}/transactions/{:transactionID?}](#get-usersidtransactionstransactionid)
     - [Description](#description-5)
     - [Headers](#headers-5)
     - [Resource type](#resource-type-5)
@@ -570,11 +570,13 @@ Unless an [authentication error](#authentication-errors) occurs, the response wi
 }
 ```
 
-## GET /users/{id}/transactions
+## GET /users/{id}/transactions/{:transactionID?}
 
 ### Description
 
 List user's transactions, filtered by query parameters.
+
+Optionally, it is possible to get a single transaction by providing the - optional - `transactionID`.
 
 It's an **authenticated** endpoint. This means you need to first obtain an `accessToken` by [logging in](#post-login).
 
@@ -605,6 +607,8 @@ These need to be included in the GET query string. For example: `/users/2/transa
 ### Responses
 
 Unless an [authentication error](#authentication-errors) occurs, the response will be:
+
+`transactionID` omitted:
 
 ```json
 {
@@ -645,6 +649,38 @@ Unless an [authentication error](#authentication-errors) occurs, the response wi
 ```
 
 `data` *can* be an empty array if no transactions matching the query were found.
+
+If `transactionID` is provided:
+
+```json
+{
+    "data": {
+        "id": "1",
+        "type": "UserTransaction",
+        "attributes": {
+            "amount": -5189,
+            "currency": "USD",
+            "date": "2021-11-03T23:00:00.000Z",
+            "tag": "Hospital bill"
+        }
+    }
+}
+```
+
+Should the transaction not be found:
+
+```json
+{
+    "errors": [
+        {
+            "code": "ERR_TRANSACTION_NOT_FOUND",
+            "detail": "The requested transaction could not be found",
+            "status": "404",
+            "title": "Transaction not found"
+        }
+    ]   
+}
+```
 
 The `amount` field is an integer where the last two digits are the "cents" part; if we look at the first transaction, for example, the amount is -\$5,201.89.
 
