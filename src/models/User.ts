@@ -4,6 +4,7 @@ import { hashPassword } from '../utils/argon';
 import { wrongCredentials, userNotFound } from '../utils/errors';
 import CurrencyCode from './CurrencyCode';
 import ErrorOr from './ErrorOr';
+import UserTransaction from './UserTransaction';
 
 export interface UserDatabaseInsertModel {
     firstName: string;
@@ -25,14 +26,6 @@ export interface UserCredentials {
     email: string;
     passwordHash: string;
     lastModifiedAt: Date;
-}
-
-export interface UserTransaction {
-    id: number,
-    amount: number;
-    currency: CurrencyCode;
-    date: string;
-    tag: string;
 }
 
 export interface TransactionQueryOptions {
