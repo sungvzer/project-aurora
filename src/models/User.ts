@@ -1,5 +1,5 @@
 import { RowDataPacket } from 'mysql2';
-import * as dbController from '../controllers/databaseController';
+import * as dbController from '../utils/databases';
 import { hashPassword } from '../utils/argon';
 import { wrongCredentials, userNotFound } from '../utils/errors';
 import CurrencyCode from './CurrencyCode';

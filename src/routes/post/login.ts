@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { check, body, Result, ValidationError, validationResult } from 'express-validator';
-import { getRedisConnection } from '../../controllers/databaseController';
+import { getRedisConnection } from '../../utils/databases';
 import ErrorOr from '../../models/ErrorOr';
 import User, { UserCredentials } from '../../models/User';
 import { verifyPassword } from '../../utils/argon';

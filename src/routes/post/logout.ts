@@ -1,5 +1,5 @@
 import { check, validationResult } from 'express-validator';
-import { getRedisConnection } from '../../controllers/databaseController';
+import { getRedisConnection } from '../../utils/databases';
 import { jwtObjectHas } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as err from '../../utils/errors';

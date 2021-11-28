@@ -3,7 +3,7 @@ import { jwtObjectHas } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as commonErrors from '../../utils/errors';
 import { Request, Response } from 'express';
-import { getRedisConnection } from '../../controllers/databaseController';
+import { getRedisConnection } from '../../utils/databases';
 import * as jwt from 'jsonwebtoken';
 import { generateTokenPair } from '../../utils/jwt';
 

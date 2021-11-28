@@ -1,5 +1,5 @@
 import * as mysql2 from 'mysql2/promise';
-import { ENVIRONMENT } from '../utils/secrets';
+import { ENVIRONMENT } from './secrets';
 import { createClient } from 'redis';
 import { RedisClientType } from '@node-redis/client/dist/lib/client';
 
