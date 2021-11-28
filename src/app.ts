@@ -5,7 +5,7 @@ import { appNameArt } from './utils/ascii';
 import { defaultError } from './routes/common/default';
 import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
 import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
-import { verifyJsonApiRequest } from './controllers/jsonAPIController';
+import { verifyJsonApiRequest } from './middleware/jsonAPI';
 import { postSignup } from './routes/post/signup';
 import { getRoutes } from './routes/get/routes';
 import { postLogout } from './routes/post/logout';
