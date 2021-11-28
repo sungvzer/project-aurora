@@ -8,7 +8,7 @@ import { postUserTransactions } from '../routes/post/users/transactions';
 
 const userRouter = Router();
 userRouter.get('/:id/settings', requireAuthentication, getUserSettings);
-userRouter.get('/:id/transactions', requireAuthentication, getUserTransactions);
+userRouter.get('/:id/transactions/:trId?', requireAuthentication, getUserTransactions);
 userRouter.delete('/:id', requireAuthentication, deleteUser);
 userRouter.post('/:id/transactions', verifyJsonApiRequest, requireAuthentication, postUserTransactions);
 

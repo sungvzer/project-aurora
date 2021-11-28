@@ -27,6 +27,12 @@ export const userNotFound: Error = {
     status: "404",
     title: "User not found"
 };
+export const transactionNotFound: Error = {
+    code: "ERR_TRANSACTION_NOT_FOUND",
+    detail: "The requested transaction could not be found",
+    status: "404",
+    title: "Transaction not found"
+};
 
 export const userIdMismatch: Error = {
     code: "ERR_USER_ID_MISMATCH",

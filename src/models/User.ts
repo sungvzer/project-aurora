@@ -1,7 +1,7 @@
 import { RowDataPacket } from 'mysql2';
 import * as dbController from '../utils/databases';
 import { hashPassword } from '../utils/argon';
-import { wrongCredentials, userNotFound } from '../utils/errors';
+import { wrongCredentials, userNotFound, transactionNotFound } from '../utils/errors';
 import CurrencyCode from './CurrencyCode';
 import ErrorOr from './ErrorOr';
 import UserTransaction from './UserTransaction';
@@ -110,7 +110,7 @@ export default class User {
         });
     }
 
-    static async getTransactionsById(id: number, queryOptions: TransactionQueryOptions): Promise<ErrorOr<UserTransaction[]>> {
+    static async getTransactionsByUserId(id: number, queryOptions: TransactionQueryOptions): Promise<ErrorOr<UserTransaction[]>> {
         const connection = await dbController.getDatabaseConnection();
 
         let parameters: string[] = [id.toString(),];
@@ -153,11 +153,35 @@ export default class User {
          * UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode
          */
         for (let row of result) {
-            transactionArray.push({ id: row['UserTransactionID'], amount: row['UserTransactionAmount'], currency: row['CurrencyCode'], date: row['UserTransactionDate'].toISOString(), tag: row['UserTransactionTag'] });
+            transactionArray.push({ id: row['UserTransactionID'], amount: row['UserTransactionAmount'], currency: row['CurrencyCode'], date: row['UserTransactionDate'].toISOString().substring(0, 10), tag: row['UserTransactionTag'] });
         }
 
         return new ErrorOr<UserTransaction[]>({
             value: transactionArray
+        });
+    }
+    static async getTransactionById(id: number): Promise<ErrorOr<UserTransaction>> {
+        const connection = await dbController.getDatabaseConnection();
+
+        let sql = 'SELECT UserTransactionID, UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserTransactionID = ?';
+
+        const [result] = await connection.execute<RowDataPacket[]>(sql, [id]);
+        let transactionArray: UserTransaction[] = [];
+        if (result.length == 0) {
+            return new ErrorOr<UserTransaction>({
+                error: transactionNotFound
+            });
+        }
+
+        /**
+         * UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode
+         */
+        for (let row of result) {
+            transactionArray.push({ id: row['UserTransactionID'], amount: row['UserTransactionAmount'], currency: row['CurrencyCode'], date: row['UserTransactionDate'].toISOString().substring(0, 10), tag: row['UserTransactionTag'] });
+        }
+
+        return new ErrorOr<UserTransaction>({
+            value: transactionArray[0]
         });
     }
 

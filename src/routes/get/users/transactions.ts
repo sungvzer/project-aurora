@@ -1,13 +1,16 @@
 import assert from 'node:assert';
 import User, { TransactionQueryOptions, UserSettings } from '../../../models/User';
-import { MultipleResourcesResponse, ResourceObject, SingleResourceResponse } from '../../../utils/jsonAPI';
+import { GenericResponse, MultipleResourcesResponse, ResourceObject, SingleResourceResponse } from '../../../utils/jsonAPI';
 import * as err from '../../../utils/errors';
 import { Request, Response } from 'express';
 import { query, param, Result, ValidationError, validationResult } from 'express-validator';
 import CurrencyCode, { isCurrencyCode } from '../../../models/CurrencyCode';
+import ErrorOr from '../../../models/ErrorOr';
+import UserTransaction from '../../../models/UserTransaction';
 
 export const getUserTransactions = async (req: Request, res: Response) => {
-    let response = new MultipleResourcesResponse("data");
+    let response: GenericResponse;
+
     await param("id", err.invalidUserId).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
 
     await query("minAmount", { ...err.invalidAmount, source: { parameter: "minAmount" } }).optional().isInt().run(req);
@@ -62,33 +65,63 @@ export const getUserTransactions = async (req: Request, res: Response) => {
 
     if (req.query.tag)
         queryOptions.tag = req.query.tag.toString();
+    if (!req.params.trId) {
+        response = new MultipleResourcesResponse("data");
 
-    const transactionsOrError = await User.getTransactionsById(payloadID, queryOptions);
+        let transactionsOrError: ErrorOr<UserTransaction[]>;
+        transactionsOrError = await User.getTransactionsByUserId(payloadID, queryOptions);
+        if (transactionsOrError.isError()) {
+            res.status(500).json(response.addError({
+                code: "ERR_INTERNAL_ERROR",
+                status: "500",
+                title: "Internal server error",
+                meta: {
+                    function: getUserTransactions.name // * Please do not change this to a constant string as we need it to be updated whenever names change
+                },
+                detail: "Internal server error. Please try again. Should the error occur repeatedly, report this to https://github.com/sungvzer/project-aurora/issues"
+            }).close());
+            return;
+        }
 
-    if (transactionsOrError.isError()) {
-        res.status(500).json(response.addError({
-            code: "ERR_INTERNAL_ERROR",
-            status: "500",
-            title: "Internal server error",
-            meta: {
-                function: getUserTransactions.name // * Please do not change this to a constant string as we need it to be updated whenever names change
-            },
-            detail: "Internal server error. Please try again. Should the error occur repeatedly, report this to https://github.com/sungvzer/project-aurora/issues"
-        }).close());
-        return;
-    }
+        response.data = transactionsOrError.value.map<ResourceObject>((value) => {
+            const id = value.id.toString();
+            delete value.id;
+            return {
+                id: id,
+                type: "UserTransaction",
+                attributes: {
+                    ...value,
+                },
+            };
+        });
+    } else {
+        response = new SingleResourceResponse("data");
 
-    response.data = transactionsOrError.value.map<ResourceObject>((value) => {
-        const id = value.id.toString();
-        delete value.id;
-        return {
-            id: id,
+        let transactionOrError = await User.getTransactionById(parseInt(req.params.trId));
+        if (transactionOrError.isError()) {
+            if (transactionOrError.error.status === "404") {
+                response.addError(transactionOrError.error);
+                res.status(404).json(transactionOrError.error);
+                return;
+            }
+
+            res.status(500).json(response.addError({
+                code: "ERR_INTERNAL_ERROR",
+                status: "500",
+                title: "Internal server error",
+                meta: {
+                    function: getUserTransactions.name // * Please do not change this to a constant string as we need it to be updated whenever names change
+                },
+                detail: "Internal server error. Please try again. Should the error occur repeatedly, report this to https://github.com/sungvzer/project-aurora/issues"
+            }).close());
+            return;
+        }
+        response.data = {
+            id: req.params.trId,
             type: "UserTransaction",
-            attributes: {
-                ...value,
-            },
+            attributes: { ...transactionOrError.value },
         };
-    });
+    }
     res.status(200).json(response.close());
     return;
 };
