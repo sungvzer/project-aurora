@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireAuthentication } from '../controllers/authenticationController';
+import { requireAuthentication } from '../middleware/authentication';
 import { deleteUser } from '../routes/delete/users';
 import { getUserSettings } from '../routes/get/users/settings';
 import { getUserTransactions } from '../routes/get/users/transactions';

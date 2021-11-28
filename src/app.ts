@@ -3,7 +3,7 @@ import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
 import { defaultError } from './routes/common/default';
-import { requireAuthentication } from './controllers/authenticationController';
+import { requireAuthentication } from './middleware/authentication';
 import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
 import { verifyJsonApiRequest } from './middleware/jsonAPI';
 import { postSignup } from './routes/post/signup';
