@@ -1,7 +1,7 @@
-import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import * as dbController from '../utils/databases';
 import { hashPassword } from '../utils/argon';
-import { wrongCredentials, userNotFound, transactionNotFound } from '../utils/errors';
+import * as err from '../utils/errors';
 import CurrencyCode from './CurrencyCode';
 import ErrorOr from './ErrorOr';
 import UserTransaction from './UserTransaction';
@@ -102,7 +102,7 @@ export default class User {
 
         if (result.length == 0)
             return new ErrorOr<number>({
-                error: wrongCredentials
+                error: err.wrongCredentials
             });
 
         return new ErrorOr<number>({
@@ -169,7 +169,7 @@ export default class User {
         let transactionArray: UserTransaction[] = [];
         if (result.length == 0) {
             return new ErrorOr<UserTransaction>({
-                error: transactionNotFound
+                error: err.transactionNotFound
             });
         }
 
@@ -192,7 +192,7 @@ export default class User {
 
         if (result.length == 0) {
             return new ErrorOr<UserCredentials>({
-                error: wrongCredentials
+                error: err.wrongCredentials
             });
         }
 
@@ -217,7 +217,7 @@ export default class User {
         const userExists = await User.exists(id);
         if (!userExists) {
             return new ErrorOr({
-                error: userNotFound
+                error: err.userNotFound
             });
         }
 
