@@ -1,18 +1,15 @@
 import assert from 'node:assert';
-import User, { TransactionQueryOptions, UserSettings } from '../../../models/User';
+import User, { TransactionQueryOptions } from '../../../models/User';
 import { GenericResponse, MultipleResourcesResponse, ResourceObject, SingleResourceResponse } from '../../../utils/jsonAPI';
 import * as err from '../../../utils/errors';
 import { Request, Response } from 'express';
-import { query, param, Result, ValidationError, validationResult } from 'express-validator';
+import { query, Result, ValidationError, validationResult } from 'express-validator';
 import CurrencyCode, { isCurrencyCode } from '../../../models/CurrencyCode';
 import ErrorOr from '../../../models/ErrorOr';
 import UserTransaction from '../../../models/UserTransaction';
 
 export const getUserTransactions = async (req: Request, res: Response) => {
     let response: GenericResponse;
-
-    await param("id", err.invalidUserId).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
-
     await query("minAmount", { ...err.invalidAmount, source: { parameter: "minAmount" } }).optional().isInt().run(req);
     await query("maxAmount", { ...err.invalidAmount, source: { parameter: "maxAmount" } }).optional().isInt().run(req);
     await query("startDate", { ...err.invalidDate, source: { parameter: "startDate" } }).optional().isDate({ format: 'YYYY-MM-DD' }).run(req);
@@ -35,6 +32,7 @@ export const getUserTransactions = async (req: Request, res: Response) => {
     const userID = parseInt(req.params.id);
     assert(payloadID);
     if (userID !== payloadID) {
+        response = new SingleResourceResponse("error");
         response.addError({
             code: "ERR_AUTH_MISMATCH",
             detail: `Cannot get transactions for user ${userID} as authentication header refers to a different user.`,

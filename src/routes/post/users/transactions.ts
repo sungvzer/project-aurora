@@ -1,32 +1,16 @@
 import { Request, Response } from 'express';
-import { check, body, Result, ValidationError, validationResult, param } from 'express-validator';
-import { getDatabaseConnection, getRedisConnection, LastInsertId } from '../../../utils/databases';
-import ErrorOr from '../../../models/ErrorOr';
-import User, { UserCredentials } from '../../../models/User';
-import { verifyPassword } from '../../../utils/argon';
-import { resourceObjectHas, resourceObjectValidateEmail, resourceObjectSanitizeEmail, dataIsArray, dataHas } from '../../../utils/customValidators';
+import { check, Result, ValidationError, validationResult } from 'express-validator';
+import { getDatabaseConnection } from '../../../utils/databases';
+import { resourceObjectHas, dataIsArray, dataHas } from '../../../utils/customValidators';
 import { ResourceObject, SingleResourceResponse } from '../../../utils/jsonAPI';
-import { generateTokenPair } from '../../../utils/jwt';
 import * as err from '../../../utils/errors';
 import validator from 'validator';
 import { isCurrencyCode } from '../../../models/CurrencyCode';
-import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
-
-/**
- * export default interface UserTransaction {
-    id: number,
-    amount: number;
-    currency: CurrencyCode;
-    date: string;
-    tag: string;
-}
-
- */
+import { ResultSetHeader } from 'mysql2';
 
 export const postUserTransactions = async (req: Request, res: Response): Promise<Response> => {
     let response = new SingleResourceResponse("data");
     let createdTransactionID: number, userId: number;
-    await param("id", err.invalidUserId).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
     await check("data", err.invalidRequestBody).not().custom(dataIsArray).run(req);
     await check("data", err.unsupportedIdInRequest).not().custom(dataHas("id")).run(req);
 

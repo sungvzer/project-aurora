@@ -7,15 +7,6 @@ import { Request, Response } from 'express';
 export const getUserSettings = async (req: Request, res: Response): Promise<void> => {
     let response = new SingleResourceResponse("data");
     const userId = parseInt(req.params.id);
-    if (!userId) {
-        res.status(400).json(response.addError({
-            code: "ERR_INVALID_USER_ID",
-            detail: "An empty or invalid id parameter was provided",
-            status: "400",
-            title: "Invalid User ID"
-        }).close());
-        return;
-    }
 
     const jwtUserHeaderId = req["decodedJWTPayload"]["userHeaderID"];
 
