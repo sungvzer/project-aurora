@@ -15,6 +15,7 @@ export const getDatabaseConnection = async () => {
         database: "aurora",
         // TODO: This needs to be changed once we reach production
         user: ENVIRONMENT === 'Development' ? "aurora_dev" : "aurora_dev",
+        timezone: '+00:00'
     });
 };
 
