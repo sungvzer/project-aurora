@@ -2,7 +2,6 @@ import express, { Request, Response, NextFunction } from 'express';
 import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
-import { deleteUser } from './routes/delete/users';
 import { defaultError } from './routes/common/default';
 import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
 import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
@@ -11,8 +10,6 @@ import { postSignup } from './routes/post/signup';
 import { getRoutes } from './routes/get/routes';
 import { postLogout } from './routes/post/logout';
 import { postLogin } from './routes/post/login';
-import { getUserSettings } from './routes/get/users/settings';
-import { getUserTransactions } from './routes/get/users/transactions';
 import userRouter from './routers/user';
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART))
@@ -74,10 +71,8 @@ app.get('/routes', getRoutes);
 app.post('/login', verifyJsonApiRequest, postLogin);
 app.post('/logout', requireAuthentication, verifyJsonApiRequest, postLogout);
 app.post('/refreshToken', verifyJsonApiRequest, regenerateToken);
-app.get('/users/:id/settings', requireAuthentication, getUserSettings);
-app.get('/users/:id/transactions', requireAuthentication, getUserTransactions);
-app.delete('/users/:id', requireAuthentication, deleteUser);
 
+app.use('/users', userRouter);
 app.use('*', defaultError);
 
 /**
