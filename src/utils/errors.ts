@@ -75,6 +75,27 @@ export const blankEmail: Error = {
     title: "Email should not be blank",
 };
 
+export const blankAmount: Error = {
+    status: "400",
+    code: "ERR_AMOUNT_BLANK",
+    detail: "A blank amount was provided",
+    title: "Amount should not be blank",
+};
+
+export const blankDate: Error = {
+    status: "400",
+    code: "ERR_DATE_BLANK",
+    detail: "A blank date was provided",
+    title: "Date should not be blank",
+};
+
+export const blankTag: Error = {
+    status: "400",
+    code: "ERR_TAG_BLANK",
+    detail: "A blank tag was provided",
+    title: "Tag should not be blank",
+};
+
 export const blankPassword: Error = {
     status: "400",
     code: "ERR_PASSWORD_BLANK",
@@ -159,4 +180,11 @@ export const invalidRequestBody: Error = {
             href: "https://jsonapi.org/format/1.0/"
         }
     }
+};
+
+export const unsupportedIdInRequest: Error = {
+    code: "ERR_UNSUPPORTED_ID",
+    detail: "This endpoint does not accept an id as part of the resource object. Please refer to the documentation for further info.",
+    status: "403",
+    title: "Providing id is not supported"
 };
