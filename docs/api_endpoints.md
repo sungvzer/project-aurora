@@ -37,13 +37,13 @@
     - [Resource type](#resource-type-3)
     - [Attributes](#attributes-3)
     - [Responses](#responses-3)
-  - [GET /user/{id}/settings](#get-useridsettings)
+  - [GET /users/{id}/settings](#get-usersidsettings)
     - [Description](#description-4)
     - [Headers](#headers-4)
     - [Resource type](#resource-type-4)
     - [Attributes](#attributes-4)
     - [Responses](#responses-4)
-  - [GET /user/{id}/transactions](#get-useridtransactions)
+  - [GET /users/{id}/transactions](#get-usersidtransactions)
     - [Description](#description-5)
     - [Headers](#headers-5)
     - [Resource type](#resource-type-5)
@@ -526,7 +526,7 @@ If the `refreshToken` is provided, but does not belong to any user, or it is pro
 }
 ```
 
-## GET /user/{id}/settings
+## GET /users/{id}/settings
 
 ### Description
 
@@ -564,7 +564,7 @@ Unless an [authentication error](#authentication-errors) occurs, the response wi
 }
 ```
 
-## GET /user/{id}/transactions
+## GET /users/{id}/transactions
 
 ### Description
 
