@@ -2,11 +2,18 @@ import express, { Request, Response, NextFunction } from 'express';
 import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
-import { postSignup, postLogin, getUserSettings, postLogout, getUserTransactions, deleteUser } from './controllers/userController';
-import { defaultError, getRoutes } from './controllers/apiController';
+import { deleteUser } from './routes/delete/users';
+import { defaultError } from './routes/common/default';
 import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
 import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
 import { verifyJsonApiRequest } from './controllers/jsonAPIController';
+import { postSignup } from './routes/post/signup';
+import { getRoutes } from './routes/get/routes';
+import { postLogout } from './routes/post/logout';
+import { postLogin } from './routes/post/login';
+import { getUserSettings } from './routes/get/users/settings';
+import { getUserTransactions } from './routes/get/users/transactions';
+import userRouter from './routers/user';
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART))
     console.log(appNameArt);
