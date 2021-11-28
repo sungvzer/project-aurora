@@ -3,13 +3,14 @@ import { endpointList } from './utils/endpoints';
 import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
 import { defaultError } from './routes/common/default';
-import { regenerateToken, requireAuthentication } from './controllers/authenticationController';
+import { requireAuthentication } from './controllers/authenticationController';
 import { setJsonAPIType, SingleResourceResponse } from './utils/jsonAPI';
 import { verifyJsonApiRequest } from './middleware/jsonAPI';
 import { postSignup } from './routes/post/signup';
 import { getRoutes } from './routes/get/routes';
 import { postLogout } from './routes/post/logout';
 import { postLogin } from './routes/post/login';
+import { regenerateToken } from './routes/post/refreshToken';
 import userRouter from './routers/user';
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART))
