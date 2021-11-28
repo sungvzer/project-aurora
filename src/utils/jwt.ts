@@ -1,4 +1,5 @@
 import * as jwt from 'jsonwebtoken';
+import { Request } from 'express';
 
 const accessTokenSettings: jwt.SignOptions = {
     expiresIn: "15m"
@@ -36,4 +37,13 @@ export const generateTokenPair = (payload: Object): TokenPair => {
             process.env.JWT_REFRESH_SECRET
         )
     };
+};
+
+export const getAccessTokenFromRequest = (req: Request): string => {
+    const authHeader = req.headers["authorization"];
+    const [bearer, token] = authHeader.split(' ');
+    if (!bearer || bearer.toLowerCase() != 'bearer' || !token) {
+        return null;
+    }
+    return token;
 };

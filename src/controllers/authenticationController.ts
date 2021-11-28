@@ -3,15 +3,8 @@ import * as jwt from 'jsonwebtoken';
 import { header, Result, ValidationError, validationResult } from 'express-validator';
 import { SingleResourceResponse } from '../utils/jsonAPI';
 import * as commonErrors from '../utils/errors';
+import { getAccessTokenFromRequest } from '../utils/jwt';
 
-export const getAccessTokenFromRequest = (req: Request): string => {
-    const authHeader = req.headers["authorization"];
-    const [bearer, token] = authHeader.split(' ');
-    if (!bearer || bearer.toLowerCase() != 'bearer' || !token) {
-        return null;
-    }
-    return token;
-};
 export const requireAuthentication = async (req: Request, res: Response, next: NextFunction) => {
     let response = new SingleResourceResponse("data");
     await header("Authorization", commonErrors.missingAuthorization).notEmpty().run(req);
