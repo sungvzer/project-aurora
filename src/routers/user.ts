@@ -9,6 +9,7 @@ import { postUserTransactions } from '../routes/post/users/transactions';
 import { SingleResourceResponse } from '../utils/jsonAPI';
 import * as err from '../utils/errors';
 import User from '../models/User';
+import { deleteUserTransaction } from '../routes/delete/users/transactions';
 
 const userRouter = Router(); userRouter.use('/:id', async (req, res, next) => {
     let response = new SingleResourceResponse("error");
@@ -34,5 +35,6 @@ userRouter.get('/:id/settings', requireAuthentication, getUserSettings);
 userRouter.get('/:id/transactions/:trId?', requireAuthentication, getUserTransactions);
 userRouter.delete('/:id', requireAuthentication, deleteUser);
 userRouter.post('/:id/transactions', verifyJsonApiRequest, requireAuthentication, postUserTransactions);
+userRouter.delete('/:id/transactions/:trId', requireAuthentication, deleteUserTransaction);
 
 export default userRouter;

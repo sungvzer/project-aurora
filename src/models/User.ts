@@ -38,6 +38,35 @@ export interface TransactionQueryOptions {
 }
 
 export default class User {
+    static async deleteTransaction(userId: number, transactionId: number): Promise<ErrorOr<boolean>> {
+        let sql = 'SELECT UserTransactionID, UserDataHeaderID FROM Transaction WHERE UserTransactionID = ?;';
+        let params = [transactionId];
+
+        const connection = await dbController.getDatabaseConnection();
+        let [result] = await connection.execute<RowDataPacket[]>(sql, params);
+        if (result.length === 0) {
+            return new ErrorOr({
+                error: err.transactionNotFound
+            });
+        }
+
+        let transactionOwner = result[0]['UserDataHeaderID'];
+        if (transactionOwner !== userId) {
+            return new ErrorOr(
+                { error: err.userIdMismatch }
+            );
+        }
+
+        let [header] = await connection.execute<ResultSetHeader>('DELETE FROM Transaction WHERE UserTransactionID = ?;', [transactionId]);
+
+        if (header.affectedRows === 0) {
+            return new ErrorOr({ error: err.transactionNotFound });
+        }
+        return new ErrorOr(
+            { value: true }
+        );
+    }
+
     static async create(user: UserDatabaseInsertModel): Promise<ErrorOr<number>> {
         const connection = await dbController.getDatabaseConnection();
         const firstName = user.firstName || null;
