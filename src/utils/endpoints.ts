@@ -1,4 +1,4 @@
-// Thanks to https://github.com/Kudoas/express-api-sample
+// Thanks to https://github.com/Kudoas/express-api-sample/blob/ceebfa49b7d7470a3c9049ea391a6656c65de167/utils/endpointList.ts
 
 import express from 'express';
 
