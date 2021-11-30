@@ -68,7 +68,7 @@ export default class User {
     }
 
     static async create(user: UserDatabaseInsertModel): Promise<ErrorOr<number>> {
-        const connection = await dbController.getDatabaseConnection();
+        const pool = await dbController.getDatabaseConnection();
         const firstName = user.firstName || null;
         const middleName = user.middleName || null;
         const lastName = user.lastName || null;
@@ -93,9 +93,11 @@ export default class User {
         // Original query is: 
         // CALL`aurora`.`SP_InsertUserIntoDatabase`(firstName, middleName, lastName, birthday, email, passwordHash, darkMode, abbreviatedFormat, currencyCode, insertedIdOutVariable);
 
-        await connection.beginTransaction();
-        const [x] = await connection.execute("CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);", [firstName, middleName, lastName, birthday, email, passwordHash, 0, 1, currencyCode]);
-        await connection.commit();
+        let conn = await pool.getConnection();
+        await conn.beginTransaction();
+        const [x] = await conn.execute("CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);", [firstName, middleName, lastName, birthday, email, passwordHash, 0, 1, currencyCode]);
+        await conn.commit();
+        conn.release();
         return new ErrorOr<number>(
             { value: x[0][0].insertedID }
         );
