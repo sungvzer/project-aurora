@@ -41,3 +41,37 @@ export const resourceObjectSanitizeEmail: CustomSanitizer = (input, meta): any =
 
     return returnedObject;
 };
+
+export const isValidResourceObject = (input: any) => {
+    const checkInput = (input: any): boolean => {
+        const allowedResourceKeys = [
+            'id', 'type', 'attributes', 'relationships', 'links', 'meta'
+        ];
+
+        if (!input) {
+            return false;
+        }
+
+        if (!input["id"] && !input["type"]) {
+            return false;
+        }
+        for (let prop in input) {
+            prop = prop.toLowerCase();
+            if (allowedResourceKeys.indexOf(prop) === -1) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    if (Array.isArray(input)) {
+        for (let member of input) {
+            if (!checkInput(member)) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        return checkInput(input);
+    }
+};

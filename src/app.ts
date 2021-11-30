@@ -79,7 +79,7 @@ app.use('*', defaultError);
 /**
  * Main Point of the application
  */
-app.listen(port, () => {
+let server = app.listen(port, () => {
     let showTable: boolean = JSON.parse(process.env.SHOW_TABLE),
         showEndpoints: boolean = JSON.parse(process.env.SHOW_ENDPOINTS);
     if (showTable)
@@ -87,3 +87,6 @@ app.listen(port, () => {
     if (showEndpoints)
         endpointList(app);
 });
+
+// Export server for testing
+export default server;
