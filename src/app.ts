@@ -1,6 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { endpointList } from './utils/endpoints';
-import { ENVIRONMENT } from './utils/secrets';
 import { appNameArt } from './utils/ascii';
 import { defaultError } from './routes/common/default';
 import { requireAuthentication } from './middleware/authentication';
@@ -19,7 +17,6 @@ else
     console.log("Aurora v1.0");
 
 const app = express();
-const port: number = parseInt(process.env.PORT);
 
 
 /**
@@ -76,17 +73,4 @@ app.post('/refreshToken', verifyJsonApiRequest, regenerateToken);
 app.use('/users', userRouter);
 app.use('*', defaultError);
 
-/**
- * Main Point of the application
- */
-let server = app.listen(port, () => {
-    let showTable: boolean = JSON.parse(process.env.SHOW_TABLE),
-        showEndpoints: boolean = JSON.parse(process.env.SHOW_ENDPOINTS);
-    if (showTable)
-        console.table({ "Port": port, "Environment": ENVIRONMENT });
-    if (showEndpoints)
-        endpointList(app);
-});
-
-// Export server for testing
-export default server;
+export default app;
