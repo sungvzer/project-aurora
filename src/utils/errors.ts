@@ -21,6 +21,13 @@ export const invalidUserId: Error = {
     title: "Invalid User ID"
 };
 
+export const invalidTransactionId: Error = {
+    code: "ERR_INVALID_TRANSACTION_ID",
+    detail: "An empty or invalid id parameter was provided",
+    status: "400",
+    title: "Invalid Transaction ID"
+};
+
 export const userNotFound: Error = {
     code: "ERR_USER_NOT_FOUND",
     detail: "The requested user could not be found",
