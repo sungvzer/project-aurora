@@ -10,8 +10,11 @@ import { SingleResourceResponse } from '../utils/jsonAPI';
 import * as err from '../utils/errors';
 import User from '../models/User';
 import { deleteUserTransaction } from '../routes/delete/users/transactions';
+import { getUserBalances } from '../routes/get/users/balances';
 
-const userRouter = Router(); userRouter.use('/:id', async (req, res, next) => {
+const userRouter = Router();
+
+userRouter.use('/:id', async (req, res, next) => {
     let response = new SingleResourceResponse("error");
     await param("id", err.invalidUserId).notEmpty().isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
     const errors: Result<ValidationError> = validationResult(req);
@@ -36,5 +39,6 @@ userRouter.get('/:id/transactions/:trId?', requireAuthentication, getUserTransac
 userRouter.delete('/:id', requireAuthentication, deleteUser);
 userRouter.post('/:id/transactions', verifyJsonApiRequest, requireAuthentication, postUserTransactions);
 userRouter.delete('/:id/transactions/:trId', requireAuthentication, deleteUserTransaction);
+userRouter.get('/:id/balances', requireAuthentication, getUserBalances);
 
 export default userRouter;
