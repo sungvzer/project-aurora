@@ -11,6 +11,7 @@ import * as err from '../utils/errors';
 import User from '../models/User';
 import { deleteUserTransaction } from '../routes/delete/users/transactions';
 import { getUserBalances } from '../routes/get/users/balances';
+import { patchUserTransaction } from '../routes/patch/users/transactions';
 
 const userRouter = Router();
 
@@ -40,5 +41,6 @@ userRouter.delete('/:id', requireAuthentication, deleteUser);
 userRouter.post('/:id/transactions', verifyJsonApiRequest, requireAuthentication, postUserTransactions);
 userRouter.delete('/:id/transactions/:trId', requireAuthentication, deleteUserTransaction);
 userRouter.get('/:id/balances', requireAuthentication, getUserBalances);
+userRouter.patch('/:id/transactions/:trId', requireAuthentication, verifyJsonApiRequest, patchUserTransaction);
 
 export default userRouter;
