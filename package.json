@@ -10,7 +10,7 @@
     "watchRelease": "tsc -w & NODE_ENV=PROD nodemon dist/server.js",
     "release": "tsc && NODE_ENV=PROD node dist/server.js",
     "watch": "tsc -w",
-    "test": "jest  --detectOpenHandles --verbose"
+    "test": "jest --detectOpenHandles --runInBand --forceExit --bail"
   },
   "repository": {
     "type": "git",
