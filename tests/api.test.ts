@@ -1,17 +1,13 @@
 import { Response } from 'superagent';
 import request from 'supertest';
-import server from '../src/app';
 import { isValidResourceObject } from '../src/utils/customValidators';
-
-afterAll(() => {
-    server.close();
-});
+import app from '../src/app';
 
 describe('GET /routes', () => {
     let response: Response;
 
     beforeAll(async () => {
-        response = await request(server)
+        response = await request(app)
             .get("/routes")
             .send();
     });
