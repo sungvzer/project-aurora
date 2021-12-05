@@ -73,4 +73,6 @@ app.post('/refreshToken', verifyJsonApiRequest, regenerateToken);
 app.use('/users', userRouter);
 app.use('*', defaultError);
 
+app.disable('x-powered-by');
+
 export default app;
