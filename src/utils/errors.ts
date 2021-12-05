@@ -36,7 +36,7 @@ export const transactionNotFound: Error = {
 
 export const userIdMismatch: Error = {
     code: "ERR_USER_ID_MISMATCH",
-    detail: "The request could not be fulfilled as the provided user id is different from the one contained authentication token",
+    detail: "The request could not be fulfilled as the provided user id is different from the one contained in the authentication token",
     status: "403",
     title: "User id mismatch"
 };
