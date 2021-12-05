@@ -194,3 +194,10 @@ export const unsupportedIdInRequest: Error = {
     status: "403",
     title: "Providing id is not supported"
 };
+
+export const internal: Error = {
+    code: "ERR_INTERNAL_LOGIN_AGAIN",
+    detail: "Internal server error. Please try again. Should the error occur repeatedly, report this to https://github.com/sungvzer/project-aurora/issues",
+    status: "500",
+    title: "Internal server error"
+};

@@ -70,13 +70,10 @@ export const getUserTransactions = async (req: Request, res: Response) => {
         transactionsOrError = await User.getTransactionsByUserId(payloadID, queryOptions);
         if (transactionsOrError.isError()) {
             res.status(500).json(response.addError({
-                code: "ERR_INTERNAL_ERROR",
-                status: "500",
-                title: "Internal server error",
+                ...err.internal,
                 meta: {
                     function: getUserTransactions.name // * Please do not change this to a constant string as we need it to be updated whenever names change
                 },
-                detail: "Internal server error. Please try again. Should the error occur repeatedly, report this to https://github.com/sungvzer/project-aurora/issues"
             }).close());
             return;
         }
@@ -104,13 +101,10 @@ export const getUserTransactions = async (req: Request, res: Response) => {
             }
 
             res.status(500).json(response.addError({
-                code: "ERR_INTERNAL_ERROR",
-                status: "500",
-                title: "Internal server error",
+                ...err.internal,
                 meta: {
                     function: getUserTransactions.name // * Please do not change this to a constant string as we need it to be updated whenever names change
                 },
-                detail: "Internal server error. Please try again. Should the error occur repeatedly, report this to https://github.com/sungvzer/project-aurora/issues"
             }).close());
             return;
         }

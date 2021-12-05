@@ -12,12 +12,7 @@ export const getUserSettings = async (req: Request, res: Response): Promise<void
 
     // This means we screwed up badly
     if (!jwtUserHeaderId) {
-        res.status(500).json(response.addError({
-            code: "ERR_INTERNAL_LOGIN_AGAIN",
-            detail: "There's been an internal error. Please login again.",
-            status: "500",
-            title: "Internal server error"
-        }).close());
+        res.status(500).json(response.addError(err.internal).close());
         return;
     }
 
