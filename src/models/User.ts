@@ -38,6 +38,26 @@ export interface TransactionQueryOptions {
 }
 
 export default class User {
+    static async getBalanceById(userId: number): Promise<ErrorOr<Map<CurrencyCode, number>>> {
+        let map = new Map<CurrencyCode, number>();
+        for (let code of Object.values(CurrencyCode)) {
+            map.set(code, 0);
+        }
+
+        if (!await User.exists(userId)) {
+            return new ErrorOr({ error: err.userNotFound });
+        }
+
+        let sql = 'SELECT SUM(UserTransactionAmount) AS Balance, CurrencyCode FROM aurora.Transaction INNER JOIN aurora.Currency ON UserTransactionCurrencyID = CurrencyID WHERE UserDataHeaderID = ? GROUP BY CurrencyCode;';
+        const connection = await dbController.getDatabaseConnection();
+        let [result] = await connection.execute<RowDataPacket[]>(sql, [userId]);
+
+        for (let pair of result) {
+            map.set(pair['CurrencyCode'], pair['Balance']);
+        }
+
+        return new ErrorOr({ value: map });
+    }
     static async deleteTransaction(userId: number, transactionId: number): Promise<ErrorOr<boolean>> {
         let sql = 'SELECT UserTransactionID, UserDataHeaderID FROM Transaction WHERE UserTransactionID = ?;';
         let params = [transactionId];
