@@ -31,6 +31,31 @@
             ],
             "type": "pwa-node",
             "console": "internalConsole"
-        }
+        },
+        {
+            "name": "Jest", // This is the configuration name you will see in debug sidebar
+            "type": "node",
+            "request": "launch",
+            "port": 5858,
+            "address": "localhost",
+            "stopOnEntry": false,
+            "runtimeExecutable": null,
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "runtimeArgs": [
+                "--inspect-brk", // node v8 use debug-brk if older version of node
+                "${workspaceRoot}/node_modules/.bin/jest",
+                "--bail",
+                "--runInBand",
+                "--detectOpenHandles",
+                "--forceExit",
+                // "--verbose",
+                // "--silent",
+                "--watchAll"
+            ],
+            "cwd": "${workspaceRoot}"
+        },
     ]
 }
