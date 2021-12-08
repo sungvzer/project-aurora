@@ -208,3 +208,17 @@ export const internal: Error = {
     status: "500",
     title: "Internal server error"
 };
+
+export const invalidDarkModeValue: Error = {
+    code: "ERR_INVALID_DARK_MODE_VALUE",
+    detail: "An invalid value was inserted for this setting. Expected a number. Valid values are 0 (Light mode) and 1 (Dark mode)",
+    status: "400",
+    title: "Invalid dark mode value"
+};
+
+export const invalidAbbreviatedAmountValue: Error = {
+    code: "ERR_INVALID_ABBREVIATED_AMOUNT_VALUE",
+    detail: "An invalid value was inserted for this setting. Expected a number. Valid values are 0 (Long amount) and 1 (Abbreviated amount)",
+    status: "400",
+    title: "Invalid abbreviated amount value"
+};
