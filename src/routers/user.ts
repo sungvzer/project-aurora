@@ -12,6 +12,7 @@ import User from '../models/User';
 import { deleteUserTransaction } from '../routes/delete/users/transactions';
 import { getUserBalances } from '../routes/get/users/balances';
 import { patchUserTransaction } from '../routes/patch/users/transactions';
+import { patchUserSettings } from '../routes/patch/users/settings';
 
 const userRouter = Router();
 
@@ -49,5 +50,6 @@ userRouter.delete('/:id/transactions/:trId', requireAuthentication, deleteUserTr
 
 // PATCH
 userRouter.patch('/:id/transactions/:trId', requireAuthentication, verifyJsonApiRequest, patchUserTransaction);
+userRouter.patch('/:id/settings', requireAuthentication, verifyJsonApiRequest, patchUserSettings);
 
 export default userRouter;
