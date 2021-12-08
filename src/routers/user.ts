@@ -35,12 +35,19 @@ userRouter.use('/:id', async (req, res, next) => {
     next();
 });
 
+// GET 
 userRouter.get('/:id/settings', requireAuthentication, getUserSettings);
 userRouter.get('/:id/transactions/:trId?', requireAuthentication, getUserTransactions);
-userRouter.delete('/:id', requireAuthentication, deleteUser);
-userRouter.post('/:id/transactions', verifyJsonApiRequest, requireAuthentication, postUserTransactions);
-userRouter.delete('/:id/transactions/:trId', requireAuthentication, deleteUserTransaction);
 userRouter.get('/:id/balances', requireAuthentication, getUserBalances);
+
+// POST
+userRouter.post('/:id/transactions', verifyJsonApiRequest, requireAuthentication, postUserTransactions);
+
+// DELETE
+userRouter.delete('/:id', requireAuthentication, deleteUser);
+userRouter.delete('/:id/transactions/:trId', requireAuthentication, deleteUserTransaction);
+
+// PATCH
 userRouter.patch('/:id/transactions/:trId', requireAuthentication, verifyJsonApiRequest, patchUserTransaction);
 
 export default userRouter;
