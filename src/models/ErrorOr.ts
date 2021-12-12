@@ -1,16 +1,15 @@
-import assert from 'node:assert';
-import { Error } from '../utils/jsonAPI';
+import assert from "node:assert";
+import { Error } from "../utils/jsonAPI";
 
 export default class ErrorOr<T> {
-    constructor ({ error = null, value = null }: { error?: Error, value?: T; }) {
+    constructor({ error = null, value = null }: { error?: Error; value?: T }) {
         assert(error || value, "Neither error or value were provided");
 
         if (error) {
             assert(value == null);
             this.setError(error);
         }
-        if (value)
-            this.value = value;
+        if (value) this.value = value;
     }
 
     public setError(error: Error): void {
@@ -25,10 +24,9 @@ export default class ErrorOr<T> {
         return !this.isError() && this._value != null;
     }
 
-
     public isError(): boolean {
         return this._error != null;
-    };
+    }
 
     public set value(value: T) {
         this._value = value;

@@ -1,7 +1,7 @@
-import CurrencyCode from './CurrencyCode';
+import CurrencyCode from "./CurrencyCode";
 
 export default interface UserTransaction {
-    id: number,
+    id: number;
     amount: number;
     currency: CurrencyCode;
     date: string;

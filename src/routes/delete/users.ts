@@ -1,9 +1,12 @@
-import User, { } from '../../models/User';
-import { SingleResourceResponse } from '../../utils/jsonAPI';
-import * as err from '../../utils/errors';
-import { Request, Response } from 'express';
+import User from "../../models/User";
+import { SingleResourceResponse } from "../../utils/jsonAPI";
+import * as err from "../../utils/errors";
+import { Request, Response } from "express";
 
-export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+export const deleteUser = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     let response: SingleResourceResponse = new SingleResourceResponse("data");
 
     const userId = parseInt(req.params.id);

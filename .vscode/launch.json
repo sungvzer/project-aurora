@@ -7,28 +7,18 @@
         {
             "name": "Watcher - Dev",
             "request": "launch",
-            "runtimeArgs": [
-                "run-script",
-                "watchDebug"
-            ],
+            "runtimeArgs": ["run-script", "watchDebug"],
             "runtimeExecutable": "npm",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
+            "skipFiles": ["<node_internals>/**"],
             "type": "pwa-node",
             "console": "internalConsole"
         },
         {
             "name": "Release",
             "request": "launch",
-            "runtimeArgs": [
-                "run-script",
-                "release"
-            ],
+            "runtimeArgs": ["run-script", "release"],
             "runtimeExecutable": "npm",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
+            "skipFiles": ["<node_internals>/**"],
             "type": "pwa-node",
             "console": "internalConsole"
         },
@@ -56,6 +46,6 @@
                 "--watchAll"
             ],
             "cwd": "${workspaceRoot}"
-        },
+        }
     ]
 }

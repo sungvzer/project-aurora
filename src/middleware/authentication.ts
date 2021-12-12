@@ -1,13 +1,24 @@
-import { NextFunction, Request, Response } from 'express';
-import * as jwt from 'jsonwebtoken';
-import { header, Result, ValidationError, validationResult } from 'express-validator';
-import { SingleResourceResponse } from '../utils/jsonAPI';
-import * as commonErrors from '../utils/errors';
-import { getAccessTokenFromRequest } from '../utils/jwt';
+import { NextFunction, Request, Response } from "express";
+import * as jwt from "jsonwebtoken";
+import {
+    header,
+    Result,
+    ValidationError,
+    validationResult,
+} from "express-validator";
+import { SingleResourceResponse } from "../utils/jsonAPI";
+import * as commonErrors from "../utils/errors";
+import { getAccessTokenFromRequest } from "../utils/jwt";
 
-export const requireAuthentication = async (req: Request, res: Response, next: NextFunction) => {
+export const requireAuthentication = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     let response = new SingleResourceResponse("data");
-    await header("Authorization", commonErrors.missingAuthorization).notEmpty().run(req);
+    await header("Authorization", commonErrors.missingAuthorization)
+        .notEmpty()
+        .run(req);
     const error: Result<ValidationError> = validationResult(req);
 
     if (!error.isEmpty()) {
@@ -17,16 +28,20 @@ export const requireAuthentication = async (req: Request, res: Response, next: N
 
     const token = getAccessTokenFromRequest(req);
     if (!token) {
-        return res.status(401).json(response.addError(commonErrors.invalidAuthToken).close());
+        return res
+            .status(401)
+            .json(response.addError(commonErrors.invalidAuthToken).close());
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
         if (err) {
-            if (err.message.indexOf('expired') != -1) {
+            if (err.message.indexOf("expired") != -1) {
                 response.addError(commonErrors.expiredAuthToken);
                 return res.status(403).json(response.close());
             }
-            return res.status(403).json(response.addError(commonErrors.genericJWT).close());
+            return res
+                .status(403)
+                .json(response.addError(commonErrors.genericJWT).close());
         }
         req["decodedJWTPayload"] = payload;
         next();

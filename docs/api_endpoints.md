@@ -2,72 +2,72 @@
 
 ## Table of contents
 
-- [API Endpoint definitions](#api-endpoint-definitions)
-  - [Table of contents](#table-of-contents)
-  - [JSON:API Specification](#jsonapi-specification)
-    - [Resources](#resources)
-  - [Common errors](#common-errors)
-    - [`ERR_MALFORMED_JSON`: Malformed JSON](#err_malformed_json-malformed-json)
-    - [`ERR_INVALID_BODY`: Invalid JSON:API body](#err_invalid_body-invalid-jsonapi-body)
-  - [Authentication errors](#authentication-errors)
-    - [`ERR_MISSING_AUTH` : Authorization Header missing](#err_missing_auth--authorization-header-missing)
-    - [`ERR_INVALID_AUTH_TOKEN`: Malformed header or invalid access token](#err_invalid_auth_token-malformed-header-or-invalid-access-token)
-    - [`ERR_EXPIRED_AUTH_TOKEN`: Expired access token](#err_expired_auth_token-expired-access-token)
-  - [POST /signup](#post-signup)
-    - [Description](#description)
-    - [Headers](#headers)
-    - [Resource type](#resource-type)
-    - [Attributes](#attributes)
-    - [Responses](#responses)
-  - [GET /routes](#get-routes)
-    - [Description](#description-1)
-    - [Headers](#headers-1)
-    - [Resource type](#resource-type-1)
-    - [Attributes](#attributes-1)
-    - [Responses](#responses-1)
-  - [POST /login](#post-login)
-    - [Description](#description-2)
-    - [Headers](#headers-2)
-    - [Resource type](#resource-type-2)
-    - [Attributes](#attributes-2)
-    - [Responses](#responses-2)
-  - [POST /logout](#post-logout)
-    - [Description](#description-3)
-    - [Headers](#headers-3)
-    - [Resource type](#resource-type-3)
-    - [Attributes](#attributes-3)
-    - [Responses](#responses-3)
-  - [GET /users/{id}/settings](#get-usersidsettings)
-    - [Description](#description-4)
-    - [Headers](#headers-4)
-    - [Resource type](#resource-type-4)
-    - [Attributes](#attributes-4)
-    - [Responses](#responses-4)
-  - [GET /users/{id}/transactions/{:transactionID?}](#get-usersidtransactionstransactionid)
-    - [Description](#description-5)
-    - [Headers](#headers-5)
-    - [Resource type](#resource-type-5)
-    - [Attributes](#attributes-5)
-    - [Fields](#fields)
-    - [Responses](#responses-5)
-  - [POST /refreshToken](#post-refreshtoken)
-    - [Description](#description-6)
-    - [Headers](#headers-6)
-    - [Resource type](#resource-type-6)
-    - [Attributes](#attributes-6)
-    - [Responses](#responses-6)
-  - [DELETE /users/{:id}](#delete-usersid)
-    - [Description](#description-7)
-    - [Headers](#headers-7)
-    - [Resource type](#resource-type-7)
-    - [Attributes](#attributes-7)
-    - [Responses](#responses-7)
+-   [API Endpoint definitions](#api-endpoint-definitions)
+    -   [Table of contents](#table-of-contents)
+    -   [JSON:API Specification](#jsonapi-specification)
+        -   [Resources](#resources)
+    -   [Common errors](#common-errors)
+        -   [`ERR_MALFORMED_JSON`: Malformed JSON](#err_malformed_json-malformed-json)
+        -   [`ERR_INVALID_BODY`: Invalid JSON:API body](#err_invalid_body-invalid-jsonapi-body)
+    -   [Authentication errors](#authentication-errors)
+        -   [`ERR_MISSING_AUTH` : Authorization Header missing](#err_missing_auth--authorization-header-missing)
+        -   [`ERR_INVALID_AUTH_TOKEN`: Malformed header or invalid access token](#err_invalid_auth_token-malformed-header-or-invalid-access-token)
+        -   [`ERR_EXPIRED_AUTH_TOKEN`: Expired access token](#err_expired_auth_token-expired-access-token)
+    -   [POST /signup](#post-signup)
+        -   [Description](#description)
+        -   [Headers](#headers)
+        -   [Resource type](#resource-type)
+        -   [Attributes](#attributes)
+        -   [Responses](#responses)
+    -   [GET /routes](#get-routes)
+        -   [Description](#description-1)
+        -   [Headers](#headers-1)
+        -   [Resource type](#resource-type-1)
+        -   [Attributes](#attributes-1)
+        -   [Responses](#responses-1)
+    -   [POST /login](#post-login)
+        -   [Description](#description-2)
+        -   [Headers](#headers-2)
+        -   [Resource type](#resource-type-2)
+        -   [Attributes](#attributes-2)
+        -   [Responses](#responses-2)
+    -   [POST /logout](#post-logout)
+        -   [Description](#description-3)
+        -   [Headers](#headers-3)
+        -   [Resource type](#resource-type-3)
+        -   [Attributes](#attributes-3)
+        -   [Responses](#responses-3)
+    -   [GET /users/{id}/settings](#get-usersidsettings)
+        -   [Description](#description-4)
+        -   [Headers](#headers-4)
+        -   [Resource type](#resource-type-4)
+        -   [Attributes](#attributes-4)
+        -   [Responses](#responses-4)
+    -   [GET /users/{id}/transactions/{:transactionID?}](#get-usersidtransactionstransactionid)
+        -   [Description](#description-5)
+        -   [Headers](#headers-5)
+        -   [Resource type](#resource-type-5)
+        -   [Attributes](#attributes-5)
+        -   [Fields](#fields)
+        -   [Responses](#responses-5)
+    -   [POST /refreshToken](#post-refreshtoken)
+        -   [Description](#description-6)
+        -   [Headers](#headers-6)
+        -   [Resource type](#resource-type-6)
+        -   [Attributes](#attributes-6)
+        -   [Responses](#responses-6)
+    -   [DELETE /users/{:id}](#delete-usersid)
+        -   [Description](#description-7)
+        -   [Headers](#headers-7)
+        -   [Resource type](#resource-type-7)
+        -   [Attributes](#attributes-7)
+        -   [Responses](#responses-7)
 
 ## JSON:API Specification
 
 This API is aiming to be almost fully compliant to the [JSON:API](https://jsonapi.org/format/1.0) specification, with the goal of sticking to a standard, and not re-inventing the wheel.
 
-We say *almost* fully because there are some shenanigans with Express and headers that makes it not 100% compliant to the standard.
+We say _almost_ fully because there are some shenanigans with Express and headers that makes it not 100% compliant to the standard.
 
 The [`jsonAPI.ts`](../src/utils/jsonAPI.ts) file will probably get polished and then released as a stand-alone library in the future, so that this specification can be adopted and implemented by many.
 
@@ -154,7 +154,7 @@ This error will get sent whenever and endpoint requests a JSON:API compliant bod
             "meta": {
                 "title": "JSON:API Specification"
             },
-            "href": "https://jsonapi.org/format/1.0/"
+            "href": "https://jsonapi.org/format/1.0/"
         }
     }
 }
@@ -215,17 +215,17 @@ Create a new user.
 
 ### Attributes
 
-- `birthday`: an ISO 8601 formatted date string representing the user birth date. The format **must** be `YYYY-MM-DD`. Example: `1986-02-12`.
+-   `birthday`: an ISO 8601 formatted date string representing the user birth date. The format **must** be `YYYY-MM-DD`. Example: `1986-02-12`.
 
-- `email`: a string representing the user email. Any email **will** be converted to lowercase. Example: `email@example.com`.
+-   `email`: a string representing the user email. Any email **will** be converted to lowercase. Example: `email@example.com`.
 
-- `password`: plain text password string required for signing up. Will be hashed and salted using `argon2` before being stored in a database. Example: `VerySecurePassword`.
+-   `password`: plain text password string required for signing up. Will be hashed and salted using `argon2` before being stored in a database. Example: `VerySecurePassword`.
 
-- `firstName`, `lastName`, `middleName`: strings that represent, in order, the first, last and middle name of the user. Example: `John`, `Doe`, `J`.
+-   `firstName`, `lastName`, `middleName`: strings that represent, in order, the first, last and middle name of the user. Example: `John`, `Doe`, `J`.
 
-- `currency`: three-letter uppercase string. Must be one of the [ISO 4217](https://www.iban.com/currency-codes) currency codes.
+-   `currency`: three-letter uppercase string. Must be one of the [ISO 4217](https://www.iban.com/currency-codes) currency codes.
 
- Of these fields, only `middleName` is optional.
+Of these fields, only `middleName` is optional.
 
 ### Responses
 
@@ -233,13 +233,13 @@ In case of a successful request: the status `201: Created` and the following res
 
 ```json
 {
-  "data": {
-    "id": "new user id",
-    "type": "user",
-    "attributes": {
-        /* Same attributes sent by the request, without plain text password */
+    "data": {
+        "id": "new user id",
+        "type": "user",
+        "attributes": {
+            /* Same attributes sent by the request, without plain text password */
+        }
     }
-  }
 }
 ```
 
@@ -357,12 +357,7 @@ An example response will be:
                 "/users/:id/settings",
                 "/users/:id/transactions"
             ],
-            "post": [
-                "/signup",
-                "/login",
-                "/logout",
-                "/refreshToken"
-            ],
+            "post": ["/signup", "/login", "/logout", "/refreshToken"],
             "put": [],
             "patch": [],
             "delete": []
@@ -387,9 +382,9 @@ Log in to an existing user.
 
 ### Attributes
 
-- `email`: a string representing the user email. Any email **will** be converted to lowercase. Example: `email@example.com`.
+-   `email`: a string representing the user email. Any email **will** be converted to lowercase. Example: `email@example.com`.
 
-- `password`: plain text password string. Will be hashed and salted using `argon2` before being compared to the saved hashes. Example: `VerySecurePassword`.
+-   `password`: plain text password string. Will be hashed and salted using `argon2` before being compared to the saved hashes. Example: `VerySecurePassword`.
 
 ### Responses
 
@@ -489,7 +484,7 @@ It's an **authenticated** endpoint. This means you need to first obtain an `acce
 
 ### Attributes
 
-- `refreshToken`: the refresh token to be invalidated.
+-   `refreshToken`: the refresh token to be invalidated.
 
 ### Responses
 
@@ -497,9 +492,9 @@ If it succeeds, the request will return the following response:
 
 ```json
 {
-  "meta": {
-    "message": "User logged out successfully"
-  }
+    "meta": {
+        "message": "User logged out successfully"
+    }
 }
 ```
 
@@ -507,13 +502,13 @@ If the `refreshToken` is omitted:
 
 ```json
 {
-  "errors": [
-    {
-      "status": "400",
-      "code": "ERR_NO_REFRESH_TOKEN",
-      "title": "No refresh token provided"
-    }
-  ]
+    "errors": [
+        {
+            "status": "400",
+            "code": "ERR_NO_REFRESH_TOKEN",
+            "title": "No refresh token provided"
+        }
+    ]
 }
 ```
 
@@ -521,14 +516,14 @@ If the `refreshToken` is provided, but does not belong to any user, or it is pro
 
 ```json
 {
-  "errors": [
-    {
-      "status": "403",
-      "code": "ERR_INVALID_REFRESH_TOKEN",
-      "title": "Invalid refresh token",
-      "detail": "The refresh token provided is not valid or refers to a different user"
-    }
-  ]
+    "errors": [
+        {
+            "status": "403",
+            "code": "ERR_INVALID_REFRESH_TOKEN",
+            "title": "Invalid refresh token",
+            "detail": "The refresh token provided is not valid or refers to a different user"
+        }
+    ]
 }
 ```
 
@@ -558,15 +553,15 @@ Unless an [authentication error](#authentication-errors) occurs, the response wi
 
 ```json
 {
-  "data": {
-    "id": "2",
-    "type": "UserSettings",
-    "attributes": {
-      "abbreviatedFormat": 1, // 1 or 0 represents true or false
-      "currency": "EUR",
-      "darkMode": 0 // 1 or 0 represents true or false
+    "data": {
+        "id": "2",
+        "type": "UserSettings",
+        "attributes": {
+            "abbreviatedFormat": 1, // 1 or 0 represents true or false
+            "currency": "EUR",
+            "darkMode": 0 // 1 or 0 represents true or false
+        }
     }
-  }
 }
 ```
 
@@ -596,13 +591,13 @@ No body is required.
 
 These need to be included in the GET query string. For example: `/users/2/transactions?currency=USD`
 
-- `minAmount` and `maxAmount` define the range of filtering for the transactions' amounts. 
+-   `minAmount` and `maxAmount` define the range of filtering for the transactions' amounts.
 
-- `startDate` and `endDate` define the range of filtering for the transactions' dates.
+-   `startDate` and `endDate` define the range of filtering for the transactions' dates.
 
-- `currency` represents the **only** currency code that will get included in the result.
+-   `currency` represents the **only** currency code that will get included in the result.
 
-- `tag` refers to the transactions' tags.
+-   `tag` refers to the transactions' tags.
 
 ### Responses
 
@@ -648,7 +643,7 @@ Unless an [authentication error](#authentication-errors) occurs, the response wi
 }
 ```
 
-`data` *can* be an empty array if no transactions matching the query were found.
+`data` _can_ be an empty array if no transactions matching the query were found.
 
 If `transactionID` is provided:
 
@@ -677,8 +672,8 @@ Should the transaction not be found:
             "detail": "The requested transaction could not be found",
             "status": "404",
             "title": "Transaction not found"
-        }
-    ]   
+        }
+    ]
 }
 ```
 
@@ -700,7 +695,7 @@ No header is required.
 
 ### Attributes
 
-- `refreshToken`: the token provided through the /login endpoint.
+-   `refreshToken`: the token provided through the /login endpoint.
 
 ### Responses
 
@@ -723,13 +718,13 @@ If the `refreshToken` is omitted:
 
 ```json
 {
-  "errors": [
-    {
-      "status": "400",
-      "code": "ERR_NO_REFRESH_TOKEN",
-      "title": "No refresh token provided"
-    }
-  ]
+    "errors": [
+        {
+            "status": "400",
+            "code": "ERR_NO_REFRESH_TOKEN",
+            "title": "No refresh token provided"
+        }
+    ]
 }
 ```
 
@@ -737,14 +732,14 @@ If the `refreshToken` is provided, but does not belong to any user, or it is pro
 
 ```json
 {
-  "errors": [
-    {
-      "status": "403",
-      "code": "ERR_INVALID_REFRESH_TOKEN",
-      "title": "Invalid refresh token",
-      "detail": "The refresh token provided is not valid or refers to a different user"
-    }
-  ]
+    "errors": [
+        {
+            "status": "403",
+            "code": "ERR_INVALID_REFRESH_TOKEN",
+            "title": "Invalid refresh token",
+            "detail": "The refresh token provided is not valid or refers to a different user"
+        }
+    ]
 }
 ```
 

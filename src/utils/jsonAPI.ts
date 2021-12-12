@@ -1,23 +1,26 @@
-import { Response, Request, NextFunction } from 'express';
-import assert from 'node:assert';
+import { Response, Request, NextFunction } from "express";
+import assert from "node:assert";
 
 // TODO: AttributesObject, RelationshipsObject
 
 export const JsonAPIObject = {
-    "version": "1.0"
+    version: "1.0",
 };
 
-export type Link = string | {
-    href: string, meta?: object;
-};
+export type Link =
+    | string
+    | {
+          href: string;
+          meta?: object;
+      };
 
 export interface LinksObject {
     [tag: string]: Link;
-};
+}
 
 export interface ErrorLinksObject extends LinksObject {
     about?: Link;
-};
+}
 
 export interface ResourceLinksObject extends LinksObject {
     self?: Link;
@@ -54,7 +57,7 @@ export interface ResourceObject {
     /**
      * Represents information about the object
      */
-    attributes?: { [key: string]: any; };
+    attributes?: { [key: string]: any };
 
     // TODO: Implement type for RelationshipObject
     /**
@@ -125,14 +128,18 @@ export interface Error {
     meta?: object;
 }
 
-export const setJsonAPIType = (req: Request, res: Response, next: NextFunction) => {
-    res.setHeader('Content-Type', 'application/vnd.api+json');
+export const setJsonAPIType = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    res.setHeader("Content-Type", "application/vnd.api+json");
     next();
 };
 
 // TODO: included
 export abstract class GenericResponse {
-    constructor (dataOrError: "data" | "error") {
+    constructor(dataOrError: "data" | "error") {
         this._dataOrError = dataOrError;
     }
 
@@ -140,8 +147,7 @@ export abstract class GenericResponse {
         if (this._links == undefined) {
             this._links = {};
         }
-        if (link && key)
-            this._links[key] = link;
+        if (link && key) this._links[key] = link;
 
         return this;
     }
@@ -167,8 +173,16 @@ export abstract class GenericResponse {
     }
 
     close(): object {
-        assert(this.data != undefined || this.errors != undefined || this.meta != undefined, "Document MUST contain at least data, errors or meta");
-        assert(!(this.data != undefined && this.errors != undefined), "Data and errors MUST NOT coexist in the same document");
+        assert(
+            this.data != undefined ||
+                this.errors != undefined ||
+                this.meta != undefined,
+            "Document MUST contain at least data, errors or meta"
+        );
+        assert(
+            !(this.data != undefined && this.errors != undefined),
+            "Data and errors MUST NOT coexist in the same document"
+        );
         let response = {};
         if (this.isError()) {
             response["errors"] = this.errors;
@@ -223,7 +237,7 @@ export class SingleResourceResponse extends GenericResponse {
         return this._data;
     }
 
-    constructor (dataOrError: "data" | "error") {
+    constructor(dataOrError: "data" | "error") {
         super(dataOrError);
     }
 
@@ -231,7 +245,6 @@ export class SingleResourceResponse extends GenericResponse {
 }
 
 export class MultipleResourcesResponse extends GenericResponse {
-
     set data(data: ResourceObject[] | ResourceIdentifierObject[] | null) {
         this._data = data;
     }
@@ -240,9 +253,10 @@ export class MultipleResourcesResponse extends GenericResponse {
         return this._data;
     }
 
-    constructor (dataOrError: "data" | "error") {
+    constructor(dataOrError: "data" | "error") {
         super(dataOrError);
     }
 
-    private _data: ResourceObject[] | ResourceIdentifierObject[] | null = undefined;
+    private _data: ResourceObject[] | ResourceIdentifierObject[] | null =
+        undefined;
 }
