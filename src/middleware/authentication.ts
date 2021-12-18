@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import {
+    cookie,
     header,
     Result,
     ValidationError,
@@ -16,7 +17,7 @@ export const requireAuthentication = async (
     next: NextFunction
 ) => {
     let response = new SingleResourceResponse("data");
-    await header("Authorization", commonErrors.missingAuthorization)
+    await cookie("AccessToken", commonErrors.missingAuthorization)
         .notEmpty()
         .run(req);
     const error: Result<ValidationError> = validationResult(req);

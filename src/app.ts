@@ -11,6 +11,7 @@ import { postLogin } from "./routes/post/login";
 import { regenerateToken } from "./routes/post/refreshToken";
 import userRouter from "./routers/user";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART)) console.log(appNameArt);
 else console.log("Aurora v1.0");
@@ -25,6 +26,7 @@ app.use(cors());
 /**
  * Libraries and middleware
  */
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(
     express.json({ type: ["application/vnd.api+json", "application/json"] })

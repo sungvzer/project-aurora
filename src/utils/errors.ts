@@ -65,7 +65,7 @@ export const genericJWT: Error = {
 export const missingAuthorization: Error = {
     status: "400",
     code: "ERR_MISSING_AUTH",
-    detail: "The request is missing the Authorization: Bearer token necessary for authentication.\nThis is an authenticated route.",
+    detail: "The request is missing the Access Token necessary for authentication. This is an authenticated route.",
     title: "Missing authorization header",
 };
 export const noRefreshToken: Error = {

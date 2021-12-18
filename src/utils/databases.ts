@@ -43,7 +43,6 @@ export const { periodicRefreshTokenCleanup } = new (class {
     connection: RedisClientType<{}, {}>;
     periodicRefreshTokenCleanup = async () => {
         this.count++;
-        console.log({ count: this.count });
         if (this.connection == null) {
             this.connection = await getRedisConnection();
         }

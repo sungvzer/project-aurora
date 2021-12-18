@@ -101,6 +101,16 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
 
     periodicRefreshTokenCleanup();
 
-    res.status(200).json(response.close());
+    console.log(req.cookies);
+    res.cookie("AccessToken", accessToken, {
+        maxAge: 24 * 3600,
+        httpOnly: true,
+    })
+        .cookie("RefreshToken", refreshToken, {
+            maxAge: 24 * 3600 * 7,
+            httpOnly: true,
+        })
+        .status(200)
+        .json(response.close());
     return;
 };

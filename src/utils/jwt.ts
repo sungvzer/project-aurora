@@ -38,10 +38,9 @@ export const generateTokenPair = (payload: Object): TokenPair => {
 };
 
 export const getAccessTokenFromRequest = (req: Request): string => {
-    const authHeader = req.headers["authorization"];
-    const [bearer, token] = authHeader.split(" ");
-    if (!bearer || bearer.toLowerCase() != "bearer" || !token) {
+    const authCookie = req.cookies["AccessToken"];
+    if (!authCookie) {
         return null;
     }
-    return token;
+    return authCookie;
 };
