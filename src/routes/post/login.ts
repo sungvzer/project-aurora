@@ -101,13 +101,18 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
 
     periodicRefreshTokenCleanup();
 
-    console.log(req.cookies);
+    const hoursInADay = 24;
+    const minutesInADay = hoursInADay * 60;
+    const secondsInADay = minutesInADay * 60;
+    const millisecondsInADay = secondsInADay * 1000;
+
+    console.log(new Date(Date.now() + millisecondsInADay).toISOString());
     res.cookie("AccessToken", accessToken, {
-        maxAge: 24 * 3600,
         httpOnly: true,
+        expires: new Date(Date.now() + millisecondsInADay),
     })
         .cookie("RefreshToken", refreshToken, {
-            maxAge: 24 * 3600 * 7,
+            expires: new Date(Date.now() + millisecondsInADay * 7),
             httpOnly: true,
         })
         .status(200)

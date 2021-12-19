@@ -66,7 +66,7 @@ export const missingAuthorization: Error = {
     status: "400",
     code: "ERR_MISSING_AUTH",
     detail: "The request is missing the Access Token necessary for authentication. This is an authenticated route.",
-    title: "Missing authorization header",
+    title: "Missing authorization cookie",
 };
 export const noRefreshToken: Error = {
     status: "400",

@@ -53,15 +53,10 @@ export const { periodicRefreshTokenCleanup } = new (class {
         for (const key of keys) {
             const value = await this.connection.get(key);
             let toDelete = false;
-            jwt.verify(
-                value,
-                process.env.JWT_REFRESH_SECRET,
-                (err, payload) => {
-                    if (err && err.message.indexOf("expired") != -1) {
-                    }
+            jwt.verify(value, process.env.JWT_REFRESH_SECRET, (err) => {
+                if (err && err.message.indexOf("expired") != -1)
                     toDelete = true;
-                }
-            );
+            });
             if (toDelete) {
                 await this.connection.del(key);
             }
