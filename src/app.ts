@@ -70,7 +70,7 @@ app.post("/signup", verifyJsonApiRequest, postSignup);
 app.get("/routes", getRoutes);
 app.get("/verify", requireAuthentication, getVerify);
 app.post("/login", verifyJsonApiRequest, postLogin);
-app.post("/logout", requireAuthentication, verifyJsonApiRequest, postLogout);
+app.post("/logout", requireAuthentication, postLogout);
 app.post("/refreshToken", verifyJsonApiRequest, regenerateToken);
 
 app.use("/users", userRouter);
