@@ -23,6 +23,7 @@ export const deleteUser = async (
         return;
     }
 
+    res.clearCookie("RefreshToken").clearCookie("AccessToken");
     res.status(204).send();
     return;
 };
