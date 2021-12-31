@@ -1,7 +1,7 @@
 import mysql2 from "mysql2";
 import { ENVIRONMENT } from "./secrets";
 import { createClient } from "redis";
-import { RedisClientType } from "@node-redis/client/dist/lib/client";
+import { RedisClientType } from "redis";
 import * as jwt from "jsonwebtoken";
 
 export interface LastInsertId extends mysql2.RowDataPacket {
