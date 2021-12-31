@@ -18,6 +18,7 @@ import { deleteUserTransaction } from "../routes/delete/users/transactions";
 import { getUserBalances } from "../routes/get/users/balances";
 import { patchUserTransaction } from "../routes/patch/users/transactions";
 import { patchUserSettings } from "../routes/patch/users/settings";
+import { getUser } from "../routes/get/users";
 
 const userRouter = Router();
 
@@ -51,6 +52,7 @@ userRouter.get(
     requireAuthentication,
     getUserTransactions
 );
+userRouter.get("/:id", requireAuthentication, getUser);
 userRouter.get("/:id/balances", requireAuthentication, getUserBalances);
 
 // POST

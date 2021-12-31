@@ -7,6 +7,13 @@ export const wrongCredentials: Error = {
     title: "Wrong email or password",
 };
 
+export const personalInfoNotFound: Error = {
+    code: "ERR_INFO_NOT_FOUND",
+    detail: `Personal info for this user could not be retrieved, probably due to an internal error.`,
+    status: "500",
+    title: "Personal info not found",
+};
+
 export const invalidAuthToken: Error = {
     code: "ERR_INVALID_AUTH_TOKEN",
     detail: "The authorization token provided with this request is not valid",

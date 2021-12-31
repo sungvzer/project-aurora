@@ -37,7 +37,54 @@ export interface TransactionQueryOptions {
     tag?: string;
 }
 
+export interface UserPersonalInfo {
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+    birthday: string;
+    createdAt: string;
+}
+
 export default class User {
+    static async getPersonalInfo(
+        userId: number
+    ): Promise<ErrorOr<UserPersonalInfo>> {
+        if (!(await User.exists(userId))) {
+            return new ErrorOr({ error: err.userNotFound });
+        }
+
+        let query = `SELECT UserCreatedAt AS CreatedAt, UserFirstName AS FirstName, UserMiddleName AS MiddleName, UserLastName AS LastName, UserBirthday AS Birthday FROM UserDataHeader INNER JOIN UserPersonalInfo ON UserDataHeader.UserPersonalInfoID = UserPersonalInfo.UserPersonalInfoID WHERE UserDataHeader.UserDataHeaderID = ?;`;
+        const connection = await dbController.getDatabaseConnection();
+        let [result] = await connection.execute<RowDataPacket[]>(query, [
+            userId,
+        ]);
+
+        if (!result || result.length === 0) {
+            return new ErrorOr({ error: err.personalInfoNotFound });
+        }
+
+        let data = result[0] as {
+            Birthday: Date;
+            CreatedAt: Date;
+            FirstName: string;
+            LastName: string;
+            MiddleName: string;
+        };
+        let info: UserPersonalInfo = {
+            birthday: data.Birthday.toISOString().substring(0, 10),
+            createdAt: data.CreatedAt.toISOString().substring(0, 10),
+            firstName: data.FirstName,
+            lastName: data.LastName,
+        };
+        if (data.MiddleName != null) {
+            info.middleName = data.MiddleName;
+        }
+
+        return new ErrorOr({
+            value: info,
+        });
+    }
+
     static async getBalanceById(
         userId: number
     ): Promise<ErrorOr<Map<CurrencyCode, number>>> {
