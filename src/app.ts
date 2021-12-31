@@ -88,7 +88,7 @@ app.get("/routes", getRoutes);
 app.get("/verify", requireAuthentication, getVerify);
 app.post("/login", verifyJsonApiRequest, postLogin);
 app.post("/logout", requireAuthentication, postLogout);
-app.post("/refreshToken", verifyJsonApiRequest, regenerateToken);
+app.post("/refreshToken", regenerateToken);
 
 app.use("/users", userRouter);
 app.use("*", defaultError);

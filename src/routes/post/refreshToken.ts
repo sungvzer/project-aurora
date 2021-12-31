@@ -1,4 +1,4 @@
-import { check, validationResult } from "express-validator";
+import { check, cookie, validationResult } from "express-validator";
 import { resourceObjectHas } from "../../utils/customValidators";
 import { SingleResourceResponse } from "../../utils/jsonAPI";
 import * as commonErrors from "../../utils/errors";
@@ -15,8 +15,9 @@ export const regenerateToken = async (
     /**
      * Empty Check
      */
-    await check("data", commonErrors.noRefreshToken)
-        .custom(resourceObjectHas("refreshToken"))
+
+    await cookie("RefreshToken", commonErrors.noRefreshToken)
+        .notEmpty()
         .run(req);
 
     const errors = validationResult(req);
@@ -25,7 +26,7 @@ export const regenerateToken = async (
         return;
     }
 
-    const oldRefreshToken = req.body.data.attributes.refreshToken;
+    const oldRefreshToken = req.cookies["RefreshToken"];
 
     const redis = await getRedisConnection();
     const result = await redis.get(oldRefreshToken);
@@ -62,7 +63,21 @@ export const regenerateToken = async (
                     refreshToken,
                 },
             };
-            res.status(200).json(response.close());
+
+            const hoursInADay = 24;
+            const minutesInADay = hoursInADay * 60;
+            const secondsInADay = minutesInADay * 60;
+            const millisecondsInADay = secondsInADay * 1000;
+            res.cookie("AccessToken", accessToken, {
+                httpOnly: true,
+                expires: new Date(Date.now() + millisecondsInADay),
+            })
+                .cookie("RefreshToken", refreshToken, {
+                    expires: new Date(Date.now() + millisecondsInADay * 7),
+                    httpOnly: true,
+                })
+                .status(200)
+                .json(response.close());
         }
     );
 };
