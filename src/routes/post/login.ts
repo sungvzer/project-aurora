@@ -24,6 +24,10 @@ import * as err from "../../utils/errors";
 
 export const postLogin = async (req: Request, res: Response): Promise<void> => {
     let response = new SingleResourceResponse("data");
+
+    /* FIXME: The current behavior "leaks" RefreshTokens and should be prevented so that the periodic cleanup does not need to occur:
+              Whenever a new refresh token is issued, we should find a way to actually verify if that user already has a certain token,
+              if so, we should delete it, (or provide it again if the request already possesses one?) */
     /**
      * Empty Checks
      */
@@ -106,7 +110,6 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     const secondsInADay = minutesInADay * 60;
     const millisecondsInADay = secondsInADay * 1000;
 
-    console.log(new Date(Date.now() + millisecondsInADay).toISOString());
     res.cookie("AccessToken", accessToken, {
         httpOnly: true,
         expires: new Date(Date.now() + millisecondsInADay),
