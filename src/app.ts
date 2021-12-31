@@ -10,7 +10,7 @@ import { postLogout } from "./routes/post/logout";
 import { postLogin } from "./routes/post/login";
 import { regenerateToken } from "./routes/post/refreshToken";
 import userRouter from "./routers/user";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import { getVerify } from "./routes/get/verify";
 
@@ -22,7 +22,23 @@ const app = express();
 /**
  * Allow CORS
  */
-app.use(cors());
+const whitelist = [
+    "http://breeze:4500",
+    "http://localhost:4500",
+    "http://192.168.1.214:4500",
+];
+const corsOptions: CorsOptions = {
+    credentials: true,
+    origin: (origin, callback) => {
+        if (whitelist.includes(origin)) {
+            return callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+};
+
+app.use(cors(corsOptions));
 
 /**
  * Libraries and middleware
