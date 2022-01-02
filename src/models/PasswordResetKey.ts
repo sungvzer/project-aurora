@@ -43,10 +43,10 @@ export default class PasswordResetKey {
         });
     }
 
-    public static async consume(key: string): Promise<ErrorOr<boolean>> {
+    public static async consume(key: string): Promise<ErrorOr<number>> {
         const pool = await getDatabaseConnection();
         let [result] = await pool.execute<RowDataPacket[]>(
-            "SELECT PasswordResetKeyID FROM `PasswordResetKey` WHERE `PasswordResetKey`.`Key`=?;",
+            "SELECT PasswordResetKeyID, UserDataHeaderID FROM `PasswordResetKey` WHERE `PasswordResetKey`.`Key`=?;",
             [key]
         );
 
@@ -58,13 +58,15 @@ export default class PasswordResetKey {
 
         console.log({ result });
         let idToBeDeleted = result[0].PasswordResetKeyID;
+        let userId = result[0].UserDataHeaderID;
+
         assert(idToBeDeleted != null);
         [result] = await pool.execute<RowDataPacket[]>(
             "DELETE FROM `PasswordResetKey` WHERE `PasswordResetKeyID` = ?;",
             [idToBeDeleted]
         );
         return new ErrorOr({
-            value: true,
+            value: userId,
         });
     }
 
