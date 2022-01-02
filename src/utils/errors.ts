@@ -1,5 +1,12 @@
 import { Error } from "./jsonAPI";
 
+export const noResetKey: Error = {
+    code: "ERR_NO_RESET_KEY",
+    detail: "The required reset key is missing",
+    title: "No reset key provided",
+    status: "400",
+};
+
 export const invalidResetKey: Error = {
     code: "ERR_INVALID_RESET_KEY",
     detail: "The reset key used is invalid",
