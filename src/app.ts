@@ -15,6 +15,7 @@ import cookieParser from "cookie-parser";
 import { getVerify } from "./routes/get/verify";
 import { requestPasswordReset } from "./routes/post/requestPasswordReset";
 import PasswordResetKey from "./models/PasswordResetKey";
+import { resetPassword } from "./routes/post/resetPassword";
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART)) console.log(appNameArt);
 else console.log("Aurora v1.0");
@@ -92,6 +93,7 @@ app.post("/login", verifyJsonApiRequest, postLogin);
 app.post("/logout", requireAuthentication, postLogout);
 app.post("/refreshToken", regenerateToken);
 app.post("/request_password_reset", verifyJsonApiRequest, requestPasswordReset);
+app.post("/reset_password", verifyJsonApiRequest, resetPassword);
 
 app.use("/users", userRouter);
 app.use("*", defaultError);
