@@ -1,5 +1,11 @@
 import { Error } from "./jsonAPI";
 
+export const invalidResetKey: Error = {
+    code: "ERR_INVALID_RESET_KEY",
+    detail: "The reset key used is invalid",
+    title: "Invalid reset key",
+    status: "400",
+};
 export const wrongCredentials: Error = {
     code: "ERR_WRONG_CREDENTIALS",
     detail: `A wrong email or password were used. I'm not gonna tell you which though.`,
