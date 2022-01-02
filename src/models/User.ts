@@ -46,6 +46,24 @@ export interface UserPersonalInfo {
 }
 
 export default class User {
+    static async changePassword(
+        userId: number,
+        password: string
+    ): Promise<ErrorOr<boolean>> {
+        if (!this.exists(userId)) {
+            return new ErrorOr({ error: err.userNotFound });
+        }
+        let hashed = await hashPassword(password);
+
+        // Query
+        let sql =
+            "UPDATE UserCredential INNER JOIN UserDataHeader ON UserCredential.UserCredentialID = UserDataHeader.UserCredentialID SET UserCredential.UserPasswordHash = ? WHERE UserCredential.UserCredentialID = ?;";
+        const connection = await dbController.getDatabaseConnection();
+        await connection.execute(sql, [hashed, userId]);
+
+        return new ErrorOr({ value: true });
+    }
+
     static async getPersonalInfo(
         userId: number
     ): Promise<ErrorOr<UserPersonalInfo>> {
