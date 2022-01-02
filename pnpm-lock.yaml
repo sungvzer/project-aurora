@@ -11,6 +11,7 @@ specifiers:
   '@types/jest': ^27.0.3
   '@types/jsonwebtoken': ^8.5.5
   '@types/mysql2': github:types/mysql2
+  '@types/nodemailer': ^6.4.4
   '@types/redis': ^2.8.32
   '@types/supertest': ^2.0.11
   '@types/validator': ^13.7.0
@@ -25,6 +26,7 @@ specifiers:
   jest: ^27.4.1
   jsonwebtoken: ^8.5.1
   mysql2: ^2.3.2
+  nodemailer: ^6.7.2
   nodemon: ^2.0.15
   redis: ^4.0.0-rc.3
   supertest: ^6.1.6
@@ -42,6 +44,7 @@ dependencies:
   '@types/jest': 27.0.3
   '@types/jsonwebtoken': 8.5.6
   '@types/mysql2': github.com/types/mysql2/d4ef3b2292f328049f7e4c545f6adab7d6a350a9
+  '@types/nodemailer': 6.4.4
   '@types/redis': 2.8.32
   '@types/supertest': 2.0.11
   '@types/validator': 13.7.1
@@ -56,6 +59,7 @@ dependencies:
   jest: 27.4.5
   jsonwebtoken: 8.5.1
   mysql2: 2.3.3
+  nodemailer: 6.7.2
   nodemon: 2.0.15
   redis: 4.0.1
   supertest: 6.1.6
@@ -1660,6 +1664,12 @@ packages:
 
   /@types/node/17.0.5:
     resolution: {integrity: sha512-w3mrvNXLeDYV1GKTZorGJQivK6XLCoGwpnyJFbJVK/aTBQUxOCaa/GlFAAN3OTDFcb7h5tiFG+YXCO2By+riZw==}
+    dev: false
+
+  /@types/nodemailer/6.4.4:
+    resolution: {integrity: sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==}
+    dependencies:
+      '@types/node': 17.0.5
     dev: false
 
   /@types/prettier/2.4.2:
@@ -3982,6 +3992,11 @@ packages:
 
   /node-releases/2.0.1:
     resolution: {integrity: sha512-CqyzN6z7Q6aMeF/ktcMVTzhAHCEpf8SOarwpzpf8pNBY2k5/oM34UHldUwp8VKI7uxct2HxSRdJjBaZeESzcxA==}
+    dev: false
+
+  /nodemailer/6.7.2:
+    resolution: {integrity: sha512-Dz7zVwlef4k5R71fdmxwR8Q39fiboGbu3xgswkzGwczUfjp873rVxt1O46+Fh0j1ORnAC6L9+heI8uUpO6DT7Q==}
+    engines: {node: '>=6.0.0'}
     dev: false
 
   /nodemon/2.0.15:

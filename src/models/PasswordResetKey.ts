@@ -3,7 +3,7 @@ import random from "../utils/random";
 import ErrorOr from "./ErrorOr";
 import User from "./User";
 import * as err from "../utils/errors";
-import { millisecondsInADay, millisecondsInAnHour } from "../utils/time";
+import { millisecondsInAnHour } from "../utils/time";
 import { RowDataPacket } from "mysql2/promise";
 import assert from "assert";
 
@@ -24,7 +24,8 @@ export default class PasswordResetKey {
         const generatedKey = this.generate();
 
         const expiresOn = new Date(Date.now() + millisecondsInAnHour); // We expire it after a single hour due to security reasons.
-        // Query construction
+
+        // Query
         let sql =
             "INSERT INTO `PasswordResetKey` (`UserDataHeaderID`, `Key`, `ExpiresOn`) VALUES (?, ?, ?);";
         let result = await pool.execute(sql, [
