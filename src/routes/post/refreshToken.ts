@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import { getRedisConnection } from "../../utils/databases";
 import * as jwt from "jsonwebtoken";
 import { generateTokenPair } from "../../utils/jwt";
+import { millisecondsInADay } from "../../utils/time";
 
 export const regenerateToken = async (
     req: Request,
@@ -64,10 +65,6 @@ export const regenerateToken = async (
                 },
             };
 
-            const hoursInADay = 24;
-            const minutesInADay = hoursInADay * 60;
-            const secondsInADay = minutesInADay * 60;
-            const millisecondsInADay = secondsInADay * 1000;
             res.cookie("AccessToken", accessToken, {
                 httpOnly: true,
                 expires: new Date(Date.now() + millisecondsInADay),

@@ -21,6 +21,7 @@ import {
 import { SingleResourceResponse } from "../../utils/jsonAPI";
 import { generateTokenPair } from "../../utils/jwt";
 import * as err from "../../utils/errors";
+import { millisecondsInADay } from "../../utils/time";
 
 export const postLogin = async (req: Request, res: Response): Promise<void> => {
     let response = new SingleResourceResponse("data");
@@ -104,11 +105,6 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     };
 
     periodicRefreshTokenCleanup();
-
-    const hoursInADay = 24;
-    const minutesInADay = hoursInADay * 60;
-    const secondsInADay = minutesInADay * 60;
-    const millisecondsInADay = secondsInADay * 1000;
 
     res.cookie("AccessToken", accessToken, {
         httpOnly: true,
