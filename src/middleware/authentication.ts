@@ -16,7 +16,6 @@ export const requireAuthentication = async (
     res: Response,
     next: NextFunction
 ) => {
-    console.log(req.cookies);
     let response = new SingleResourceResponse("data");
     await cookie("AccessToken", commonErrors.missingAuthorization)
         .notEmpty()

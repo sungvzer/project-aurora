@@ -31,7 +31,6 @@ export const getRedisConnection = async (): Promise<
         url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     });
     client.on("error", (err) => {
-        console.log(err);
         throw err;
     });
     await client.connect();

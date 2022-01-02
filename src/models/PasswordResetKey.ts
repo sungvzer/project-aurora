@@ -56,7 +56,6 @@ export default class PasswordResetKey {
             });
         }
 
-        console.log({ result });
         let idToBeDeleted = result[0].PasswordResetKeyID;
         let userId = result[0].UserDataHeaderID;
 
