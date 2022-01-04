@@ -7,7 +7,7 @@ Throughout the API, the [JSON:API](https://jsonapi.org/) specification is used t
 _Request_
 
 ```http
-GET http://aurora:3000/users/12/transactions HTTP1.1;
+GET http://aurora:3000/users/12/transactions HTTP1.1
 Cookie: AccessToken=[...]; RefreshToken=[...]
 ```
 
