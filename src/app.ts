@@ -16,6 +16,44 @@ import { getVerify } from "./routes/get/verify";
 import { requestPasswordReset } from "./routes/post/requestPasswordReset";
 import PasswordResetKey from "./models/PasswordResetKey";
 import { resetPassword } from "./routes/post/resetPassword";
+import colors from "colors/safe";
+
+const environmentCheckup = (): void => {
+    console.log(colors.yellow("INFO: Running environment checkup"));
+    const environmentVariables = [
+        "PORT",
+        "MYSQL_HOST",
+        "MYSQL_PORT",
+        "MYSQL_PASSWORD_DEV",
+        "REDIS_HOST",
+        "REDIS_PORT",
+        "SHOW_ENDPOINTS",
+        "SHOW_TABLE",
+        "SHOW_TITLE_AS_ASCII_ART",
+        "JWT_SECRET",
+        "JWT_REFRESH_SECRET",
+        "SMTP_USER",
+        "SMTP_PASS",
+        "SMTP_SERVER",
+        "SMTP_PORT",
+    ];
+
+    let missingVariables: string[] = [];
+    for (const variable of environmentVariables) {
+        if (process.env[variable] == null) {
+            missingVariables.push(variable);
+        }
+    }
+    if (missingVariables.length !== 0) {
+        console.log(colors.red("ERROR: environment checkup failed"));
+        console.log("These variables should be set:");
+        console.log(JSON.stringify(missingVariables));
+        process.exit();
+    }
+
+    console.log(colors.green("SUCCESS: environment checkup completed"));
+};
+environmentCheckup();
 
 if (JSON.parse(process.env.SHOW_TITLE_AS_ASCII_ART)) console.log(appNameArt);
 else console.log("Aurora v1.0");
