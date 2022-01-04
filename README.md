@@ -1,10 +1,71 @@
-# Aurora
+# Aurora :star:
 
 Aurora is a free-to-use, self-hostable accounting API that can be used to keep track of personal expenses.
 
-Throughout the API, the [JSON:API](https://jsonapi.org/) specification is used to maintain consistency and structure.
+Throughout the API, the [JSON:API](https://jsonapi.org/) specification is used to maintain consistency and structure. The aim is to simplify access to this API by using a consolidated specification:
 
-## System Requirements
+_Request_
+
+```http
+GET http://aurora:3000/users/12/transactions HTTP1.1;
+Cookie: AccessToken=[...]; RefreshToken=[...]
+```
+
+_Response_
+
+```json
+{
+    "data": [
+        {
+            "id": "22077",
+            "type": "UserTransaction",
+            "attributes": {
+                "amount": 1599,
+                "currency": "EUR",
+                "date": "2021-11-07",
+                "tag": "Burger"
+            }
+        }
+    ],
+    "jsonapi": {
+        "version": "1.0"
+    }
+}
+```
+
+## Table of contents
+
+-   [Table of contents](#table-of-contents)
+-   [Features](#features)
+-   [Installation](#installation)
+    -   [System Requirements](#system-requirements)
+-   [Running the API server](#running-the-api-server)
+    -   [Environment variables](#environment-variables)
+    -   [Dependencies](#dependencies)
+    -   [Running](#running)
+    -   [Debugging](#debugging)
+-   [Contributing](#contributing)
+-   [License](#license)
+
+## Features
+
+-   :man: :woman: Manage user account:
+    -   :lock: User access managed via authentication with [JSON Web Tokens](https://jwt.io), no session stored on the database
+    -   :envelope: Password restoring mechanism via SMTP emails
+-   :wrench: Manage user settings for a front-end UI:
+    -   :crescent_moon: Dark Mode/ :sunny: Light Mode
+    -   :moneybag: Abbreviated amount format (e.g. 10'000'00'.00 -> 10M)
+    -   :heavy_dollar_sign: Favorite currency (e.g. EUR, USD...)
+-   :heavy_plus_sign: Add transactions
+-   :mag: Query transactions
+-   :x: Delete transactions
+-   :pencil: Edit transactions
+
+## Installation
+
+At this stage of development, installing Aurora requires some configuration and it's not a one-line command:
+
+### System Requirements
 
 **Note:** These steps will not include network configuration.
 
@@ -58,9 +119,19 @@ Run `pnpm install` or the chosen npm/yarn equivalent to install all dependencies
 
 Check that a `node_modules` folder is created in the project root.
 
-### Watchmode
+### Running
 
-To build the project as you work on it, you will need to run the `watch` task:
+To run the project, run
+
+    pnpm run release
+
+### Debugging
+
+To build the project a single time:
+
+    pnpx tsc
+
+To build the project as you work on it:
 
     pnpm run watch
 
@@ -72,18 +143,21 @@ or
 
     pnpm run watchRelease
 
-To build:
-
-    pnpx tsc
-
 To build and run single-shot:
-
-    pnpm run release
-
-or
 
     pnpm run debug
 
-To run a prebuild version:
+To run a prebuilt version:
 
     pnpm start
+
+## Contributing
+
+Every contribution is highly welcome! Feel free to visit the following links to take part in this journey:
+
+-   Visit the [Issue Tracker](https://github.com/sungvzer/project-aurora/issues) to see the current active bugs and enhancement suggestions, or to create one of your own!
+-   Our source code is available on [GitHub](https://github.com/sungvzer/project-aurora), where you're reading this!
+
+## License
+
+The project is licensed under the GPL 3.0 license.
