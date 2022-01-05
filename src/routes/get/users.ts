@@ -1,14 +1,14 @@
-import ErrorOr from "../../models/ErrorOr";
-import User, { UserPersonalInfo, UserSettings } from "../../models/User";
-import { SingleResourceResponse } from "../../utils/jsonAPI";
-import * as err from "../../utils/errors";
-import { Request, Response } from "express";
+import ErrorOr from '../../models/ErrorOr';
+import User, { UserPersonalInfo, UserSettings } from '../../models/User';
+import { SingleResourceResponse } from '../../utils/jsonAPI';
+import * as err from '../../utils/errors';
+import { Request, Response } from 'express';
 
 export const getUser = async (req: Request, res: Response): Promise<void> => {
-    let response = new SingleResourceResponse("data");
+    let response = new SingleResourceResponse('data');
     const userId = parseInt(req.params.id);
 
-    const jwtUserHeaderId = req["decodedJWTPayload"]["userHeaderID"];
+    const jwtUserHeaderId = req['decodedJWTPayload']['userHeaderID'];
 
     // This means we screwed up badly
     if (!jwtUserHeaderId) {
@@ -21,9 +21,7 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const infoOrError: ErrorOr<UserPersonalInfo> = await User.getPersonalInfo(
-        userId
-    );
+    const infoOrError: ErrorOr<UserPersonalInfo> = await User.getPersonalInfo(userId);
     if (infoOrError.isError()) {
         response.addError(infoOrError.error);
         res.status(404).json(response.close());
@@ -32,7 +30,7 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
 
     response.data = {
         id: userId.toString(),
-        type: "UserPersonalInfo",
+        type: 'UserPersonalInfo',
         attributes: {
             ...infoOrError.value,
         },

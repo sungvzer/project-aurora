@@ -1,35 +1,29 @@
-import { SingleResourceResponse } from "../../utils/jsonAPI";
-import { Request, Response } from "express";
-import nodemailer from "nodemailer";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
-import { ENVIRONMENT } from "../../utils/secrets";
-import {
-    body,
-    check,
-    Result,
-    ValidationError,
-    validationResult,
-} from "express-validator";
+import { SingleResourceResponse } from '../../utils/jsonAPI';
+import { Request, Response } from 'express';
+import nodemailer from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { ENVIRONMENT } from '../../utils/secrets';
+import { body, check, Result, ValidationError, validationResult } from 'express-validator';
 import {
     resourceObjectHas,
     resourceObjectSanitizeEmail,
     resourceObjectValidateEmail,
-} from "../../utils/customValidators";
-import * as err from "../../utils/errors";
-import htmlPasswordResetTemplate from "../../templates/email";
-import User from "../../models/User";
-import PasswordResetKey from "../../models/PasswordResetKey";
+} from '../../utils/customValidators';
+import * as err from '../../utils/errors';
+import htmlPasswordResetTemplate from '../../templates/email';
+import User from '../../models/User';
+import PasswordResetKey from '../../models/PasswordResetKey';
 
 let smtpOptions: SMTPTransport.Options;
 
-if (ENVIRONMENT === "Development") {
+if (ENVIRONMENT === 'Development') {
     smtpOptions = {
-        host: "smtp.ethereal.email",
+        host: 'smtp.ethereal.email',
         port: 587,
         auth: {
             // We really don't care for clear-text passwords as they are a temporary account that does not communicate with the outer world
-            user: "missouri.bruen80@ethereal.email",
-            pass: "x4TyU7XDJABczr84PP",
+            user: 'missouri.bruen80@ethereal.email',
+            pass: 'x4TyU7XDJABczr84PP',
         },
     };
 } else {
@@ -45,31 +39,22 @@ if (ENVIRONMENT === "Development") {
 
 export const { requestPasswordReset } = new (class {
     transport = nodemailer.createTransport(smtpOptions);
-    requestPasswordReset = async (
-        req: Request,
-        res: Response
-    ): Promise<void> => {
-        let response = new SingleResourceResponse("data");
+    requestPasswordReset = async (req: Request, res: Response): Promise<void> => {
+        let response = new SingleResourceResponse('data');
 
         /**
          * Empty Checks
          */
-        await check("data", err.blankEmail)
-            .custom(resourceObjectHas("email"))
-            .run(req);
+        await check('data', err.blankEmail).custom(resourceObjectHas('email')).run(req);
         /**
          * Validity Checks
          */
-        await check("data", err.invalidEmail)
-            .custom(resourceObjectValidateEmail)
-            .run(req);
+        await check('data', err.invalidEmail).custom(resourceObjectValidateEmail).run(req);
 
         /**
          * Body sanitization
          */
-        await body("data")
-            .customSanitizer(resourceObjectSanitizeEmail)
-            .run(req);
+        await body('data').customSanitizer(resourceObjectSanitizeEmail).run(req);
 
         /**
          * Error handling
@@ -105,11 +90,8 @@ export const { requestPasswordReset } = new (class {
         let passwordResetEmail: SMTPTransport.Options = {};
         Object.assign(passwordResetEmail, smtpOptions);
         passwordResetEmail.to = email;
-        passwordResetEmail.html = htmlPasswordResetTemplate.replace(
-            "{{params.key}}",
-            resetKey.key
-        );
-        passwordResetEmail.subject = "Password reset";
+        passwordResetEmail.html = htmlPasswordResetTemplate.replace('{{params.key}}', resetKey.key);
+        passwordResetEmail.subject = 'Password reset';
         this.transport.sendMail(passwordResetEmail);
         response.meta = {
             message: `A reset key has been sent to the email as requested. Use this key in the /reset_password endpoint.`,

@@ -1,24 +1,20 @@
-import { CustomSanitizer, Meta, CustomValidator } from "express-validator";
-import validator from "validator";
+import { CustomSanitizer, Meta, CustomValidator } from 'express-validator';
+import validator from 'validator';
 
-function editResourceAttribute(
-    object: any,
-    attribute: string,
-    value: any
-): object {
+function editResourceAttribute(object: any, attribute: string, value: any): object {
     let returned = { ...object };
-    returned["attributes"] = { ...object.attributes };
-    returned["attributes"][attribute] = value;
+    returned['attributes'] = { ...object.attributes };
+    returned['attributes'][attribute] = value;
     return returned;
 }
 
 export const resourceObjectHas = (str: string): CustomValidator => {
-    return (input, meta) => input["attributes"][str];
+    return (input, meta) => input['attributes'][str];
 };
 
 export const resourceObjectValidateEmail = (input: any, meta: Meta): any => {
-    if (input["attributes"]["email"]) {
-        const email = input["attributes"]["email"];
+    if (input['attributes']['email']) {
+        const email = input['attributes']['email'];
         return validator.isEmail(email);
     }
 };
@@ -34,39 +30,29 @@ export const dataHas = (str: string): CustomValidator => {
 /**
  * This function does not validate if email is present or not, please check with `jwtObjectHas` and `jwtObjectValidateEmail`
  */
-export const resourceObjectSanitizeEmail: CustomSanitizer = (
-    input,
-    meta
-): any => {
-    if (!input || !input["attributes"] || !input["attributes"]["email"]) {
+export const resourceObjectSanitizeEmail: CustomSanitizer = (input, meta): any => {
+    if (!input || !input['attributes'] || !input['attributes']['email']) {
         return null;
     }
-    let email = input["attributes"]["email"];
+    let email = input['attributes']['email'];
     email = validator.normalizeEmail(email, {
         gmail_remove_dots: false,
         all_lowercase: true,
     });
-    let returnedObject = editResourceAttribute(input, "email", email);
+    let returnedObject = editResourceAttribute(input, 'email', email);
 
     return returnedObject;
 };
 
 export const isValidResourceObject = (input: any) => {
     const checkInput = (input: any): boolean => {
-        const allowedResourceKeys = [
-            "id",
-            "type",
-            "attributes",
-            "relationships",
-            "links",
-            "meta",
-        ];
+        const allowedResourceKeys = ['id', 'type', 'attributes', 'relationships', 'links', 'meta'];
 
         if (!input) {
             return false;
         }
 
-        if (!input["id"] && !input["type"]) {
+        if (!input['id'] && !input['type']) {
             return false;
         }
         for (let prop in input) {

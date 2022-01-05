@@ -1,20 +1,12 @@
-import User from "../../../models/User";
-import { SingleResourceResponse } from "../../../utils/jsonAPI";
-import * as err from "../../../utils/errors";
-import { Request, Response } from "express";
-import {
-    param,
-    Result,
-    ValidationError,
-    validationResult,
-} from "express-validator";
+import User from '../../../models/User';
+import { SingleResourceResponse } from '../../../utils/jsonAPI';
+import * as err from '../../../utils/errors';
+import { Request, Response } from 'express';
+import { param, Result, ValidationError, validationResult } from 'express-validator';
 
-export const deleteUserTransaction = async (
-    req: Request,
-    res: Response
-): Promise<Response> => {
-    let response: SingleResourceResponse = new SingleResourceResponse("data");
-    await param("trId").isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
+export const deleteUserTransaction = async (req: Request, res: Response): Promise<Response> => {
+    let response: SingleResourceResponse = new SingleResourceResponse('data');
+    await param('trId').isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
 
     const validationErrors: Result<ValidationError> = validationResult(req);
     if (!validationErrors.isEmpty()) {
@@ -27,7 +19,7 @@ export const deleteUserTransaction = async (
     const userId = parseInt(req.params.id);
     const transactionId = parseInt(req.params.trId);
 
-    if (req["decodedJWTPayload"]["userHeaderID"] != userId) {
+    if (req['decodedJWTPayload']['userHeaderID'] != userId) {
         response.addError(err.userIdMismatch);
         res.status(403).json(response.close());
         return;

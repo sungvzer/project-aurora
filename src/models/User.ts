@@ -1,10 +1,10 @@
-import { ResultSetHeader, RowDataPacket } from "mysql2";
-import * as dbController from "../utils/databases";
-import { hashPassword } from "../utils/argon";
-import * as err from "../utils/errors";
-import CurrencyCode from "./CurrencyCode";
-import ErrorOr from "./ErrorOr";
-import UserTransaction from "./UserTransaction";
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import * as dbController from '../utils/databases';
+import { hashPassword } from '../utils/argon';
+import * as err from '../utils/errors';
+import CurrencyCode from './CurrencyCode';
+import ErrorOr from './ErrorOr';
+import UserTransaction from './UserTransaction';
 
 export interface UserDatabaseInsertModel {
     firstName: string;
@@ -46,10 +46,7 @@ export interface UserPersonalInfo {
 }
 
 export default class User {
-    static async changePassword(
-        userId: number,
-        password: string
-    ): Promise<ErrorOr<boolean>> {
+    static async changePassword(userId: number, password: string): Promise<ErrorOr<boolean>> {
         if (!this.exists(userId)) {
             return new ErrorOr({ error: err.userNotFound });
         }
@@ -57,25 +54,21 @@ export default class User {
 
         // Query
         let sql =
-            "UPDATE UserCredential INNER JOIN UserDataHeader ON UserCredential.UserCredentialID = UserDataHeader.UserCredentialID SET UserCredential.UserPasswordHash = ? WHERE UserCredential.UserCredentialID = ?;";
+            'UPDATE UserCredential INNER JOIN UserDataHeader ON UserCredential.UserCredentialID = UserDataHeader.UserCredentialID SET UserCredential.UserPasswordHash = ? WHERE UserCredential.UserCredentialID = ?;';
         const connection = await dbController.getDatabaseConnection();
         await connection.execute(sql, [hashed, userId]);
 
         return new ErrorOr({ value: true });
     }
 
-    static async getPersonalInfo(
-        userId: number
-    ): Promise<ErrorOr<UserPersonalInfo>> {
+    static async getPersonalInfo(userId: number): Promise<ErrorOr<UserPersonalInfo>> {
         if (!(await User.exists(userId))) {
             return new ErrorOr({ error: err.userNotFound });
         }
 
         let query = `SELECT UserCreatedAt AS CreatedAt, UserFirstName AS FirstName, UserMiddleName AS MiddleName, UserLastName AS LastName, UserBirthday AS Birthday FROM UserDataHeader INNER JOIN UserPersonalInfo ON UserDataHeader.UserPersonalInfoID = UserPersonalInfo.UserPersonalInfoID WHERE UserDataHeader.UserDataHeaderID = ?;`;
         const connection = await dbController.getDatabaseConnection();
-        let [result] = await connection.execute<RowDataPacket[]>(query, [
-            userId,
-        ]);
+        let [result] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
         if (!result || result.length === 0) {
             return new ErrorOr({ error: err.personalInfoNotFound });
@@ -103,9 +96,7 @@ export default class User {
         });
     }
 
-    static async getBalanceById(
-        userId: number
-    ): Promise<ErrorOr<Map<CurrencyCode, number>>> {
+    static async getBalanceById(userId: number): Promise<ErrorOr<Map<CurrencyCode, number>>> {
         let map = new Map<CurrencyCode, number>();
         for (let code of Object.values(CurrencyCode)) {
             map.set(code, 0);
@@ -116,22 +107,22 @@ export default class User {
         }
 
         let sql =
-            "SELECT SUM(UserTransactionAmount) AS Balance, CurrencyCode FROM aurora.Transaction INNER JOIN aurora.Currency ON UserTransactionCurrencyID = CurrencyID WHERE UserDataHeaderID = ? GROUP BY CurrencyCode;";
+            'SELECT SUM(UserTransactionAmount) AS Balance, CurrencyCode FROM aurora.Transaction INNER JOIN aurora.Currency ON UserTransactionCurrencyID = CurrencyID WHERE UserDataHeaderID = ? GROUP BY CurrencyCode;';
         const connection = await dbController.getDatabaseConnection();
         let [result] = await connection.execute<RowDataPacket[]>(sql, [userId]);
 
         for (let pair of result) {
-            map.set(pair["CurrencyCode"], pair["Balance"]);
+            map.set(pair['CurrencyCode'], pair['Balance']);
         }
 
         return new ErrorOr({ value: map });
     }
     static async deleteTransaction(
         userId: number,
-        transactionId: number
+        transactionId: number,
     ): Promise<ErrorOr<boolean>> {
         let sql =
-            "SELECT UserTransactionID, UserDataHeaderID FROM Transaction WHERE UserTransactionID = ?;";
+            'SELECT UserTransactionID, UserDataHeaderID FROM Transaction WHERE UserTransactionID = ?;';
         let params = [transactionId];
 
         const connection = await dbController.getDatabaseConnection();
@@ -142,14 +133,14 @@ export default class User {
             });
         }
 
-        let transactionOwner = result[0]["UserDataHeaderID"];
+        let transactionOwner = result[0]['UserDataHeaderID'];
         if (transactionOwner !== userId) {
             return new ErrorOr({ error: err.userIdMismatch });
         }
 
         let [header] = await connection.execute<ResultSetHeader>(
-            "DELETE FROM Transaction WHERE UserTransactionID = ?;",
-            [transactionId]
+            'DELETE FROM Transaction WHERE UserTransactionID = ?;',
+            [transactionId],
         );
 
         if (header.affectedRows === 0) {
@@ -158,9 +149,7 @@ export default class User {
         return new ErrorOr({ value: true });
     }
 
-    static async create(
-        user: UserDatabaseInsertModel
-    ): Promise<ErrorOr<number>> {
+    static async create(user: UserDatabaseInsertModel): Promise<ErrorOr<number>> {
         const pool = await dbController.getDatabaseConnection();
         const firstName = user.firstName || null;
         const middleName = user.middleName || null;
@@ -176,10 +165,10 @@ export default class User {
         if (userFoundOrError.hasValue()) {
             return new ErrorOr<number>({
                 error: {
-                    code: "ERR_USER_ALREADY_EXISTS",
-                    detail: "User with email " + email + " already exists",
-                    title: "User already exists",
-                    status: "409",
+                    code: 'ERR_USER_ALREADY_EXISTS',
+                    detail: 'User with email ' + email + ' already exists',
+                    title: 'User already exists',
+                    status: '409',
                 },
             });
         }
@@ -189,18 +178,8 @@ export default class User {
         let conn = await pool.getConnection();
         await conn.beginTransaction();
         const [x] = await conn.execute(
-            "CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);",
-            [
-                firstName,
-                middleName,
-                lastName,
-                birthday,
-                email,
-                passwordHash,
-                0,
-                1,
-                currencyCode,
-            ]
+            'CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);',
+            [firstName, middleName, lastName, birthday, email, passwordHash, 0, 1, currencyCode],
         );
         await conn.commit();
         conn.release();
@@ -210,26 +189,26 @@ export default class User {
     static async getSettingsById(id: number): Promise<ErrorOr<UserSettings>> {
         const connection = await dbController.getDatabaseConnection();
         const [result] = await connection.execute<RowDataPacket[]>(
-            "SELECT * FROM UserDataHeader INNER JOIN UserSetting ON UserDataHeader.UserSettingID = UserSetting.UserSettingID INNER JOIN Currency ON UserSetting.UserCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ?",
-            [id]
+            'SELECT * FROM UserDataHeader INNER JOIN UserSetting ON UserDataHeader.UserSettingID = UserSetting.UserSettingID INNER JOIN Currency ON UserSetting.UserCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ?',
+            [id],
         );
 
         if (result.length == 0) {
             return new ErrorOr<UserSettings>({
                 error: {
-                    code: "ERR_NO_USER_SETTINGS",
-                    detail: "No user settings were found for id " + id,
-                    status: "404",
-                    title: "No settings found",
+                    code: 'ERR_NO_USER_SETTINGS',
+                    detail: 'No user settings were found for id ' + id,
+                    status: '404',
+                    title: 'No settings found',
                 },
             });
         }
 
         return new ErrorOr<UserSettings>({
             value: {
-                abbreviatedFormat: result[0]["AbbreviatedFormat"],
-                currency: result[0]["CurrencyCode"],
-                darkMode: result[0]["DarkMode"],
+                abbreviatedFormat: result[0]['AbbreviatedFormat'],
+                currency: result[0]['CurrencyCode'],
+                darkMode: result[0]['DarkMode'],
             },
         });
     }
@@ -237,8 +216,8 @@ export default class User {
     static async getUserIdByEmail(email: string): Promise<ErrorOr<number>> {
         const connection = await dbController.getDatabaseConnection();
         const [result] = await connection.execute<RowDataPacket[]>(
-            "SELECT UserCredentialID FROM UserCredential WHERE UserEmail=?;",
-            [email]
+            'SELECT UserCredentialID FROM UserCredential WHERE UserEmail=?;',
+            [email],
         );
 
         if (result.length == 0)
@@ -247,49 +226,46 @@ export default class User {
             });
 
         return new ErrorOr<number>({
-            value: result[0]["UserCredentialID"],
+            value: result[0]['UserCredentialID'],
         });
     }
 
     static async getTransactionsByUserId(
         id: number,
-        queryOptions: TransactionQueryOptions
+        queryOptions: TransactionQueryOptions,
     ): Promise<ErrorOr<UserTransaction[]>> {
         const connection = await dbController.getDatabaseConnection();
 
         let parameters: string[] = [id.toString()];
         let sql =
-            "SELECT UserTransactionID, UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ? ";
+            'SELECT UserTransactionID, UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ? ';
 
         if (queryOptions.currency) {
-            sql += " AND CurrencyCode = ? ";
+            sql += ' AND CurrencyCode = ? ';
             parameters.push(queryOptions.currency);
         }
         if (queryOptions.tag) {
-            sql += " AND UserTransactionTag = ? ";
+            sql += ' AND UserTransactionTag = ? ';
             parameters.push(queryOptions.tag);
         }
         if (queryOptions.startDate) {
-            sql += " AND UserTransactionDate >= ? ";
+            sql += ' AND UserTransactionDate >= ? ';
             parameters.push(queryOptions.startDate.toISOString());
         }
         if (queryOptions.endDate) {
-            sql += " AND UserTransactionDate <= ? ";
+            sql += ' AND UserTransactionDate <= ? ';
             parameters.push(queryOptions.endDate.toISOString());
         }
         if (queryOptions.minAmount) {
-            sql += " AND UserTransactionAmount >= ? ";
+            sql += ' AND UserTransactionAmount >= ? ';
             parameters.push(queryOptions.minAmount.toString());
         }
         if (queryOptions.maxAmount) {
-            sql += " AND UserTransactionAmount <= ? ";
+            sql += ' AND UserTransactionAmount <= ? ';
             parameters.push(queryOptions.maxAmount.toString());
         }
 
-        const [result] = await connection.execute<RowDataPacket[]>(
-            sql,
-            parameters
-        );
+        const [result] = await connection.execute<RowDataPacket[]>(sql, parameters);
         let transactionArray: UserTransaction[] = [];
         if (result.length == 0) {
             return new ErrorOr<UserTransaction[]>({
@@ -302,11 +278,11 @@ export default class User {
          */
         for (let row of result) {
             transactionArray.push({
-                id: row["UserTransactionID"],
-                amount: row["UserTransactionAmount"],
-                currency: row["CurrencyCode"],
-                date: row["UserTransactionDate"].toISOString().substring(0, 10),
-                tag: row["UserTransactionTag"],
+                id: row['UserTransactionID'],
+                amount: row['UserTransactionAmount'],
+                currency: row['CurrencyCode'],
+                date: row['UserTransactionDate'].toISOString().substring(0, 10),
+                tag: row['UserTransactionTag'],
             });
         }
 
@@ -314,13 +290,11 @@ export default class User {
             value: transactionArray,
         });
     }
-    static async getTransactionById(
-        id: number
-    ): Promise<ErrorOr<UserTransaction>> {
+    static async getTransactionById(id: number): Promise<ErrorOr<UserTransaction>> {
         const connection = await dbController.getDatabaseConnection();
 
         let sql =
-            "SELECT UserTransactionID, UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserTransactionID = ?";
+            'SELECT UserTransactionID, UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserTransactionID = ?';
 
         const [result] = await connection.execute<RowDataPacket[]>(sql, [id]);
         let transactionArray: UserTransaction[] = [];
@@ -335,11 +309,11 @@ export default class User {
          */
         for (let row of result) {
             transactionArray.push({
-                id: row["UserTransactionID"],
-                amount: row["UserTransactionAmount"],
-                currency: row["CurrencyCode"],
-                date: row["UserTransactionDate"].toISOString().substring(0, 10),
-                tag: row["UserTransactionTag"],
+                id: row['UserTransactionID'],
+                amount: row['UserTransactionAmount'],
+                currency: row['CurrencyCode'],
+                date: row['UserTransactionDate'].toISOString().substring(0, 10),
+                tag: row['UserTransactionTag'],
             });
         }
 
@@ -348,14 +322,12 @@ export default class User {
         });
     }
 
-    static async getCredentialsByEmail(
-        email: string
-    ): Promise<ErrorOr<UserCredentials>> {
+    static async getCredentialsByEmail(email: string): Promise<ErrorOr<UserCredentials>> {
         const connection = await dbController.getDatabaseConnection();
 
         const [result] = await connection.execute<RowDataPacket[]>(
-            "SELECT * FROM UserCredential WHERE UserEmail = ?",
-            [email]
+            'SELECT * FROM UserCredential WHERE UserEmail = ?',
+            [email],
         );
 
         if (result.length == 0) {
@@ -367,7 +339,7 @@ export default class User {
         return new ErrorOr<UserCredentials>({
             value: {
                 email: email,
-                passwordHash: result[0]["UserPasswordHash"],
+                passwordHash: result[0]['UserPasswordHash'],
                 lastModifiedAt: new Date(Date.now()),
             },
         });
@@ -377,8 +349,8 @@ export default class User {
         const connection = await dbController.getDatabaseConnection();
 
         const [result] = await connection.execute<RowDataPacket[]>(
-            "SELECT UserDataHeaderID FROM UserDataHeader WHERE UserDataHeaderID = ?",
-            [id]
+            'SELECT UserDataHeaderID FROM UserDataHeader WHERE UserDataHeaderID = ?',
+            [id],
         );
 
         return result.length !== 0;
@@ -393,9 +365,7 @@ export default class User {
         }
 
         const connection = await dbController.getDatabaseConnection();
-        await connection.execute<RowDataPacket[]>("CALL SP_DeleteUser(?);", [
-            id,
-        ]);
+        await connection.execute<RowDataPacket[]>('CALL SP_DeleteUser(?);', [id]);
 
         return new ErrorOr({
             value: true,

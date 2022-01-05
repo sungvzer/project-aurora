@@ -1,6 +1,6 @@
-import app from "./app";
-import { endpointList } from "./utils/endpoints";
-import { ENVIRONMENT } from "./utils/secrets";
+import app from './app';
+import { endpointList } from './utils/endpoints';
+import { ENVIRONMENT } from './utils/secrets';
 const port: number = parseInt(process.env.PORT);
 
 app.listen(port, () => {

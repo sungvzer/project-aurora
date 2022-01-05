@@ -1,10 +1,10 @@
-import { Response, Request, NextFunction } from "express";
-import assert from "node:assert";
+import { Response, Request, NextFunction } from 'express';
+import assert from 'node:assert';
 
 // TODO: AttributesObject, RelationshipsObject
 
 export const JsonAPIObject = {
-    version: "1.0",
+    version: '1.0',
 };
 
 export type Link =
@@ -128,18 +128,14 @@ export interface Error {
     meta?: object;
 }
 
-export const setJsonAPIType = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    res.setHeader("Content-Type", "application/vnd.api+json");
+export const setJsonAPIType = (req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('Content-Type', 'application/vnd.api+json');
     next();
 };
 
 // TODO: included
 export abstract class GenericResponse {
-    constructor(dataOrError: "data" | "error") {
+    constructor(dataOrError: 'data' | 'error') {
         this._dataOrError = dataOrError;
     }
 
@@ -164,40 +160,38 @@ export abstract class GenericResponse {
         }
 
         this._errors.push(error);
-        this._dataOrError = "error";
+        this._dataOrError = 'error';
         return this;
     }
 
     isError(): boolean {
-        return this._dataOrError == "error";
+        return this._dataOrError == 'error';
     }
 
     close(): object {
         assert(
-            this.data != undefined ||
-                this.errors != undefined ||
-                this.meta != undefined,
-            "Document MUST contain at least data, errors or meta"
+            this.data != undefined || this.errors != undefined || this.meta != undefined,
+            'Document MUST contain at least data, errors or meta',
         );
         assert(
             !(this.data != undefined && this.errors != undefined),
-            "Data and errors MUST NOT coexist in the same document"
+            'Data and errors MUST NOT coexist in the same document',
         );
         let response = {};
         if (this.isError()) {
-            response["errors"] = this.errors;
+            response['errors'] = this.errors;
         } else {
-            response["data"] = this.data;
+            response['data'] = this.data;
         }
         if (this.meta) {
-            response["meta"] = this.meta;
+            response['meta'] = this.meta;
         }
 
         if (this.links) {
-            response["links"] = this.links;
+            response['links'] = this.links;
         }
 
-        response["jsonapi"] = JsonAPIObject;
+        response['jsonapi'] = JsonAPIObject;
 
         return response;
     }
@@ -222,7 +216,7 @@ export abstract class GenericResponse {
     abstract get data(): any;
 
     protected _links: LinksObject;
-    protected _dataOrError: "data" | "error";
+    protected _dataOrError: 'data' | 'error';
     protected _errors: Error[] = undefined;
     protected _meta: object = undefined;
     protected _jsonAPI = JsonAPIObject;
@@ -237,7 +231,7 @@ export class SingleResourceResponse extends GenericResponse {
         return this._data;
     }
 
-    constructor(dataOrError: "data" | "error") {
+    constructor(dataOrError: 'data' | 'error') {
         super(dataOrError);
     }
 
@@ -253,10 +247,9 @@ export class MultipleResourcesResponse extends GenericResponse {
         return this._data;
     }
 
-    constructor(dataOrError: "data" | "error") {
+    constructor(dataOrError: 'data' | 'error') {
         super(dataOrError);
     }
 
-    private _data: ResourceObject[] | ResourceIdentifierObject[] | null =
-        undefined;
+    private _data: ResourceObject[] | ResourceIdentifierObject[] | null = undefined;
 }

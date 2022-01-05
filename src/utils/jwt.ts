@@ -1,12 +1,12 @@
-import * as jwt from "jsonwebtoken";
-import { Request } from "express";
+import * as jwt from 'jsonwebtoken';
+import { Request } from 'express';
 
 const accessTokenSettings: jwt.SignOptions = {
-    expiresIn: "15m",
+    expiresIn: '15m',
 };
 
 const refreshTokenSettings: jwt.SignOptions = {
-    expiresIn: "7d",
+    expiresIn: '7d',
 };
 
 export interface TokenPair {
@@ -24,21 +24,13 @@ export const generateRefreshToken = (payload: Object): string => {
 
 export const generateTokenPair = (payload: Object): TokenPair => {
     return {
-        accessToken: jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            accessTokenSettings
-        ),
-        refreshToken: jwt.sign(
-            payload,
-            process.env.JWT_REFRESH_SECRET,
-            refreshTokenSettings
-        ),
+        accessToken: jwt.sign(payload, process.env.JWT_SECRET, accessTokenSettings),
+        refreshToken: jwt.sign(payload, process.env.JWT_REFRESH_SECRET, refreshTokenSettings),
     };
 };
 
 export const getAccessTokenFromRequest = (req: Request): string => {
-    const authCookie = req.cookies["AccessToken"];
+    const authCookie = req.cookies['AccessToken'];
     if (!authCookie) {
         return null;
     }

@@ -1,7 +1,7 @@
-const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
 export default (length: number = 16): string => {
-    let str = "";
+    let str = '';
     let index: number;
     for (let i = 0; i < length; i++) {
         index = Math.random() * alphabet.length;

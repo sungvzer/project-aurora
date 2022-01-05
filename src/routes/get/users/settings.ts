@@ -1,17 +1,14 @@
-import ErrorOr from "../../../models/ErrorOr";
-import User, { UserSettings } from "../../../models/User";
-import { SingleResourceResponse } from "../../../utils/jsonAPI";
-import * as err from "../../../utils/errors";
-import { Request, Response } from "express";
+import ErrorOr from '../../../models/ErrorOr';
+import User, { UserSettings } from '../../../models/User';
+import { SingleResourceResponse } from '../../../utils/jsonAPI';
+import * as err from '../../../utils/errors';
+import { Request, Response } from 'express';
 
-export const getUserSettings = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
-    let response = new SingleResourceResponse("data");
+export const getUserSettings = async (req: Request, res: Response): Promise<void> => {
+    let response = new SingleResourceResponse('data');
     const userId = parseInt(req.params.id);
 
-    const jwtUserHeaderId = req["decodedJWTPayload"]["userHeaderID"];
+    const jwtUserHeaderId = req['decodedJWTPayload']['userHeaderID'];
 
     // This means we screwed up badly
     if (!jwtUserHeaderId) {
@@ -24,9 +21,7 @@ export const getUserSettings = async (
         return;
     }
 
-    const settingsOrError: ErrorOr<UserSettings> = await User.getSettingsById(
-        userId
-    );
+    const settingsOrError: ErrorOr<UserSettings> = await User.getSettingsById(userId);
     if (settingsOrError.isError()) {
         response.addError(settingsOrError.error);
         res.status(404).json(response.close());
@@ -35,7 +30,7 @@ export const getUserSettings = async (
 
     response.data = {
         id: userId.toString(),
-        type: "UserSettings",
+        type: 'UserSettings',
         attributes: {
             ...settingsOrError.value,
         },

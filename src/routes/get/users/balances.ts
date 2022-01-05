@@ -1,18 +1,15 @@
-import ErrorOr from "../../../models/ErrorOr";
-import User, { UserSettings } from "../../../models/User";
-import { SingleResourceResponse } from "../../../utils/jsonAPI";
-import * as err from "../../../utils/errors";
-import { Request, Response } from "express";
-import CurrencyCode from "../../../models/CurrencyCode";
+import ErrorOr from '../../../models/ErrorOr';
+import User, { UserSettings } from '../../../models/User';
+import { SingleResourceResponse } from '../../../utils/jsonAPI';
+import * as err from '../../../utils/errors';
+import { Request, Response } from 'express';
+import CurrencyCode from '../../../models/CurrencyCode';
 
-export const getUserBalances = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
-    let response = new SingleResourceResponse("data");
+export const getUserBalances = async (req: Request, res: Response): Promise<void> => {
+    let response = new SingleResourceResponse('data');
     const userId = parseInt(req.params.id);
 
-    const jwtUserHeaderId = req["decodedJWTPayload"]["userHeaderID"];
+    const jwtUserHeaderId = req['decodedJWTPayload']['userHeaderID'];
 
     // This means we screwed up badly
     if (!jwtUserHeaderId) {
@@ -25,8 +22,7 @@ export const getUserBalances = async (
         return;
     }
 
-    const balanceOrError: ErrorOr<Map<CurrencyCode, number>> =
-        await User.getBalanceById(userId);
+    const balanceOrError: ErrorOr<Map<CurrencyCode, number>> = await User.getBalanceById(userId);
     if (balanceOrError.isError()) {
         response.addError(balanceOrError.error);
         res.status(404).json(response.close());
@@ -35,7 +31,7 @@ export const getUserBalances = async (
 
     response.data = {
         id: userId.toString(),
-        type: "UserBalances",
+        type: 'UserBalances',
         attributes: {
             ...Object.fromEntries(balanceOrError.value),
         },

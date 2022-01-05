@@ -1,30 +1,25 @@
-import { Router } from "express";
-import {
-    param,
-    Result,
-    ValidationError,
-    validationResult,
-} from "express-validator";
-import { requireAuthentication } from "../middleware/authentication";
-import { verifyJsonApiRequest } from "../middleware/jsonAPI";
-import { deleteUser } from "../routes/delete/users";
-import { getUserSettings } from "../routes/get/users/settings";
-import { getUserTransactions } from "../routes/get/users/transactions";
-import { postUserTransactions } from "../routes/post/users/transactions";
-import { SingleResourceResponse } from "../utils/jsonAPI";
-import * as err from "../utils/errors";
-import User from "../models/User";
-import { deleteUserTransaction } from "../routes/delete/users/transactions";
-import { getUserBalances } from "../routes/get/users/balances";
-import { patchUserTransaction } from "../routes/patch/users/transactions";
-import { patchUserSettings } from "../routes/patch/users/settings";
-import { getUser } from "../routes/get/users";
+import { Router } from 'express';
+import { param, Result, ValidationError, validationResult } from 'express-validator';
+import { requireAuthentication } from '../middleware/authentication';
+import { verifyJsonApiRequest } from '../middleware/jsonAPI';
+import { deleteUser } from '../routes/delete/users';
+import { getUserSettings } from '../routes/get/users/settings';
+import { getUserTransactions } from '../routes/get/users/transactions';
+import { postUserTransactions } from '../routes/post/users/transactions';
+import { SingleResourceResponse } from '../utils/jsonAPI';
+import * as err from '../utils/errors';
+import User from '../models/User';
+import { deleteUserTransaction } from '../routes/delete/users/transactions';
+import { getUserBalances } from '../routes/get/users/balances';
+import { patchUserTransaction } from '../routes/patch/users/transactions';
+import { patchUserSettings } from '../routes/patch/users/settings';
+import { getUser } from '../routes/get/users';
 
 const userRouter = Router();
 
-userRouter.use("/:id", async (req, res, next) => {
-    let response = new SingleResourceResponse("error");
-    await param("id", err.invalidUserId)
+userRouter.use('/:id', async (req, res, next) => {
+    let response = new SingleResourceResponse('error');
+    await param('id', err.invalidUserId)
         .notEmpty()
         .isInt({ allow_leading_zeroes: false, gt: 0 })
         .run(req);
@@ -46,43 +41,30 @@ userRouter.use("/:id", async (req, res, next) => {
 });
 
 // GET
-userRouter.get("/:id/settings", requireAuthentication, getUserSettings);
-userRouter.get(
-    "/:id/transactions/:trId?",
-    requireAuthentication,
-    getUserTransactions
-);
-userRouter.get("/:id", requireAuthentication, getUser);
-userRouter.get("/:id/balances", requireAuthentication, getUserBalances);
+userRouter.get('/:id/settings', requireAuthentication, getUserSettings);
+userRouter.get('/:id/transactions/:trId?', requireAuthentication, getUserTransactions);
+userRouter.get('/:id', requireAuthentication, getUser);
+userRouter.get('/:id/balances', requireAuthentication, getUserBalances);
 
 // POST
 userRouter.post(
-    "/:id/transactions",
+    '/:id/transactions',
     verifyJsonApiRequest,
     requireAuthentication,
-    postUserTransactions
+    postUserTransactions,
 );
 
 // DELETE
-userRouter.delete("/:id", requireAuthentication, deleteUser);
-userRouter.delete(
-    "/:id/transactions/:trId",
-    requireAuthentication,
-    deleteUserTransaction
-);
+userRouter.delete('/:id', requireAuthentication, deleteUser);
+userRouter.delete('/:id/transactions/:trId', requireAuthentication, deleteUserTransaction);
 
 // PATCH
 userRouter.patch(
-    "/:id/transactions/:trId",
+    '/:id/transactions/:trId',
     requireAuthentication,
     verifyJsonApiRequest,
-    patchUserTransaction
+    patchUserTransaction,
 );
-userRouter.patch(
-    "/:id/settings",
-    requireAuthentication,
-    verifyJsonApiRequest,
-    patchUserSettings
-);
+userRouter.patch('/:id/settings', requireAuthentication, verifyJsonApiRequest, patchUserSettings);
 
 export default userRouter;
