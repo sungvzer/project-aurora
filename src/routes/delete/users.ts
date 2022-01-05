@@ -4,7 +4,7 @@ import * as err from '../../utils/errors';
 import { Request, Response } from 'express';
 
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
-    let response: SingleResourceResponse = new SingleResourceResponse('data');
+    const response: SingleResourceResponse = new SingleResourceResponse('data');
 
     const userId = parseInt(req.params.id);
     if (req['decodedJWTPayload']['userHeaderID'] != userId) {

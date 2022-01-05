@@ -1,11 +1,11 @@
 import ErrorOr from '../../models/ErrorOr';
-import User, { UserPersonalInfo, UserSettings } from '../../models/User';
+import User, { UserPersonalInfo } from '../../models/User';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as err from '../../utils/errors';
 import { Request, Response } from 'express';
 
 export const getUser = async (req: Request, res: Response): Promise<void> => {
-    let response = new SingleResourceResponse('data');
+    const response = new SingleResourceResponse('data');
     const userId = parseInt(req.params.id);
 
     const jwtUserHeaderId = req['decodedJWTPayload']['userHeaderID'];

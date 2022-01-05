@@ -153,7 +153,7 @@ export abstract class GenericResponse {
             this._errors = [];
         }
 
-        for (let err of this.errors) {
+        for (const err of this.errors) {
             if (err.code === error.code) {
                 return this;
             }
@@ -177,7 +177,7 @@ export abstract class GenericResponse {
             !(this.data != undefined && this.errors != undefined),
             'Data and errors MUST NOT coexist in the same document',
         );
-        let response = {};
+        const response = {};
         if (this.isError()) {
             response['errors'] = this.errors;
         } else {

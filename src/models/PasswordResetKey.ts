@@ -15,7 +15,7 @@ export interface Key {
 
 export default class PasswordResetKey {
     public static async produce(email: string): Promise<ErrorOr<Key>> {
-        let userIdOrError = await User.getUserIdByEmail(email);
+        const userIdOrError = await User.getUserIdByEmail(email);
         if (userIdOrError.isError()) {
             return new ErrorOr({ error: userIdOrError.error });
         }
@@ -26,9 +26,9 @@ export default class PasswordResetKey {
         const expiresOn = new Date(Date.now() + millisecondsInAnHour); // We expire it after a single hour due to security reasons.
 
         // Query
-        let sql =
+        const sql =
             'INSERT INTO `PasswordResetKey` (`UserDataHeaderID`, `Key`, `ExpiresOn`) VALUES (?, ?, ?);';
-        let result = await pool.execute(sql, [userIdOrError.value, generatedKey, expiresOn]);
+        await pool.execute(sql, [userIdOrError.value, generatedKey, expiresOn]);
 
         return new ErrorOr({
             value: {
@@ -52,8 +52,8 @@ export default class PasswordResetKey {
             });
         }
 
-        let idToBeDeleted = result[0].PasswordResetKeyID;
-        let userId = result[0].UserDataHeaderID;
+        const idToBeDeleted = result[0].PasswordResetKeyID;
+        const userId = result[0].UserDataHeaderID;
 
         assert(idToBeDeleted != null);
         [result] = await pool.execute<RowDataPacket[]>(

@@ -40,7 +40,7 @@ if (ENVIRONMENT === 'Development') {
 export const { requestPasswordReset } = new (class {
     transport = nodemailer.createTransport(smtpOptions);
     requestPasswordReset = async (req: Request, res: Response): Promise<void> => {
-        let response = new SingleResourceResponse('data');
+        const response = new SingleResourceResponse('data');
 
         /**
          * Empty Checks
@@ -68,33 +68,35 @@ export const { requestPasswordReset } = new (class {
             return;
         }
 
-        let email = req.body.data.attributes.email;
+        const email = req.body.data.attributes.email;
         {
-            let idOrError = await User.getUserIdByEmail(email);
+            const idOrError = await User.getUserIdByEmail(email);
             if (idOrError.isError()) {
                 response.meta = {
-                    message: `A reset key has been sent to the email as requested. Use this key in the /reset_password endpoint.`,
+                    message:
+                        'A reset key has been sent to the email as requested. Use this key in the /reset_password endpoint.',
                 };
                 res.status(201).json(response.close());
                 return;
             }
         }
 
-        let resetKeyOrError = await PasswordResetKey.produce(email);
+        const resetKeyOrError = await PasswordResetKey.produce(email);
         if (resetKeyOrError.isError()) {
             response.addError(err.internal);
             res.status(500).json(response.close());
         }
 
-        let resetKey = resetKeyOrError.value;
-        let passwordResetEmail: SMTPTransport.Options = {};
+        const resetKey = resetKeyOrError.value;
+        const passwordResetEmail: SMTPTransport.Options = {};
         Object.assign(passwordResetEmail, smtpOptions);
         passwordResetEmail.to = email;
         passwordResetEmail.html = htmlPasswordResetTemplate.replace('{{params.key}}', resetKey.key);
         passwordResetEmail.subject = 'Password reset';
         this.transport.sendMail(passwordResetEmail);
         response.meta = {
-            message: `A reset key has been sent to the email as requested. Use this key in the /reset_password endpoint.`,
+            message:
+                'A reset key has been sent to the email as requested. Use this key in the /reset_password endpoint.',
         };
         res.status(201).json(response.close());
     };

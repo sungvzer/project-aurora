@@ -12,10 +12,10 @@ export const verifyJsonApiRequest = async (
     await check('data', err.blankDataField).notEmpty().run(req);
     await check('data', err.invalidRequestBody).custom(isValidResourceObject).run(req);
 
-    let errors = validationResult(req);
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        let response = new SingleResourceResponse('error');
-        for (let { msg } of errors.array()) {
+        const response = new SingleResourceResponse('error');
+        for (const { msg } of errors.array()) {
             response.addError(msg);
         }
         res.status(400).json(response.close());

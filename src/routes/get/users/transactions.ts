@@ -10,8 +10,6 @@ import * as err from '../../../utils/errors';
 import { Request, Response } from 'express';
 import { query, Result, ValidationError, validationResult } from 'express-validator';
 import CurrencyCode, { isCurrencyCode } from '../../../models/CurrencyCode';
-import ErrorOr from '../../../models/ErrorOr';
-import UserTransaction from '../../../models/UserTransaction';
 
 export const getUserTransactions = async (req: Request, res: Response) => {
     let response: GenericResponse;
@@ -76,7 +74,7 @@ export const getUserTransactions = async (req: Request, res: Response) => {
     }
 
     // Parse query
-    let queryOptions: TransactionQueryOptions = {};
+    const queryOptions: TransactionQueryOptions = {};
 
     if (req.query.currency) queryOptions.currency = CurrencyCode[req.query.currency.toString()];
 
@@ -94,8 +92,7 @@ export const getUserTransactions = async (req: Request, res: Response) => {
     if (!req.params.trId) {
         response = new MultipleResourcesResponse('data');
 
-        let transactionsOrError: ErrorOr<UserTransaction[]>;
-        transactionsOrError = await User.getTransactionsByUserId(payloadID, queryOptions);
+        const transactionsOrError = await User.getTransactionsByUserId(payloadID, queryOptions);
         if (transactionsOrError.isError()) {
             res.status(500).json(
                 response
@@ -124,7 +121,7 @@ export const getUserTransactions = async (req: Request, res: Response) => {
     } else {
         response = new SingleResourceResponse('data');
 
-        let transactionOrError = await User.getTransactionById(parseInt(req.params.trId));
+        const transactionOrError = await User.getTransactionById(parseInt(req.params.trId));
         if (transactionOrError.isError()) {
             if (transactionOrError.error.status === '404') {
                 response.addError(transactionOrError.error);

@@ -2,7 +2,7 @@
 
 import express from 'express';
 
-export const print = (path: [], layer: any) => {
+export const print = (path: [], layer) => {
     if (layer.route) {
         layer.route.stack.forEach(print.bind(null, path.concat(split(layer.route.path))));
     } else if (layer.name === 'router' && layer.handle.stack) {
@@ -16,7 +16,7 @@ export const print = (path: [], layer: any) => {
     }
 };
 
-export const split = (thing: any): any => {
+export const split = (thing) => {
     if (typeof thing === 'string') {
         return thing.split('/');
     } else if (thing.fast_slash) {
@@ -26,7 +26,7 @@ export const split = (thing: any): any => {
             .toString()
             .replace('\\/?', '')
             .replace('(?=\\/|$)', '$')
-            .match(/^\/\^((?:\\[.*+?^${}()|[\]\\\/]|[^.*+?^${}()|[\]\\\/])*)\$\//);
+            .match(/^\/\^((?:\\[.*+?^${}()|[\]\\/]|[^.*+?^${}()|[\]\\/])*)\$\//);
         return match
             ? match[1].replace(/\\(.)/g, '$1').split('/')
             : '<complex:' + thing.toString() + '>';

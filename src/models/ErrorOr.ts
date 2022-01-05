@@ -33,14 +33,14 @@ export default class ErrorOr<T> {
         this._error = null;
     }
 
-    public get error(): Error {
-        assert(this.isError());
-        return this._error;
-    }
-
     public get value(): T {
         assert(this.hasValue());
         return this._value;
+    }
+
+    public get error(): Error {
+        assert(this.isError());
+        return this._error;
     }
 
     private _error: Error;

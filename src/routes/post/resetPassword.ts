@@ -1,22 +1,13 @@
 import { Request, Response } from 'express';
-import { check, body, Result, ValidationError, validationResult } from 'express-validator';
-import { getRedisConnection, periodicRefreshTokenCleanup } from '../../utils/databases';
-import ErrorOr from '../../models/ErrorOr';
-import User, { UserCredentials } from '../../models/User';
-import { verifyPassword } from '../../utils/argon';
-import {
-    resourceObjectHas,
-    resourceObjectValidateEmail,
-    resourceObjectSanitizeEmail,
-} from '../../utils/customValidators';
+import { check, Result, ValidationError, validationResult } from 'express-validator';
+import User from '../../models/User';
+import { resourceObjectHas } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
-import { generateTokenPair } from '../../utils/jwt';
 import * as err from '../../utils/errors';
-import { millisecondsInADay } from '../../utils/time';
 import PasswordResetKey from '../../models/PasswordResetKey';
 
 export const resetPassword = async (req: Request, res: Response): Promise<void> => {
-    let response = new SingleResourceResponse('data');
+    const response = new SingleResourceResponse('data');
 
     /**
      * Empty Checks
@@ -36,15 +27,15 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
         return;
     }
 
-    let resetKey = req.body.data.attributes.resetKey;
-    let password = req.body.data.attributes.password;
+    const resetKey = req.body.data.attributes.resetKey;
+    const password = req.body.data.attributes.password;
 
     response.meta = {
         resetKey,
         password,
     };
 
-    let userIdOrError = await PasswordResetKey.consume(resetKey);
+    const userIdOrError = await PasswordResetKey.consume(resetKey);
     if (userIdOrError.isError()) {
         res.status(400).json(response.addError(userIdOrError.error).close());
         return;

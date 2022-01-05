@@ -32,6 +32,7 @@ export const getDatabaseConnection = async () => {
     return pool.promise();
 };
 
+// FIXME: RedisModules, RedisScripts
 export const getRedisConnection = async (): Promise<RedisClientType<{}, {}>> => {
     const client = createClient({
         url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
@@ -45,6 +46,7 @@ export const getRedisConnection = async (): Promise<RedisClientType<{}, {}>> => 
 
 export const { periodicRefreshTokenCleanup } = new (class {
     count = -1;
+    // FIXME: Same FIXME as above
     connection: RedisClientType<{}, {}>;
     periodicRefreshTokenCleanup = async () => {
         this.count++;

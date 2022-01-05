@@ -15,14 +15,14 @@ export const invalidResetKey: Error = {
 };
 export const wrongCredentials: Error = {
     code: 'ERR_WRONG_CREDENTIALS',
-    detail: `A wrong email or password were used. I'm not gonna tell you which though.`,
+    detail: "A wrong email or password were used. I'm not gonna tell you which though.",
     status: '400',
     title: 'Wrong email or password',
 };
 
 export const personalInfoNotFound: Error = {
     code: 'ERR_INFO_NOT_FOUND',
-    detail: `Personal info for this user could not be retrieved, probably due to an internal error.`,
+    detail: 'Personal info for this user could not be retrieved, probably due to an internal error.',
     status: '500',
     title: 'Personal info not found',
 };

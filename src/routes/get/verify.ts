@@ -2,7 +2,7 @@ import { SingleResourceResponse } from '../../utils/jsonAPI';
 import { Request, Response } from 'express';
 
 export const getVerify = async (req: Request, res: Response): Promise<void> => {
-    let response = new SingleResourceResponse('data');
+    const response = new SingleResourceResponse('data');
 
     response.data = {
         id: req['decodedJWTPayload']['userHeaderID'],

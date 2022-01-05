@@ -50,10 +50,10 @@ export default class User {
         if (!this.exists(userId)) {
             return new ErrorOr({ error: err.userNotFound });
         }
-        let hashed = await hashPassword(password);
+        const hashed = await hashPassword(password);
 
         // Query
-        let sql =
+        const sql =
             'UPDATE UserCredential INNER JOIN UserDataHeader ON UserCredential.UserCredentialID = UserDataHeader.UserCredentialID SET UserCredential.UserPasswordHash = ? WHERE UserCredential.UserCredentialID = ?;';
         const connection = await dbController.getDatabaseConnection();
         await connection.execute(sql, [hashed, userId]);
@@ -66,22 +66,23 @@ export default class User {
             return new ErrorOr({ error: err.userNotFound });
         }
 
-        let query = `SELECT UserCreatedAt AS CreatedAt, UserFirstName AS FirstName, UserMiddleName AS MiddleName, UserLastName AS LastName, UserBirthday AS Birthday FROM UserDataHeader INNER JOIN UserPersonalInfo ON UserDataHeader.UserPersonalInfoID = UserPersonalInfo.UserPersonalInfoID WHERE UserDataHeader.UserDataHeaderID = ?;`;
+        const query =
+            'SELECT UserCreatedAt AS CreatedAt, UserFirstName AS FirstName, UserMiddleName AS MiddleName, UserLastName AS LastName, UserBirthday AS Birthday FROM UserDataHeader INNER JOIN UserPersonalInfo ON UserDataHeader.UserPersonalInfoID = UserPersonalInfo.UserPersonalInfoID WHERE UserDataHeader.UserDataHeaderID = ?;';
         const connection = await dbController.getDatabaseConnection();
-        let [result] = await connection.execute<RowDataPacket[]>(query, [userId]);
+        const [result] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
         if (!result || result.length === 0) {
             return new ErrorOr({ error: err.personalInfoNotFound });
         }
 
-        let data = result[0] as {
+        const data = result[0] as {
             Birthday: Date;
             CreatedAt: Date;
             FirstName: string;
             LastName: string;
             MiddleName: string;
         };
-        let info: UserPersonalInfo = {
+        const info: UserPersonalInfo = {
             birthday: data.Birthday.toISOString().substring(0, 10),
             createdAt: data.CreatedAt.toISOString().substring(0, 10),
             firstName: data.FirstName,
@@ -97,8 +98,8 @@ export default class User {
     }
 
     static async getBalanceById(userId: number): Promise<ErrorOr<Map<CurrencyCode, number>>> {
-        let map = new Map<CurrencyCode, number>();
-        for (let code of Object.values(CurrencyCode)) {
+        const map = new Map<CurrencyCode, number>();
+        for (const code of Object.values(CurrencyCode)) {
             map.set(code, 0);
         }
 
@@ -106,12 +107,12 @@ export default class User {
             return new ErrorOr({ error: err.userNotFound });
         }
 
-        let sql =
+        const sql =
             'SELECT SUM(UserTransactionAmount) AS Balance, CurrencyCode FROM aurora.Transaction INNER JOIN aurora.Currency ON UserTransactionCurrencyID = CurrencyID WHERE UserDataHeaderID = ? GROUP BY CurrencyCode;';
         const connection = await dbController.getDatabaseConnection();
-        let [result] = await connection.execute<RowDataPacket[]>(sql, [userId]);
+        const [result] = await connection.execute<RowDataPacket[]>(sql, [userId]);
 
-        for (let pair of result) {
+        for (const pair of result) {
             map.set(pair['CurrencyCode'], pair['Balance']);
         }
 
@@ -121,24 +122,24 @@ export default class User {
         userId: number,
         transactionId: number,
     ): Promise<ErrorOr<boolean>> {
-        let sql =
+        const sql =
             'SELECT UserTransactionID, UserDataHeaderID FROM Transaction WHERE UserTransactionID = ?;';
-        let params = [transactionId];
+        const params = [transactionId];
 
         const connection = await dbController.getDatabaseConnection();
-        let [result] = await connection.execute<RowDataPacket[]>(sql, params);
+        const [result] = await connection.execute<RowDataPacket[]>(sql, params);
         if (result.length === 0) {
             return new ErrorOr({
                 error: err.transactionNotFound,
             });
         }
 
-        let transactionOwner = result[0]['UserDataHeaderID'];
+        const transactionOwner = result[0]['UserDataHeaderID'];
         if (transactionOwner !== userId) {
             return new ErrorOr({ error: err.userIdMismatch });
         }
 
-        let [header] = await connection.execute<ResultSetHeader>(
+        const [header] = await connection.execute<ResultSetHeader>(
             'DELETE FROM Transaction WHERE UserTransactionID = ?;',
             [transactionId],
         );
@@ -175,7 +176,7 @@ export default class User {
         // Original query is:
         // CALL`aurora`.`SP_InsertUserIntoDatabase`(firstName, middleName, lastName, birthday, email, passwordHash, darkMode, abbreviatedFormat, currencyCode, insertedIdOutVariable);
 
-        let conn = await pool.getConnection();
+        const conn = await pool.getConnection();
         await conn.beginTransaction();
         const [x] = await conn.execute(
             'CALL`aurora`.`SP_InsertUserIntoDatabase`(?, ?, ?, ?, ?, ?, ?, ?, ?, @insertedID);',
@@ -236,7 +237,7 @@ export default class User {
     ): Promise<ErrorOr<UserTransaction[]>> {
         const connection = await dbController.getDatabaseConnection();
 
-        let parameters: string[] = [id.toString()];
+        const parameters: string[] = [id.toString()];
         let sql =
             'SELECT UserTransactionID, UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserDataHeaderID = ? ';
 
@@ -266,7 +267,7 @@ export default class User {
         }
 
         const [result] = await connection.execute<RowDataPacket[]>(sql, parameters);
-        let transactionArray: UserTransaction[] = [];
+        const transactionArray: UserTransaction[] = [];
         if (result.length == 0) {
             return new ErrorOr<UserTransaction[]>({
                 value: [],
@@ -276,7 +277,7 @@ export default class User {
         /**
          * UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode
          */
-        for (let row of result) {
+        for (const row of result) {
             transactionArray.push({
                 id: row['UserTransactionID'],
                 amount: row['UserTransactionAmount'],
@@ -293,11 +294,11 @@ export default class User {
     static async getTransactionById(id: number): Promise<ErrorOr<UserTransaction>> {
         const connection = await dbController.getDatabaseConnection();
 
-        let sql =
+        const sql =
             'SELECT UserTransactionID, UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode FROM Transaction INNER JOIN Currency ON Transaction.UserTransactionCurrencyID = Currency.CurrencyID WHERE UserTransactionID = ?';
 
         const [result] = await connection.execute<RowDataPacket[]>(sql, [id]);
-        let transactionArray: UserTransaction[] = [];
+        const transactionArray: UserTransaction[] = [];
         if (result.length == 0) {
             return new ErrorOr<UserTransaction>({
                 error: err.transactionNotFound,
@@ -307,7 +308,7 @@ export default class User {
         /**
          * UserTransactionAmount, UserTransactionDate, UserTransactionTag, CurrencyCode
          */
-        for (let row of result) {
+        for (const row of result) {
             transactionArray.push({
                 id: row['UserTransactionID'],
                 amount: row['UserTransactionAmount'],

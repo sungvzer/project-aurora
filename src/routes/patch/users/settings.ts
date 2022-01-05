@@ -10,8 +10,7 @@ import { ResultSetHeader } from 'mysql2';
 import User from '../../../models/User';
 
 export const patchUserSettings = async (req: Request, res: Response): Promise<Response> => {
-    let response = new SingleResourceResponse('data');
-    let userId: number;
+    const response = new SingleResourceResponse('data');
     await check('data', err.invalidRequestBody).not().custom(dataIsArray).run(req);
     await check('data', err.unsupportedIdInRequest).not().custom(dataHas('id')).run(req);
 
@@ -26,7 +25,7 @@ export const patchUserSettings = async (req: Request, res: Response): Promise<Re
 
     await check('data', err.invalidDarkModeValue)
         .custom((input) => {
-            let value = input['attributes']['darkMode'];
+            const value = input['attributes']['darkMode'];
             if (!value) {
                 return true;
             }
@@ -43,7 +42,7 @@ export const patchUserSettings = async (req: Request, res: Response): Promise<Re
 
     await check('data', err.invalidAbbreviatedAmountValue)
         .custom((input) => {
-            let value = input['attributes']['abbreviatedFormat'];
+            const value = input['attributes']['abbreviatedFormat'];
             if (!value) {
                 return true;
             }
@@ -66,17 +65,17 @@ export const patchUserSettings = async (req: Request, res: Response): Promise<Re
         return res.status(400).json(response.close());
     }
 
-    userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id);
     if (req['decodedJWTPayload']['userHeaderID'] !== userId) {
         return res.status(403).json(response.addError(err.userIdMismatch).close());
     }
 
-    let settingsOrError = await User.getSettingsById(userId);
+    const settingsOrError = await User.getSettingsById(userId);
     if (settingsOrError.isError()) {
         return res.status(400).json(response.addError(settingsOrError.error).close());
     }
 
-    let resource: ResourceObject = req.body.data;
+    const resource: ResourceObject = req.body.data;
 
     const darkMode = resource.attributes.darkMode;
     const abbreviatedFormat = resource.attributes.abbreviatedFormat;
@@ -88,7 +87,7 @@ export const patchUserSettings = async (req: Request, res: Response): Promise<Re
     }
 
     let sql = 'UPDATE `aurora`.`UserSetting` SET';
-    let params = [];
+    const params = [];
     let firstParameter = true;
 
     if (currency) {
@@ -123,7 +122,7 @@ export const patchUserSettings = async (req: Request, res: Response): Promise<Re
     params.push(userId);
 
     const connection = await getDatabaseConnection();
-    const [result] = await connection.execute<ResultSetHeader>(sql, params);
+    await connection.execute<ResultSetHeader>(sql, params);
 
     response.data = {
         id: userId.toString(),

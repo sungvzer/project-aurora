@@ -1,9 +1,11 @@
 import CurrencyCode from './CurrencyCode';
 
-export default interface UserTransaction {
+interface UserTransaction {
     id: number;
     amount: number;
     currency: CurrencyCode;
     date: string;
     tag: string;
 }
+
+export default UserTransaction;

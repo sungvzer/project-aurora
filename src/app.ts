@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { appNameArt } from './utils/ascii';
 import { defaultError } from './routes/common/default';
 import { requireAuthentication } from './middleware/authentication';
@@ -14,7 +14,6 @@ import cors, { CorsOptions } from 'cors';
 import cookieParser from 'cookie-parser';
 import { getVerify } from './routes/get/verify';
 import { requestPasswordReset } from './routes/post/requestPasswordReset';
-import PasswordResetKey from './models/PasswordResetKey';
 import { resetPassword } from './routes/post/resetPassword';
 import colors from 'colors/safe';
 
@@ -91,8 +90,10 @@ app.use(setJsonAPIType);
  * Error Handling
  */
 app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
-    let response: SingleResourceResponse = new SingleResourceResponse('error');
-
+    const response: SingleResourceResponse = new SingleResourceResponse('error');
+    if (!err) {
+        next();
+    }
     if (err instanceof SyntaxError) {
         const error = {
             status: undefined,

@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 import { param, Result, ValidationError, validationResult } from 'express-validator';
 
 export const deleteUserTransaction = async (req: Request, res: Response): Promise<Response> => {
-    let response: SingleResourceResponse = new SingleResourceResponse('data');
+    const response: SingleResourceResponse = new SingleResourceResponse('data');
     await param('trId').isInt({ allow_leading_zeroes: false, gt: 0 }).run(req);
 
     const validationErrors: Result<ValidationError> = validationResult(req);

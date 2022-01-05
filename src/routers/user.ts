@@ -18,7 +18,7 @@ import { getUser } from '../routes/get/users';
 const userRouter = Router();
 
 userRouter.use('/:id', async (req, res, next) => {
-    let response = new SingleResourceResponse('error');
+    const response = new SingleResourceResponse('error');
     await param('id', err.invalidUserId)
         .notEmpty()
         .isInt({ allow_leading_zeroes: false, gt: 0 })
@@ -31,7 +31,7 @@ userRouter.use('/:id', async (req, res, next) => {
         res.status(400).json(response.close());
         return;
     }
-    let userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id);
     if (!(await User.exists(userId))) {
         response.addError(err.userNotFound);
         res.status(404).json(response.close());

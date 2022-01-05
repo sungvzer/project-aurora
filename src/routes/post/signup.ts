@@ -13,7 +13,7 @@ import { Request, Response } from 'express';
 import assert from 'node:assert';
 
 export const postSignup = async (req: Request, res: Response): Promise<void> => {
-    let response: SingleResourceResponse = new SingleResourceResponse('data');
+    const response: SingleResourceResponse = new SingleResourceResponse('data');
     /**
      * Empty Checks
      */
@@ -34,7 +34,7 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
         .run(req);
     await check('data', err.invalidEmail).custom(resourceObjectValidateEmail).run(req);
     await check('data', err.invalidDate)
-        .custom((input, _) => {
+        .custom((input) => {
             return validator.isDate(input['attributes']['birthday'], {
                 format: 'YYYY-MM-DD',
             });
@@ -56,7 +56,7 @@ export const postSignup = async (req: Request, res: Response): Promise<void> => 
         return;
     }
 
-    let resource: ResourceObject = req.body.data;
+    const resource: ResourceObject = req.body.data;
 
     const email = resource.attributes.email;
     const plainTextPassword = resource.attributes.password;

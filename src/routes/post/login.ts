@@ -15,7 +15,7 @@ import * as err from '../../utils/errors';
 import { millisecondsInADay } from '../../utils/time';
 
 export const postLogin = async (req: Request, res: Response): Promise<void> => {
-    let response = new SingleResourceResponse('data');
+    const response = new SingleResourceResponse('data');
 
     /* FIXME: The current behavior "leaks" RefreshTokens and should be prevented so that the periodic cleanup does not need to occur:
               Whenever a new refresh token is issued, we should find a way to actually verify if that user already has a certain token,

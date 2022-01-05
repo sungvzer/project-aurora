@@ -1,36 +1,38 @@
-import { CustomSanitizer, Meta, CustomValidator } from 'express-validator';
+import { CustomSanitizer, CustomValidator } from 'express-validator';
 import validator from 'validator';
 
-function editResourceAttribute(object: any, attribute: string, value: any): object {
-    let returned = { ...object };
-    returned['attributes'] = { ...object.attributes };
+function editResourceAttribute(toChange: object, attribute: string, value: unknown): object {
+    if (!Object.prototype.hasOwnProperty.call(toChange, 'attributes')) return;
+    const returned = { ...toChange };
+    returned['attributes'] = { ...toChange['attributes'] };
     returned['attributes'][attribute] = value;
     return returned;
 }
 
 export const resourceObjectHas = (str: string): CustomValidator => {
-    return (input, meta) => input['attributes'][str];
+    return (input) => input['attributes'][str];
 };
 
-export const resourceObjectValidateEmail = (input: any, meta: Meta): any => {
+export const resourceObjectValidateEmail = (input: unknown): boolean => {
     if (input['attributes']['email']) {
         const email = input['attributes']['email'];
         return validator.isEmail(email);
     }
+    return false;
 };
 
-export const dataIsArray = (input: any, meta: Meta): any => {
+export const dataIsArray = (input: unknown): boolean => {
     return Array.isArray(input);
 };
 
 export const dataHas = (str: string): CustomValidator => {
-    return (input, meta) => input[str];
+    return (input) => input[str];
 };
 
 /**
  * This function does not validate if email is present or not, please check with `jwtObjectHas` and `jwtObjectValidateEmail`
  */
-export const resourceObjectSanitizeEmail: CustomSanitizer = (input, meta): any => {
+export const resourceObjectSanitizeEmail: CustomSanitizer = (input): object => {
     if (!input || !input['attributes'] || !input['attributes']['email']) {
         return null;
     }
@@ -39,13 +41,13 @@ export const resourceObjectSanitizeEmail: CustomSanitizer = (input, meta): any =
         gmail_remove_dots: false,
         all_lowercase: true,
     });
-    let returnedObject = editResourceAttribute(input, 'email', email);
+    const returnedObject = editResourceAttribute(input, 'email', email);
 
     return returnedObject;
 };
 
-export const isValidResourceObject = (input: any) => {
-    const checkInput = (input: any): boolean => {
+export const isValidResourceObject = (input: object) => {
+    const checkInput = (input: object): boolean => {
         const allowedResourceKeys = ['id', 'type', 'attributes', 'relationships', 'links', 'meta'];
 
         if (!input) {
@@ -65,7 +67,7 @@ export const isValidResourceObject = (input: any) => {
     };
 
     if (Array.isArray(input)) {
-        for (let member of input) {
+        for (const member of input) {
             if (!checkInput(member)) {
                 return false;
             }

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import * as routes from 'get-routes';
 
 export const getRoutes = async (req: Request, res: Response): Promise<void> => {
-    let response = new SingleResourceResponse('data');
+    const response = new SingleResourceResponse('data');
     response.data = {
         id: '0',
         type: 'Routes',

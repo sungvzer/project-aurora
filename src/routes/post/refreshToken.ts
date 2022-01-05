@@ -1,5 +1,4 @@
-import { check, cookie, validationResult } from 'express-validator';
-import { resourceObjectHas } from '../../utils/customValidators';
+import { cookie, validationResult } from 'express-validator';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as commonErrors from '../../utils/errors';
 import { Request, Response } from 'express';
@@ -9,7 +8,7 @@ import { generateTokenPair } from '../../utils/jwt';
 import { millisecondsInADay } from '../../utils/time';
 
 export const regenerateToken = async (req: Request, res: Response): Promise<void> => {
-    let response = new SingleResourceResponse('data');
+    const response = new SingleResourceResponse('data');
     /**
      * Empty Check
      */

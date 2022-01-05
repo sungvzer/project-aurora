@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { check, param, Result, ValidationError, validationResult } from 'express-validator';
 import { getDatabaseConnection } from '../../../utils/databases';
-import { resourceObjectHas, dataIsArray, dataHas } from '../../../utils/customValidators';
+import { dataIsArray, dataHas } from '../../../utils/customValidators';
 import { ResourceObject, SingleResourceResponse } from '../../../utils/jsonAPI';
 import * as err from '../../../utils/errors';
 import validator from 'validator';
@@ -10,8 +10,7 @@ import { ResultSetHeader } from 'mysql2';
 import User from '../../../models/User';
 
 export const patchUserTransaction = async (req: Request, res: Response): Promise<Response> => {
-    let response = new SingleResourceResponse('data');
-    let transactionID: number, userId: number;
+    const response = new SingleResourceResponse('data');
     await check('data', err.invalidRequestBody).not().custom(dataIsArray).run(req);
     await check('data', err.unsupportedIdInRequest).not().custom(dataHas('id')).run(req);
     await param('trId', err.invalidTransactionId)
@@ -60,19 +59,18 @@ export const patchUserTransaction = async (req: Request, res: Response): Promise
         return res.status(400).json(response.close());
     }
 
-    transactionID = parseInt(req.params.trId);
-
-    userId = parseInt(req.params.id);
+    const transactionID = parseInt(req.params.trId),
+        userId = parseInt(req.params.id);
     if (req['decodedJWTPayload']['userHeaderID'] !== userId) {
         return res.status(403).json(response.addError(err.userIdMismatch).close());
     }
 
-    let transactionOrError = await User.getTransactionById(transactionID);
+    const transactionOrError = await User.getTransactionById(transactionID);
     if (transactionOrError.isError()) {
         return res.status(400).json(response.addError(transactionOrError.error).close());
     }
 
-    let resource: ResourceObject = req.body.data;
+    const resource: ResourceObject = req.body.data;
 
     const currency = resource.attributes.currency;
     const date = resource.attributes.date;
@@ -85,7 +83,7 @@ export const patchUserTransaction = async (req: Request, res: Response): Promise
     }
 
     let sql = 'UPDATE `aurora`.`Transaction` SET';
-    let params = [];
+    const params = [];
     let firstParameter = true;
 
     if (currency) {
@@ -106,6 +104,8 @@ export const patchUserTransaction = async (req: Request, res: Response): Promise
             firstParameter = false;
         }
         sql += ' UserTransactionDate = ? ';
+
+        // FIXME
         if (date instanceof Date) {
             str = date.toISOString().substring(0, 10);
         } else {
@@ -136,7 +136,7 @@ export const patchUserTransaction = async (req: Request, res: Response): Promise
     params.push(userId);
 
     const connection = await getDatabaseConnection();
-    const [result] = await connection.execute<ResultSetHeader>(sql, params);
+    await connection.execute<ResultSetHeader>(sql, params);
 
     response.data = {
         id: transactionID.toString(),

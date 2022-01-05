@@ -9,8 +9,7 @@ import { isCurrencyCode } from '../../../models/CurrencyCode';
 import { ResultSetHeader } from 'mysql2';
 
 export const postUserTransactions = async (req: Request, res: Response): Promise<Response> => {
-    let response = new SingleResourceResponse('data');
-    let createdTransactionID: number, userId: number;
+    const response = new SingleResourceResponse('data');
     await check('data', err.invalidRequestBody).not().custom(dataIsArray).run(req);
     await check('data', err.unsupportedIdInRequest).not().custom(dataHas('id')).run(req);
 
@@ -52,8 +51,9 @@ export const postUserTransactions = async (req: Request, res: Response): Promise
         return res.status(400).json(response.close());
     }
 
-    let resource: ResourceObject = req.body.data;
-    userId = parseInt(req.params.id);
+    const resource: ResourceObject = req.body.data;
+
+    const userId = parseInt(req.params.id);
     if (req['decodedJWTPayload']['userHeaderID'] !== userId) {
         return res.status(403).json(response.addError(err.userIdMismatch).close());
     }
@@ -69,7 +69,7 @@ export const postUserTransactions = async (req: Request, res: Response): Promise
         [currency, userId, amount, date, tag],
     );
 
-    createdTransactionID = result.insertId;
+    const createdTransactionID = result.insertId;
     response.data = {
         id: createdTransactionID.toString(),
         type: 'UserTransaction',

@@ -1,6 +1,5 @@
-import { check, cookie, validationResult } from 'express-validator';
+import { cookie, validationResult } from 'express-validator';
 import { getRedisConnection } from '../../utils/databases';
-import { resourceObjectHas } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as err from '../../utils/errors';
 import { Request, Response } from 'express';
@@ -11,7 +10,7 @@ export const postLogout = async (req: Request, res: Response): Promise<void> => 
     /**
      * Empty Check
      */
-    let response = new SingleResourceResponse('data');
+    const response = new SingleResourceResponse('data');
     await cookie('RefreshToken', err.noRefreshToken).notEmpty().run(req);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

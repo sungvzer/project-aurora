@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { cookie, header, Result, ValidationError, validationResult } from 'express-validator';
+import { cookie, Result, ValidationError, validationResult } from 'express-validator';
 import { SingleResourceResponse } from '../utils/jsonAPI';
 import * as commonErrors from '../utils/errors';
 import { getAccessTokenFromRequest } from '../utils/jwt';
 
 export const requireAuthentication = async (req: Request, res: Response, next: NextFunction) => {
-    let response = new SingleResourceResponse('data');
+    const response = new SingleResourceResponse('data');
     await cookie('AccessToken', commonErrors.missingAuthorization).notEmpty().run(req);
     const error: Result<ValidationError> = validationResult(req);
 
