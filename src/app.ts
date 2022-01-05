@@ -25,6 +25,7 @@ const environmentCheckup = (): void => {
         "MYSQL_HOST",
         "MYSQL_PORT",
         "MYSQL_PASSWORD_DEV",
+        "MYSQL_PASSWORD_PROD",
         "REDIS_HOST",
         "REDIS_PORT",
         "SHOW_ENDPOINTS",

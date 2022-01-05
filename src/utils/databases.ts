@@ -10,11 +10,13 @@ export interface LastInsertId extends mysql2.RowDataPacket {
 
 const mysqlConfig = {
     host: process.env.MYSQL_HOST,
-    password: process.env.MYSQL_PASSWORD_DEV,
+    password:
+        ENVIRONMENT === "Development"
+            ? process.env.MYSQL_PASSWORD_DEV
+            : process.env.MYSQL_PASSWORD_PROD,
     port: parseInt(process.env.MYSQL_PORT),
     database: "aurora",
-    // TODO: This needs to be changed once we reach production
-    user: ENVIRONMENT === "Development" ? "aurora_dev" : "aurora_dev",
+    user: ENVIRONMENT === "Development" ? "aurora_dev" : "aurora_prod",
     timezone: "+00:00",
 };
 
