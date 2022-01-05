@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response, Request, NextFunction } from 'express';
 import assert from 'node:assert';
 
