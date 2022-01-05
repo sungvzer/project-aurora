@@ -75,7 +75,8 @@ To run an instance of Aurora, you first need to have these programs up and runni
 
     -   There needs to be a database on this server called `aurora`
     -   An user with which tables need to be created
-    -   And an user - `aurora_dev` which the API will use.
+    -   An user - `aurora_dev` which the API will use throughout development/debug mode
+    -   An user - `aurora_prod` to be used in production
 
 -   Redis (Development version is v6.2.6)
 
@@ -101,6 +102,7 @@ Create a new `.env` file into the root of the project, then set these variables:
 | MYSQL_HOST             | String  | MySQL database hostname (IP or name)                    | `localhost / 127.0.0.1 `             |
 | MYSQL_PORT             | Integer | MySQL database port                                     | `3306 `                              |
 | MYSQL_PASSWORD_DEV     | String  | MySQL database `aurora_dev` user password               | `AuroraPassword123 `                 |
+| MYSQL_PASSWORD_PROD    | String  | MySQL database `aurora_prod` user password              | `AuroraPassword123Prod `             |
 | REDIS_HOST             | String  | Redis database hostname (IP or name)                    | `localhost / 127.0.0.1 `             |
 | REDIS_PORT             | Integer | Redis database port                                     | `6000 `                              |
 | SHOW_ENDPOINTS         | Boolean | Whether to log endpoints on startup                     | `true `                              |
