@@ -19,6 +19,12 @@ const mysqlConfig = {
 };
 
 const pool = mysql2.createPool(mysqlConfig);
+pool.getConnection((err, conn) => {
+    if (err) {
+        throw err;
+    }
+    conn.release();
+});
 
 export const getDatabaseConnection = async () => {
     return pool.promise();
