@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import mysql2 from 'mysql2';
 import { ENVIRONMENT } from './secrets';
 import { createClient } from 'redis';
