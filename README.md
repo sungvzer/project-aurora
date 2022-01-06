@@ -35,17 +35,17 @@ _Response_
 
 ## Table of contents
 
--   [Table of contents](#table-of-contents)
--   [Features](#features)
--   [Installation](#installation)
-    -   [System Requirements](#system-requirements)
--   [Running the API server](#running-the-api-server)
-    -   [Environment variables](#environment-variables)
-    -   [Dependencies](#dependencies)
-    -   [Running](#running)
-    -   [Debugging](#debugging)
--   [Contributing](#contributing)
--   [License](#license)
+- [Table of contents](#table-of-contents)
+- [Features](#features)
+- [Installation](#installation)
+  - [System Requirements](#system-requirements)
+- [Running the API server](#running-the-api-server)
+  - [Environment variables](#environment-variables)
+  - [Dependencies](#dependencies)
+  - [Running](#running)
+  - [Debugging](#debugging)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Features
 
