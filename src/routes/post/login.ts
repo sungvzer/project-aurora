@@ -79,13 +79,9 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     const redis = await getRedisConnection();
     await redis.set(refreshToken, '1');
 
-    response.data = {
-        id: userIDOrError.value.toString(),
-        type: 'Credentials',
-        attributes: {
-            accessToken,
-            refreshToken,
-        },
+    response.meta = {
+        message: 'Access granted',
+        userId: userIDOrError.value.toString(),
     };
 
     periodicRefreshTokenCleanup();
