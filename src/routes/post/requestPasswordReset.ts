@@ -92,6 +92,7 @@ export const { requestPasswordReset } = new (class {
         Object.assign(passwordResetEmail, smtpOptions);
         passwordResetEmail.to = email;
         passwordResetEmail.html = htmlPasswordResetTemplate.replace('{{params.key}}', resetKey.key);
+        passwordResetEmail.text = `Hello!\nWe received a request to reset your password.\nTo do so, the key to use in the API call is the following:\n${resetKey.key}\nWarning: Do not share this code with anyone! It can be used to change your APIpassword\nIf you did not request such reset and do not acknowledge this action, please ignore this email.`;
         passwordResetEmail.subject = 'Password reset';
         this.transport.sendMail(passwordResetEmail);
         response.meta = {
