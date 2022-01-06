@@ -24,12 +24,6 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
     const oldRefreshToken = req.cookies['RefreshToken'];
 
     const redis = await getRedisConnection();
-    const result = await redis.get(oldRefreshToken);
-
-    if (!result) {
-        res.status(403).json(response.addError(commonErrors.invalidRefreshToken).close());
-        return;
-    }
 
     jwt.verify(
         oldRefreshToken,
@@ -39,16 +33,23 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
                 res.status(403).json(response.addError(commonErrors.invalidRefreshToken).close());
                 return;
             }
+            const userId = payload['userHeaderID'].toString();
+            const result = await redis.get(userId + '-' + oldRefreshToken);
+
+            if (!result) {
+                res.status(403).json(response.addError(commonErrors.invalidRefreshToken).close());
+                return;
+            }
 
             // Remove old token from list of valid tokens
-            await redis.del(oldRefreshToken);
+            await redis.del(userId + '-' + oldRefreshToken);
             const { accessToken, refreshToken } = generateTokenPair({
-                userHeaderID: payload['userHeaderID'],
+                userHeaderID: parseInt(userId),
             });
-            await redis.set(refreshToken, '1');
+            await redis.set(userId + '-' + refreshToken, '1');
 
             response.meta = {
-                userId: payload['userHeaderID'].toString(),
+                userId: userId,
                 message: 'Tokens updated',
             };
 

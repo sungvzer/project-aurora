@@ -49,12 +49,14 @@ export const postLogout = async (req: Request, res: Response): Promise<void> => 
     }
 
     const redis = await getRedisConnection();
-    const queryResult = await redis.get(refreshToken);
+    const queryResult = await redis.get(
+        accessPayload['userHeaderID'].toString() + '-' + refreshToken,
+    );
     if (!queryResult) {
         res.status(403).json(response.addError(err.invalidRefreshToken).close());
         return;
     }
-    await redis.del(refreshToken);
+    await redis.del(accessPayload['userHeaderID'].toString() + '-' + refreshToken);
     response.meta = { message: 'User logged out successfully' };
     res.clearCookie('AccessToken').clearCookie('RefreshToken');
     res.status(200).json(response.close());

@@ -77,7 +77,7 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
         userHeaderID: userIDOrError.value,
     });
     const redis = await getRedisConnection();
-    await redis.set(refreshToken, '1');
+    await redis.set(userIDOrError.value.toString() + '-' + refreshToken, '1');
 
     response.meta = {
         message: 'Access granted',
