@@ -1,5 +1,19 @@
 import { Error } from './jsonAPI';
 
+export const wrongParameterType: Error = {
+    code: 'ERR_WRONG_PARAMETER_TYPE',
+    detail: 'The parameter type for {{param.name}} is wrong. The correct type is {{param.type}}',
+    title: 'Wrong parameter type',
+    status: '400',
+};
+
+export const missingInvalidateSessionsParameter: Error = {
+    code: 'ERR_MISSING_INVALIDATE_SESSIONS_PARAMETER',
+    detail: 'The required parameter for invalidating sessions is missing',
+    title: 'Missing "invalidateSessions" parameter',
+    status: '400',
+};
+
 export const noResetKey: Error = {
     code: 'ERR_NO_RESET_KEY',
     detail: 'The required reset key is missing',

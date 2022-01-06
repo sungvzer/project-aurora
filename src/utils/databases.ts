@@ -47,10 +47,35 @@ export const getRedisConnection = async (): Promise<RedisClientType<{}, {}>> => 
     return client;
 };
 
-export const { periodicRefreshTokenCleanup, invalidateSessionsForRefreshToken } = new (class {
+export const {
+    periodicRefreshTokenCleanup,
+    invalidateSessionsForRefreshToken,
+    invalidateAllSessionsForUser,
+} = new (class {
     count = -1;
     // FIXME: Same FIXME as above
     connection: RedisClientType<{}, {}>;
+
+    /**
+     * Delete all sessions from Redis database for a certain user's id.
+     * This will prevent refreshing tokens on ALL sessions, even the one that requested this action.
+     * @param userId The user's ID
+     */
+    invalidateAllSessionsForUser = async (userId: number): Promise<void> => {
+        if (this.connection == null) {
+            this.connection = await getRedisConnection();
+        }
+
+        const result = await this.connection.keys(`${userId}-*`);
+        if (!result) {
+            return;
+        }
+
+        for (const key of result) {
+            await this.connection.del(key);
+        }
+        return;
+    };
 
     /**
      * Delete all sessions from Redis database for a certain user's refresh token
