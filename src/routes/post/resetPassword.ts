@@ -5,6 +5,7 @@ import { resourceObjectHas } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as err from '../../utils/errors';
 import PasswordResetKey from '../../models/PasswordResetKey';
+import { invalidateAllSessionsForUser } from '../../utils/databases';
 
 export const resetPassword = async (req: Request, res: Response): Promise<void> => {
     const response = new SingleResourceResponse('data');
@@ -13,7 +14,23 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
      * Empty Checks
      */
     await check('data', err.noResetKey).custom(resourceObjectHas('resetKey')).run(req);
+    await check('data', err.missingInvalidateSessionsParameter)
+        .custom(resourceObjectHas('invalidateSessions'))
+        .run(req);
     await check('data', err.blankPassword).custom(resourceObjectHas('password')).run(req);
+
+    /**
+     * Validity checks
+     */
+    const customError = err.wrongParameterType;
+    customError.detail = customError.detail
+        ?.replace('{{param.name}}', 'invalidateSessions')
+        .replace('{{param.type}}', 'boolean');
+    await check('data', customError)
+        .custom((input) => {
+            return typeof input['attributes']['invalidateSessions'] === 'boolean';
+        })
+        .run(req);
 
     /**
      * Error handling
@@ -29,11 +46,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
 
     const resetKey = req.body.data.attributes.resetKey;
     const password = req.body.data.attributes.password;
-
-    response.meta = {
-        resetKey,
-        password,
-    };
+    const invalidateSessions = req.body.data.attributes.invalidateSessions as boolean;
 
     const userIdOrError = await PasswordResetKey.consume(resetKey);
     if (userIdOrError.isError()) {
@@ -41,7 +54,9 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
         return;
     }
     User.changePassword(userIdOrError.value, password);
-    // TODO: Cleanup all refresh tokens that belong to this user
+    if (invalidateSessions) {
+        invalidateAllSessionsForUser(userIdOrError.value);
+    }
 
     response.meta = { message: 'Password correctly changed' };
     res.status(200).json(response.close());
