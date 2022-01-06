@@ -46,13 +46,10 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
                 userHeaderID: payload['userHeaderID'],
             });
             await redis.set(refreshToken, '1');
-            response.data = {
-                id: payload['userHeaderID'],
-                type: 'AuthTokenPair',
-                attributes: {
-                    accessToken,
-                    refreshToken,
-                },
+
+            response.meta = {
+                userId: payload['userHeaderID'].toString(),
+                message: 'Tokens updated',
             };
 
             res.cookie('AccessToken', accessToken, {
