@@ -1,5 +1,6 @@
 import { CustomSanitizer, CustomValidator } from 'express-validator';
 import validator from 'validator';
+import Type from './typeof';
 
 function editResourceAttribute(toChange: object, attribute: string, value: unknown): object {
     if (!Object.prototype.hasOwnProperty.call(toChange, 'attributes')) return;
@@ -76,4 +77,10 @@ export const isValidResourceObject = (input: object) => {
     } else {
         return checkInput(input);
     }
+};
+
+export const resourceObjectAttributeIs = (attribute: string, type: Type): CustomValidator => {
+    return (input) => {
+        return typeof input['attributes'][attribute] === type;
+    };
 };

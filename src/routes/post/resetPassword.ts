@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { check, Result, ValidationError, validationResult } from 'express-validator';
 import User from '../../models/User';
-import { resourceObjectHas } from '../../utils/customValidators';
+import { resourceObjectAttributeIs, resourceObjectHas } from '../../utils/customValidators';
 import { SingleResourceResponse } from '../../utils/jsonAPI';
 import * as err from '../../utils/errors';
 import PasswordResetKey from '../../models/PasswordResetKey';
@@ -26,10 +26,9 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     customError.detail = customError.detail
         ?.replace('{{param.name}}', 'invalidateSessions')
         .replace('{{param.type}}', 'boolean');
+
     await check('data', customError)
-        .custom((input) => {
-            return typeof input['attributes']['invalidateSessions'] === 'boolean';
-        })
+        .custom(resourceObjectAttributeIs('invalidateSessions', 'boolean'))
         .run(req);
 
     /**
