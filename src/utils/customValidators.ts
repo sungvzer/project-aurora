@@ -10,7 +10,7 @@ function editResourceAttribute(toChange: object, attribute: string, value: unkno
 }
 
 export const resourceObjectHas = (str: string): CustomValidator => {
-    return (input) => input['attributes'][str];
+    return (input) => input['attributes'][str] != null;
 };
 
 export const resourceObjectValidateEmail = (input: unknown): boolean => {

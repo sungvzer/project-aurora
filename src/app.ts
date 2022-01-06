@@ -16,6 +16,7 @@ import { getVerify } from './routes/get/verify';
 import { requestPasswordReset } from './routes/post/requestPasswordReset';
 import { resetPassword } from './routes/post/resetPassword';
 import colors from 'colors/safe';
+import { invalidateSessions } from './routes/post/invalidateSessions';
 
 const environmentCheckup = (): void => {
     console.log(colors.yellow('INFO: Running environment checkup'));
@@ -127,6 +128,7 @@ app.post('/logout', requireAuthentication, postLogout);
 app.post('/refreshToken', regenerateToken);
 app.post('/request_password_reset', verifyJsonApiRequest, requestPasswordReset);
 app.post('/reset_password', verifyJsonApiRequest, resetPassword);
+app.post('/invalidate_sessions', requireAuthentication, invalidateSessions);
 
 app.use('/users', userRouter);
 app.use('*', defaultError);

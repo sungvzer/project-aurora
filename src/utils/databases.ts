@@ -4,6 +4,8 @@ import { ENVIRONMENT } from './secrets';
 import { createClient } from 'redis';
 import { RedisClientType } from 'redis';
 import * as jwt from 'jsonwebtoken';
+import ErrorOr from '../models/ErrorOr';
+import * as commonErrors from './errors';
 
 export interface LastInsertId extends mysql2.RowDataPacket {
     'LAST_INSERT_ID()': number;
@@ -45,10 +47,46 @@ export const getRedisConnection = async (): Promise<RedisClientType<{}, {}>> => 
     return client;
 };
 
-export const { periodicRefreshTokenCleanup } = new (class {
+export const { periodicRefreshTokenCleanup, invalidateSessionsForRefreshToken } = new (class {
     count = -1;
     // FIXME: Same FIXME as above
     connection: RedisClientType<{}, {}>;
+
+    /**
+     * Delete all sessions from Redis database for a certain user's refresh token
+     * @param refreshToken Refresh token for the user.
+     * @returns The user ID from the refresh token
+     */
+    invalidateSessionsForRefreshToken = async (refreshToken: string): Promise<ErrorOr<number>> => {
+        let userId: number = undefined;
+        if (this.connection == null) {
+            this.connection = await getRedisConnection();
+        }
+        try {
+            jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, payload) => {
+                if (err) {
+                    throw err; // This is the only way I found to propagate errors without external variables
+                }
+                userId = payload['userHeaderID'];
+            });
+        } catch (error) {
+            return new ErrorOr({ error: commonErrors.invalidRefreshToken });
+        }
+
+        const result = await this.connection.keys(`${userId}-*`);
+        if (!result || !result.includes(`${userId}-${refreshToken}`)) {
+            return new ErrorOr({ error: commonErrors.invalidRefreshToken });
+        }
+
+        for (const key of result) {
+            if (key === `${userId}-${refreshToken}`) {
+                continue;
+            }
+            await this.connection.del(key);
+        }
+        return new ErrorOr({ value: userId });
+    };
+
     periodicRefreshTokenCleanup = async () => {
         this.count++;
         if (this.connection == null) {
