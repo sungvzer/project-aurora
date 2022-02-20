@@ -17,9 +17,6 @@ import { millisecondsInADay } from '../../utils/time';
 export const postLogin = async (req: Request, res: Response): Promise<void> => {
     const response = new SingleResourceResponse('data');
 
-    /* FIXME: The current behavior "leaks" RefreshTokens and should be prevented so that the periodic cleanup does not need to occur:
-              Whenever a new refresh token is issued, we should find a way to actually verify if that user already has a certain token,
-              if so, we should delete it, (or provide it again if the request already possesses one?) */
     /**
      * Empty Checks
      */
@@ -72,16 +69,29 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
         res.status(401).json(response.close());
         return;
     }
+    const redis = await getRedisConnection();
+    const userID = userIDOrError.value;
+
+    /* Once we verify that the credentials are ok, we are good with refreshing
+       current tokens instead of generating new ones.
+       Even though this behavior is really stupid, clients should never allow
+       login after they have already access to the API */
+    if (req.cookies.RefreshToken) {
+        const storedRefreshToken = await redis.get(`${userID}-${req.cookies.RefreshToken}`);
+        if (storedRefreshToken == '1') {
+            res.redirect('/refreshToken');
+            return;
+        }
+    }
 
     const { accessToken, refreshToken } = generateTokenPair({
-        userHeaderID: userIDOrError.value,
+        userHeaderID: userID,
     });
-    const redis = await getRedisConnection();
-    await redis.set(userIDOrError.value.toString() + '-' + refreshToken, '1');
+    await redis.set(userID.toString() + '-' + refreshToken, '1');
 
     response.meta = {
         message: 'Access granted',
-        userId: userIDOrError.value.toString(),
+        userId: userID.toString(),
     };
 
     periodicRefreshTokenCleanup();
@@ -96,5 +106,4 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
         })
         .status(200)
         .json(response.close());
-    return;
 };
