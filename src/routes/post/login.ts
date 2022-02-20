@@ -84,10 +84,15 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
         }
     }
 
+    // Given we're talking about milliseconds, storing it once ensures consistency
+    const refreshExpiryTimestamp = Date.now() + millisecondsInADay * 7;
+
     const { accessToken, refreshToken } = generateTokenPair({
         userHeaderID: userID,
     });
-    await redis.set(userID.toString() + '-' + refreshToken, '1');
+    await redis.set(userID.toString() + '-' + refreshToken, '1', {
+        PXAT: refreshExpiryTimestamp,
+    });
 
     response.meta = {
         message: 'Access granted',
@@ -101,7 +106,7 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
         expires: new Date(Date.now() + millisecondsInADay),
     })
         .cookie('RefreshToken', refreshToken, {
-            expires: new Date(Date.now() + millisecondsInADay * 7),
+            expires: new Date(refreshExpiryTimestamp),
             httpOnly: true,
         })
         .status(200)

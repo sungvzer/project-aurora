@@ -46,7 +46,11 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
             const { accessToken, refreshToken } = generateTokenPair({
                 userHeaderID: parseInt(userId),
             });
-            await redis.set(userId + '-' + refreshToken, '1');
+
+            // Given we're talking about milliseconds, storing it once ensures consistency
+            const refreshExpiryTimestamp = Date.now() + millisecondsInADay * 7;
+
+            await redis.set(userId + '-' + refreshToken, '1', { PXAT: refreshExpiryTimestamp });
 
             response.meta = {
                 userId: userId,
@@ -58,7 +62,7 @@ export const regenerateToken = async (req: Request, res: Response): Promise<void
                 expires: new Date(Date.now() + millisecondsInADay),
             })
                 .cookie('RefreshToken', refreshToken, {
-                    expires: new Date(Date.now() + millisecondsInADay * 7),
+                    expires: new Date(refreshExpiryTimestamp),
                     httpOnly: true,
                 })
                 .status(200)
