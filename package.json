@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "Back-end for managing users and transactions",
     "main": "dist/server.js",
+    "bin": "dist/server.js",
     "scripts": {
         "start": "NODE_ENV=DEV node dist/server.js",
         "watchDebug": "tsc -w & NODE_ENV=DEV nodemon dist/server.js",
@@ -47,7 +48,7 @@
         "@typescript-eslint/parser": "^5.9.0",
         "argon2": "^0.28.2",
         "babel-jest": "^27.4.1",
-        "colors": "^1.4.0",
+        "colors": "1.4.0",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
