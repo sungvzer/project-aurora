@@ -79,7 +79,7 @@ export const postLogin = async (req: Request, res: Response): Promise<void> => {
     if (req.cookies.RefreshToken) {
         const storedRefreshToken = await redis.get(`${userID}-${req.cookies.RefreshToken}`);
         if (storedRefreshToken == '1') {
-            res.redirect('/refreshToken');
+            res.redirect('/refreshToken', 307);
             return;
         }
     }
